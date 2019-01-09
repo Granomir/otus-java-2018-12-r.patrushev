@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     	 
-    <!--определение родительского POM -->
+    <!--определение родительского POM-->
     <parent>
         <groupId>com.patrushev</groupId>
         <artifactId>Home_work</artifactId>
@@ -18,6 +18,8 @@
     <name>home_work_01</name>
 	
 	<properties>
+        <!--по умолчанию в maven версия jdk 1.5, поэтому если в коде будут фишки более поздних версий, то приложение не скомпилируется
+        указание версии jdk нужно для того, чтобы этого избежать-->
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
@@ -63,9 +65,10 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <appendAssemblyId>true</appendAssemblyId>
+                    <!--нижняя строка для того, чтобы к имени файла не добавлялось название дескриптора (в данном случае jar-with-dependencies)-->
+                    <appendAssemblyId>false</appendAssemblyId>
                     <descriptorRefs>
-                        <!--здесь говорится что jar файл должен собираться со всеми dependencies-->
+                        <!--здесь говорится что jar файл должен собираться со всеми dependencies c использованием указанного дескриптора сборки (jar-with-dependencies)-->
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                     <archive>
