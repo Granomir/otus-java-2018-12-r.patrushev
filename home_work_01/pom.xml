@@ -37,24 +37,12 @@
         <finalName>${project.name}</finalName>
 
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.1</version>
-                <configuration>
-                    <archive>
-                        <!--здесь говорится, чтобы при создании манифеста мавен добавил в него информацию, что главным классом является Main-->
-                        <manifest>
-                            <mainClass>com.patrushev.home_work_01.Main</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
+            <!--плагин для сборки jar со всеми зависимостями-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.1.0</version>
-                <!--в этой секции говорится, чтобы мавен сделал работу, описанную в секции configuration во время выполнения фазы package-->
+                <!--в этой секции настраивается привязка плагина к конкретным фазе и цели-->
                 <executions>
                     <execution>
                         <id>my-maven-assembly-plugin</id>
