@@ -8,24 +8,28 @@ public class ObjectSizeDeterminerImpl implements ObjectSizeDeterminer {
     public long getMemorySizeOfObject(ObjectFactory objectFactory) {
         int size = 20_000_000;
         //создаем массив для объектов
-        Object[] array = new Object[size];
+        Object[] objects = new Object[size];
         //определем размер занятой памяти до заполнения массива объектами
         long currentlyOccupiedMemorySize1 = getCurrentlyOccupiedMemorySize();
         //заплняем массив объектами, создаваемыми фабрикой
-        for (int i = 0; i < array.length; i++) {
+        for (int i = 0; i < objects.length; i++) {
             //создаем объект
-            array[i] = objectFactory.createObject();
+            objects[i] = objectFactory.createObject();
         }
         //определем размер занятой памяти после заполнения массива
         long currentlyOccupiedMemorySize2 = getCurrentlyOccupiedMemorySize();
         //размер памяти занимаемой объектом = (размер занятой памяти после заполнения массива - размер занятой памяти до заполнения массива) / кол-во элементов
-        long memorySizeOfObject = (currentlyOccupiedMemorySize2 - currentlyOccupiedMemorySize1) / size;
+        long memorySizeOfObject = (currentlyOccupiedMemorySize2 - currentlyOccupiedMemorySize1) / objects.length;
+        for (int i = 0; i < objects.length; i++) {
+            objects[i] = null;
+        }
+        objects = null;
         return memorySizeOfObject;
     }
 
     //возвращает размер занятой в данный момент памяти
     private static long getCurrentlyOccupiedMemorySize() {
-        //вызов сборщика мусора (не гарантирован)
+        //вызов сборщика мусора
         System.gc();
         //ждем 10 мс, чтобы увеличить вероятность отработки GC???
         try {
