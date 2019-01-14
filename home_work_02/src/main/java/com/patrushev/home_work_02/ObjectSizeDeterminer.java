@@ -5,7 +5,7 @@ import com.patrushev.home_work_02.factories.ObjectFactory;
 public class ObjectSizeDeterminer {
 
     public static long getMemorySizeOfObject(ObjectFactory objectFactory) {
-        int size = 500_000;
+        int size = 1_000_000;
         //создаем массив для объектов
         Object[] objects = new Object[size];
         //определем размер занятой памяти до заполнения массива объектами
