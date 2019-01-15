@@ -9,6 +9,12 @@ public class IntArrayFactory implements ObjectFactory {
 
     @Override
     public Object createObject() {
-        return new int[arrayLength];
+        int[] intArray = new int[arrayLength];
+        if (arrayLength > 0) {
+            for (int i = 0; i < intArray.length; i++) {
+                intArray[i] = i;
+            }
+        }
+        return intArray;
     }
 }

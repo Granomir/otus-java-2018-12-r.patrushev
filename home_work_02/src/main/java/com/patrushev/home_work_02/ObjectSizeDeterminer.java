@@ -19,10 +19,7 @@ public class ObjectSizeDeterminer {
         long currentlyOccupiedMemorySize2 = getCurrentlyOccupiedMemorySize();
         //размер памяти занимаемой объектом = (размер занятой памяти после заполнения массива - размер занятой памяти до заполнения массива) / кол-во элементов
         long memorySizeOfObject = (currentlyOccupiedMemorySize2 - currentlyOccupiedMemorySize1) / objects.length;
-        //очищаем массив для того, чтобы GC выполнил уборку
-        for (int i = 0; i < objects.length; i++) {
-            objects[i] = null;
-        }
+        //присваиваем массиву null для того, чтобы GC выполнил уборку
         objects = null;
         return memorySizeOfObject;
     }
