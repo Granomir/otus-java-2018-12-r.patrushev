@@ -1,28 +1,54 @@
 package com.patrushev.my_arraylist;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 public class MyArrayList<T> implements List<T> {
+    //внутренний массив - основа списка
+    T[] array;
+    //текущее количество элементов в списке
+    private long size = 0;
+    //размер внутреннего массива
+    private long capacity;
 
-    private long size;
-
-    //готов
-    @Override
-    public int size() {
-        return (int) size;
+    //готов - создается массив с размером по умолчанию 10
+    @SuppressWarnings("unchecked")
+    public MyArrayList() {
+        array = (T[]) new Object[10];
+        capacity = array.length;
     }
 
-    //готов
+    //готов - создается массив с переданным размером
+    @SuppressWarnings("unchecked")
+    public MyArrayList(int size) {
+        array = (T[]) new Object[size];
+        capacity = array.length;
+    }
+
+    //готов - возвращает количество элементов в списке
+    @Override
+    public int size() {
+        if (size > Integer.MAX_VALUE) {
+            return Integer.MAX_VALUE;
+        } else {
+            return (int) size;
+        }
+    }
+
+    //готов - возвращает true, если размер списка равен 0
     @Override
     public boolean isEmpty() {
         return size == 0;
     }
 
+    //готов
     @Override
     public boolean contains(Object o) {
+        if (size == 0) return false;
+        for (T t : array) {
+            if (t == o) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -31,19 +57,52 @@ public class MyArrayList<T> implements List<T> {
         return null;
     }
 
+    //готов - возвращает массив типа Object, содержащий все элементы списка
     @Override
     public Object[] toArray() {
-        return new Object[0];
+        return Arrays.copyOf(array, (int) size);
     }
 
+    //как-то сделать проверку, что тип переданного массива соответствует или является предком дженерика, иначе при записи в него будет ошибка
+    @SuppressWarnings("unchecked")
     @Override
-    public <T1> T1[] toArray(T1[] a) {
-        return null;
+    public <E> E[] toArray(E[] a) {
+        if (a == null) {
+            throw new NullPointerException();
+        }
+        //проверка типа...
+        if (a.length >= size) {
+            for (int i = 0; i < size; i++) {
+                a[i] = (E) array[i];
+            }
+            if (a.length > size) {
+                a[(int) size] = null;
+            }
+            return a;
+        }
+        return (E[]) Arrays.copyOf(array, (int) size);
     }
 
+    //готов - если после внесения элемента в массиве останется мнеьше 25% свободного места, то сначала происходит увеличение массива в 1.5 раза
+    //после добавления происходит проверка, что в той ячейке массива, в которую добавлялся новый элемент, действительно там находится
     @Override
     public boolean add(T t) {
-        return false;
+        if ((size + 1) * 100 / capacity > 75) {
+            enlargeCapacity();
+        }
+        array[(int) size] = t;
+
+
+        //проверка что объект действительно добавился после выполнения этого метода (true или false) - нужно учесть что может быть два одинаковых объекта после этого
+//        if (array[(int) size - 1] == null)
+        return array[(int) size] == t;
+    }
+
+    //готов - копирует содержимое старого внутреннего массива в новый массив размером в 1.5 больше старого
+    private void enlargeCapacity() {
+        T[] tempArray = array;
+        array = Arrays.copyOf(tempArray, (int) (capacity * 1.5));
+        capacity = array.length;
     }
 
     @Override
