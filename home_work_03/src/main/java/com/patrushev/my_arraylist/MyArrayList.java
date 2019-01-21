@@ -2,9 +2,9 @@ package com.patrushev.my_arraylist;
 
 import java.util.*;
 
-public class MyArrayList<T> implements List<T> {
+public class MyArrayList<E> implements List<E> {
     //внутренний массив - основа списка
-    T[] array;
+    E[] array;
     //текущее количество элементов в списке
     private long size = 0;
     //размер внутреннего массива
@@ -13,14 +13,14 @@ public class MyArrayList<T> implements List<T> {
     //готов - создается массив с размером по умолчанию 10
     @SuppressWarnings("unchecked")
     public MyArrayList() {
-        array = (T[]) new Object[10];
+        array = (E[]) new Object[10];
         capacity = array.length;
     }
 
     //готов - создается массив с переданным размером
     @SuppressWarnings("unchecked")
     public MyArrayList(int size) {
-        array = (T[]) new Object[size];
+        array = (E[]) new Object[size];
         capacity = array.length;
     }
 
@@ -44,8 +44,8 @@ public class MyArrayList<T> implements List<T> {
     @Override
     public boolean contains(Object o) {
         if (size == 0) return false;
-        for (T t : array) {
-            if (t == o) {
+        for (E e : array) {
+            if (e == o) {
                 return true;
             }
         }
@@ -53,7 +53,7 @@ public class MyArrayList<T> implements List<T> {
     }
 
     @Override
-    public Iterator<T> iterator() {
+    public Iterator<E> iterator() {
         return null;
     }
 
@@ -66,62 +66,66 @@ public class MyArrayList<T> implements List<T> {
     //как-то сделать проверку, что тип переданного массива соответствует или является предком дженерика, иначе при записи в него будет ошибка
     @SuppressWarnings("unchecked")
     @Override
-    public <E> E[] toArray(E[] a) {
+    public <T> T[] toArray(T[] a) {
         if (a == null) {
             throw new NullPointerException();
         }
         //проверка типа...
         if (a.length >= size) {
             for (int i = 0; i < size; i++) {
-                a[i] = (E) array[i];
+                a[i] = (T) array[i];
             }
             if (a.length > size) {
                 a[(int) size] = null;
             }
             return a;
         }
-        return (E[]) Arrays.copyOf(array, (int) size);
+        return (T[]) Arrays.copyOf(array, (int) size);
     }
 
     //готов - если после внесения элемента в массиве останется мнеьше 25% свободного места, то сначала происходит увеличение массива в 1.5 раза
     //после добавления происходит проверка, что в той ячейке массива, в которую добавлялся новый элемент, действительно там находится
     @Override
-    public boolean add(T t) {
+    public boolean add(E e) {
         if ((size + 1) * 100 / capacity > 75) {
             enlargeCapacity();
         }
-        array[(int) size] = t;
-
-
-        //проверка что объект действительно добавился после выполнения этого метода (true или false) - нужно учесть что может быть два одинаковых объекта после этого
-//        if (array[(int) size - 1] == null)
-        return array[(int) size] == t;
+        array[(int) size] = e;
+        return array[(int) size] == e;
     }
 
     //готов - копирует содержимое старого внутреннего массива в новый массив размером в 1.5 больше старого
     private void enlargeCapacity() {
-        T[] tempArray = array;
+        E[] tempArray = array;
         array = Arrays.copyOf(tempArray, (int) (capacity * 1.5));
         capacity = array.length;
     }
 
     @Override
     public boolean remove(Object o) {
+        //поиск элемента в массиве (indexOf) || return false
+        //копирование элемента в переменную(get(i))
+        //удаление элемента из массива по индексу(remove(i)) || return что элемента нет в этой ячейке
         return false;
     }
 
     @Override
     public boolean containsAll(Collection<?> c) {
+        for (Object o : c) {
+            if (!contains(o)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends E> c) {
         return false;
     }
 
     @Override
-    public boolean addAll(Collection<? extends T> c) {
-        return false;
-    }
-
-    @Override
-    public boolean addAll(int index, Collection<? extends T> c) {
+    public boolean addAll(int index, Collection<? extends E> c) {
         return false;
     }
 
@@ -141,22 +145,22 @@ public class MyArrayList<T> implements List<T> {
     }
 
     @Override
-    public T get(int index) {
+    public E get(int index) {
         return null;
     }
 
     @Override
-    public T set(int index, T element) {
+    public E set(int index, E element) {
         return null;
     }
 
     @Override
-    public void add(int index, T element) {
+    public void add(int index, E element) {
 
     }
 
     @Override
-    public T remove(int index) {
+    public E remove(int index) {
         return null;
     }
 
@@ -171,17 +175,17 @@ public class MyArrayList<T> implements List<T> {
     }
 
     @Override
-    public ListIterator<T> listIterator() {
+    public ListIterator<E> listIterator() {
         return null;
     }
 
     @Override
-    public ListIterator<T> listIterator(int index) {
+    public ListIterator<E> listIterator(int index) {
         return null;
     }
 
     @Override
-    public List<T> subList(int fromIndex, int toIndex) {
+    public List<E> subList(int fromIndex, int toIndex) {
         return null;
     }
 }
