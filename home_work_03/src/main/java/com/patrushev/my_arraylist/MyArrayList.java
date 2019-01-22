@@ -6,9 +6,9 @@ public class MyArrayList<E> implements List<E> {
     //внутренний массив - основа списка
     E[] array;
     //текущее количество элементов в списке
-    private long size = 0;
+    private int size = 0;
     //размер внутреннего массива
-    private long capacity;
+    private int capacity;
 
     //готов - создается массив с размером по умолчанию 10
     @SuppressWarnings("unchecked")
@@ -27,11 +27,8 @@ public class MyArrayList<E> implements List<E> {
     //готов - возвращает количество элементов в списке
     @Override
     public int size() {
-        if (size > Integer.MAX_VALUE) {
-            return Integer.MAX_VALUE;
-        } else {
-            return (int) size;
-        }
+        return size;
+
     }
 
     //готов - возвращает true, если размер списка равен 0
@@ -60,45 +57,51 @@ public class MyArrayList<E> implements List<E> {
     //готов - возвращает массив типа Object, содержащий все элементы списка
     @Override
     public Object[] toArray() {
-        return Arrays.copyOf(array, (int) size);
+        return Arrays.copyOf(array, size);
     }
 
     //как-то сделать проверку, что тип переданного массива соответствует или является предком дженерика, иначе при записи в него будет ошибка
     @SuppressWarnings("unchecked")
     @Override
     public <T> T[] toArray(T[] a) {
-        if (a == null) {
-            throw new NullPointerException();
-        }
-        //проверка типа...
+        //здесь еще сначала проверка типа...
         if (a.length >= size) {
             for (int i = 0; i < size; i++) {
                 a[i] = (T) array[i];
             }
             if (a.length > size) {
-                a[(int) size] = null;
+                a[size] = null;
             }
             return a;
         }
-        return (T[]) Arrays.copyOf(array, (int) size);
+        return (T[]) Arrays.copyOf(array, size);
     }
 
-    //готов - если после внесения элемента в массиве останется мнеьше 25% свободного места, то сначала происходит увеличение массива в 1.5 раза
-    //после добавления происходит проверка, что в той ячейке массива, в которую добавлялся новый элемент, действительно там находится
+    //готов - если после внесения элемента в массиве останется меньше 25% свободного места, то сначала происходит увеличение массива в 1.5 раза
+    //если в списке уже Integer.MAX элементов, то в него больше нельзя добавлять новые элементы - выбрасывается исключение
     @Override
     public boolean add(E e) {
-        if ((size + 1) * 100 / capacity > 75) {
-            enlargeCapacity();
+        if (size == Integer.MAX_VALUE) {
+            throw new ArrayStoreException();
+        } else {
+            size++;
+            if ((size) * 100 / capacity > 75) {
+                enlargeCapacity((capacity * 1.5));
+            }
+            array[size - 1] = e;
+            return true;
         }
-        array[(int) size] = e;
-        return array[(int) size] == e;
     }
 
-    //готов - копирует содержимое старого внутреннего массива в новый массив размером в 1.5 больше старого
-    private void enlargeCapacity() {
-        E[] tempArray = array;
-        array = Arrays.copyOf(tempArray, (int) (capacity * 1.5));
-        capacity = array.length;
+    //готов - копирует содержимое старого внутреннего массива в новый массив большего размера
+    private void enlargeCapacity(double newCapacity) {
+        if (newCapacity > Integer.MAX_VALUE) {
+            capacity = Integer.MAX_VALUE;
+        } else {
+            E[] tempArray = array;
+            array = Arrays.copyOf(tempArray, (int) newCapacity);
+            capacity = array.length;
+        }
     }
 
     @Override
@@ -109,6 +112,7 @@ public class MyArrayList<E> implements List<E> {
         return false;
     }
 
+    //готов - проверяем каждый элемент переданной коллекции на совпадение с элементами списка
     @Override
     public boolean containsAll(Collection<?> c) {
         for (Object o : c) {
@@ -119,14 +123,77 @@ public class MyArrayList<E> implements List<E> {
         return true;
     }
 
+    //готов - если после внесения всех элементов переданной коллекции в массиве останется меньше 25% свободного места, то сначала происходит увеличение массива
+    //если в списке уже Integer.MAX элементов или при внесении элементов коллекции общей кол-во элементов превысит Integer.MAX - выбрасывается исключение
     @Override
     public boolean addAll(Collection<? extends E> c) {
-        return false;
+        long newSize = (long) size + (long) c.size();
+        if (newSize > Integer.MAX_VALUE) {
+            throw new ArrayStoreException();
+        } else {
+            if (newSize * 100 / capacity > 75) {
+                enlargeCapacity(newSize * 2);
+            }
+            for (E e : c) {
+                array[size] = e;
+                size++;
+            }
+            return true;
+        }
     }
 
+    //готов - если в списке уже Integer.MAX элементов или при внесении элементов коллекции общей кол-во элементов превысит Integer.MAX
+    //или если переданный индекс превышает размер коллекции - выбрасывается исключение
+    //если после внесения всех элементов переданной коллекции в массиве останется меньше 25% свободного места, то сначала происходит увеличение массива
+    //все сущ. элементы начиная с переданного индекса переносятся вправо на значение, равное количеству элементов в переданной коллекции
     @Override
     public boolean addAll(int index, Collection<? extends E> c) {
-        return false;
+        if (index >= size || index < 0) {
+            throw new IndexOutOfBoundsException();
+        }
+        long newSize = (long) size + (long) c.size();
+        if (newSize > Integer.MAX_VALUE) {
+            throw new ArrayStoreException();
+        } else {
+            if (newSize * 100 / capacity > 75) {
+                enlargeCapacity(newSize * 2);
+            }
+            moveTailToRight(index, c.size());
+            for (E e : c) {
+                array[index] = e;
+                index++;
+            }
+            size += c.size();
+            return true;
+        }
+    }
+
+    //готов - переносит хвост массива вправо
+    private void moveTailToRight(int index, int offset) {
+        //получаем количество итераций
+        int count = size - index;
+        //получаем индекс, в который надо начинать перенос
+        int newIndexR = size - 1 + offset;
+        //получаем индекс, с которого надо начинать перенос
+        int oldIndexR = newIndexR - offset;
+        for (int i = 0; i < count; i++, newIndexR--, oldIndexR--) {
+            array[newIndexR] = array[oldIndexR];
+            array[oldIndexR] = null;
+        }
+    }
+
+    //готов - переносит хвост массива влево
+    private void moveTailToLeft(int index, int offset) {
+        //получаем количество итераций
+        int count = size - index - 1;
+        //получаем индекс, в который надо начинать перенос
+        int newIndexL = index;
+        //получаем индекс, с которого надо начинать перенос
+        int oldIndexL = newIndexL + offset;
+        for (int i = 0; i < count; i++, newIndexL++, oldIndexL++) {
+            array[newIndexL] = array[oldIndexL];
+            array[oldIndexL] = null;
+        }
     }
 
     @Override
@@ -139,29 +206,62 @@ public class MyArrayList<E> implements List<E> {
         return false;
     }
 
+    //готов - заменяем старый массив новым пустым того же размера и сбрасываем счетчик size
+    @SuppressWarnings("unchecked")
     @Override
     public void clear() {
-
+        array = (E[]) new Object[capacity];
+        size = 0;
     }
 
+    //готов
     @Override
     public E get(int index) {
-        return null;
+        if (index >= size || index < 0) {
+            throw new IndexOutOfBoundsException();
+        }
+        return array[index];
     }
 
+    //готов
     @Override
     public E set(int index, E element) {
-        return null;
+        if (index >= size || index < 0) {
+            throw new IndexOutOfBoundsException();
+        }
+        E temp = array[index];
+        array[index] = element;
+        return temp;
     }
 
+    //готов - если в списке уже Integer.MAX элементов или если переданный индекс превышает размер коллекции - выбрасывается исключение
+    //если после внесения элемента в массиве останется меньше 25% свободного места, то сначала происходит увеличение массива
+    //все сущ. элементы начиная с переданного индекса переносятся вправо на единицу
     @Override
     public void add(int index, E element) {
-
+        if (index >= size || index < 0) {
+            throw new IndexOutOfBoundsException();
+        }
+        if (size == Integer.MAX_VALUE) {
+            throw new ArrayStoreException();
+        } else {
+            size++;
+            if ((size) * 100 / capacity > 75) {
+                enlargeCapacity((capacity * 1.5));
+            }
+            array[index] = element;
+        }
     }
 
+    //готов
     @Override
     public E remove(int index) {
-        return null;
+        if (index >= size || index < 0) {
+            throw new IndexOutOfBoundsException();
+        }
+        E temp = array[index];
+        moveTailToLeft(index, 1);
+        return temp;
     }
 
     @Override
