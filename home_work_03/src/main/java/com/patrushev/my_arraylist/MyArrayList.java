@@ -1,10 +1,11 @@
 package com.patrushev.my_arraylist;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class MyArrayList<E> implements List<E> {
     //внутренний массив - основа списка
-    E[] array;
+    private E[] array;
     //текущее количество элементов в списке
     private int size = 0;
     //размер внутреннего массива
@@ -73,8 +74,13 @@ public class MyArrayList<E> implements List<E> {
                 a[size] = null;
             }
             return a;
+        } else {
+            T[] newArray = (T[]) Array.newInstance(a.getClass().getComponentType(), a.length);
+            for (int i = 0; i < a.length; i++) {
+                newArray[i] = (T) array[i];
+            }
+            return newArray;
         }
-        return (T[]) Arrays.copyOf(array, size);
     }
 
     //готов - если после внесения элемента в массиве останется меньше 25% свободного места, то сначала происходит увеличение массива в 1.5 раза
@@ -106,10 +112,12 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public boolean remove(Object o) {
-        //поиск элемента в массиве (indexOf) || return false
-        //копирование элемента в переменную(get(i))
-        //удаление элемента из массива по индексу(remove(i)) || return что элемента нет в этой ячейке
-        return false;
+        if (contains(o)) {
+            remove(indexOf(o));
+            return true;
+        } else {
+            return false;
+        }
     }
 
     //готов - проверяем каждый элемент переданной коллекции на совпадение с элементами списка
@@ -183,13 +191,13 @@ public class MyArrayList<E> implements List<E> {
     }
 
     //готов - переносит хвост массива влево
-    private void moveTailToLeft(int index, int offset) {
+    private void moveTailToLeft(int index) {
         //получаем количество итераций
         int count = size - index - 1;
         //получаем индекс, в который надо начинать перенос
         int newIndexL = index;
         //получаем индекс, с которого надо начинать перенос
-        int oldIndexL = newIndexL + offset;
+        int oldIndexL = newIndexL + 1;
         for (int i = 0; i < count; i++, newIndexL++, oldIndexL++) {
             array[newIndexL] = array[oldIndexL];
             array[oldIndexL] = null;
@@ -198,7 +206,13 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return false;
+        boolean result = false;
+        for (Object o : c) {
+            if(remove(o)) {
+                result = true;
+            }
+        }
+        return result;
     }
 
     @Override
@@ -260,18 +274,31 @@ public class MyArrayList<E> implements List<E> {
             throw new IndexOutOfBoundsException();
         }
         E temp = array[index];
-        moveTailToLeft(index, 1);
+        moveTailToLeft(index);
+        size--;
         return temp;
     }
 
+    //готов
     @Override
     public int indexOf(Object o) {
-        return 0;
+        for (int i = 0; i < size; i++) {
+            if (o == array[i]) {
+                return i;
+            }
+        }
+        return -1;
     }
 
+    //готов
     @Override
     public int lastIndexOf(Object o) {
-        return 0;
+        for (int i = size - 1; i >= 0; i--) {
+            if (o == array[i]) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override

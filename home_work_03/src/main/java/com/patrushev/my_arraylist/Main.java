@@ -1,11 +1,16 @@
 package com.patrushev.my_arraylist;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-//        Object[] array = new Object[1];
-        System.out.println(Integer.MAX_VALUE + 1);
-
+        List<String> myList = new MyArrayList<>();
+        Collections.addAll(myList, "1", "2", "3");
+        Object[] ints = new Object[10];
+        Object[] integers = myList.toArray(ints);
+        for (Object integer : integers) {
+            System.out.println(integer);
+        }
     }
 }
