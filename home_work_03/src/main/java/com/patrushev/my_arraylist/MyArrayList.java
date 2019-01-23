@@ -110,6 +110,7 @@ public class MyArrayList<E> implements List<E> {
         }
     }
 
+    //готов
     @Override
     public boolean remove(Object o) {
         if (contains(o)) {
@@ -204,6 +205,7 @@ public class MyArrayList<E> implements List<E> {
         }
     }
 
+    //готов
     @Override
     public boolean removeAll(Collection<?> c) {
         boolean result = false;
@@ -215,9 +217,18 @@ public class MyArrayList<E> implements List<E> {
         return result;
     }
 
+    //готов
     @Override
     public boolean retainAll(Collection<?> c) {
-        return false;
+        boolean result = false;
+        for (int i = 0; i < size; i++) {
+            if (!c.contains(array[i])) {
+                remove(i);
+                i--;
+                result = true;
+            }
+        }
+        return result;
     }
 
     //готов - заменяем старый массив новым пустым того же размера и сбрасываем счетчик size

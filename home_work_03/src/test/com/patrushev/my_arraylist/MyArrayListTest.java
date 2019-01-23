@@ -195,7 +195,21 @@ public class MyArrayListTest {
 
     @Test
     public void retainAll() {
-        
+        testList.add("1");
+        testList.add("2");
+        testList.add("3");
+        testList.add("4");
+        testList.add("5");
+        testList.add("6");
+        testList.add("7");
+        List<String> arrayList1 = new ArrayList<>();
+        arrayList1.add("5");
+        arrayList1.add("2");
+        arrayList1.add("3");
+        assertTrue(testList.retainAll(arrayList1));
+        assertFalse(testList.retainAll(arrayList1));
+        Assert.assertEquals(3, testList.size());
+        Assert.assertEquals("3", testList.get(1));
     }
 
     @Test
