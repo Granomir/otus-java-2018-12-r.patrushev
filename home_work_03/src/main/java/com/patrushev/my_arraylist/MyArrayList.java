@@ -274,6 +274,7 @@ public class MyArrayList<E> implements List<E> {
             if ((size) * 100 / capacity > 75) {
                 enlargeCapacity((capacity * 1.5));
             }
+            moveTailToRight(index, 1);
             array[index] = element;
         }
     }

@@ -214,31 +214,75 @@ public class MyArrayListTest {
 
     @Test
     public void clear() {
-
+        testList.add("1");
+        testList.add("2");
+        testList.add("3");
+        testList.add("4");
+        testList.add("5");
+        testList.add("6");
+        testList.add("7");
+        testList.clear();
+        assertTrue(testList.isEmpty());
     }
 
     @Test
     public void get() {
+        testList.add("1");
+        testList.add("2");
+        testList.add("3");
+        assertEquals("2", testList.get(1));
     }
 
     @Test
     public void set() {
+        testList.add("1");
+        testList.add("2");
+        testList.add("3");
+        testList.set(1, "33");
+        assertEquals("33", testList.get(1));
     }
 
     @Test
     public void add1() {
+        testList.add("1");
+        testList.add("2");
+        testList.add("3");
+        testList.add(1, "11");
+        testList.add(1, "22");
+        testList.add(1, "33");
+        assertEquals("33", testList.get(1));
+        assertEquals("22", testList.get(2));
+        assertEquals("11", testList.get(3));
+        assertEquals("2", testList.get(4));
+        assertEquals(6, testList.size());
     }
 
     @Test
     public void remove1() {
+        testList.add("1");
+        testList.add("2");
+        testList.add("3");
+        testList.remove(1);
+        assertEquals("3", testList.get(1));
+        assertEquals(2, testList.size());
     }
 
     @Test
     public void indexOf() {
+        testList.add("1");
+        testList.add("2");
+        testList.add("3");
+        testList.add("2");
+        assertEquals(1, testList.indexOf("2"));
     }
 
     @Test
     public void lastIndexOf() {
+        testList.add("1");
+        testList.add("2");
+        testList.add("3");
+        testList.add("2");
+        assertEquals(3, testList.lastIndexOf("2"));
     }
 
     @Test
