@@ -43,7 +43,7 @@ public class MyArrayList<E> implements List<E> {
     public boolean contains(Object o) {
         if (size == 0) return false;
         for (E e : array) {
-            if (e == o) {
+            if (Objects.equals(o, e)) {
                 return true;
             }
         }
@@ -53,17 +53,17 @@ public class MyArrayList<E> implements List<E> {
     @Override
     public Iterator<E> iterator() {
         return new Iterator<>() {
-            private int count = 0;
+            private int next = 0;
 
             @Override
             public boolean hasNext() {
-                return count < size;
+                return next < size;
             }
 
             @Override
             public E next() {
-                count++;
-                return get(count - 1);
+                next++;
+                return get(next - 1);
             }
         };
     }
@@ -74,11 +74,10 @@ public class MyArrayList<E> implements List<E> {
         return Arrays.copyOf(array, size);
     }
 
-    //как-то сделать проверку, что тип переданного массива соответствует или является предком дженерика, иначе при записи в него будет ошибка
+    //готов
     @SuppressWarnings("unchecked")
     @Override
     public <T> T[] toArray(T[] a) {
-        //здесь еще сначала проверка типа...
         if (a.length >= size) {
             for (int i = 0; i < size; i++) {
                 a[i] = (T) array[i];
@@ -126,13 +125,16 @@ public class MyArrayList<E> implements List<E> {
     //готов
     @Override
     public boolean remove(Object o) {
-        if (contains(o)) {
-            remove(indexOf(o));
+        int index = indexOf(o);
+        if (index > -1) {
+            remove(index);
             return true;
         } else {
             return false;
         }
     }
+
+    //===============================
 
     //готов - проверяем каждый элемент переданной коллекции на совпадение с элементами списка
     @Override
@@ -326,66 +328,77 @@ public class MyArrayList<E> implements List<E> {
         return -1;
     }
 
-    //НЕ РАБОТАЕТ!!!
+    //готов
     @Override
     public ListIterator<E> listIterator() {
         return new ListIterator<>() {
-            private int count = 0;
+            private int next = 0;
+            private int previous = -1;
+            private int lastReturnedE = -1;
 
             @Override
             public boolean hasNext() {
-                return count < size;
+                return next < size;
             }
 
             @Override
             public E next() {
-                count++;
-                return get(count - 1);
+                next++;
+                previous++;
+                lastReturnedE = previous;
+                return get(previous);
             }
 
             @Override
             public boolean hasPrevious() {
-                return count > 0;
+                return previous > -1;
             }
 
             @Override
             public E previous() {
-                count--;
-                return get(count);
+                next--;
+                previous--;
+                lastReturnedE = next;
+                return get(next);
             }
 
             @Override
             public int nextIndex() {
-                return count;
+                return next;
             }
 
             @Override
             public int previousIndex() {
-                return count - 1;
+                return previous;
             }
 
+            //не учтены ограничения к этому методу, описанные в интерфейсе Listiterator
             @Override
             public void remove() {
-                MyArrayList.this.remove(count);
+                MyArrayList.this.remove(lastReturnedE);
             }
 
+            //не учтены ограничения к этому методу, описанные в интерфейсе Listiterator
             @Override
             public void set(E e) {
-                MyArrayList.this.set(count, e);
+                MyArrayList.this.set(lastReturnedE, e);
             }
 
+            //не реализован
             @Override
             public void add(E e) {
-                MyArrayList.this.add(count - 1, e);
+
             }
         };
     }
 
+    //не реализован
     @Override
     public ListIterator<E> listIterator(int index) {
         return null;
     }
 
+    //не реализован
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
         return null;

@@ -1,6 +1,5 @@
 package com.patrushev.my_arraylist;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,17 +10,12 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class MyArrayListTest {
-    MyArrayList<String> testList = new MyArrayList<>();
+    private MyArrayList<String> testList = new MyArrayList<>();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         testList = new MyArrayList<>();
     }
-//
-//    @After
-//    public void tearDown() throws Exception {
-//        testList.clear();
-//    }
 
     @Test
     public void size() {
