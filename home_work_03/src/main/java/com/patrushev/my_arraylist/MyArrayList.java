@@ -52,7 +52,20 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public Iterator<E> iterator() {
-        return null;
+        return new Iterator<>() {
+            private int count = 0;
+
+            @Override
+            public boolean hasNext() {
+                return count < size;
+            }
+
+            @Override
+            public E next() {
+                count++;
+                return get(count - 1);
+            }
+        };
     }
 
     //готов - возвращает массив типа Object, содержащий все элементы списка
@@ -313,9 +326,59 @@ public class MyArrayList<E> implements List<E> {
         return -1;
     }
 
+    //НЕ РАБОТАЕТ!!!
     @Override
     public ListIterator<E> listIterator() {
-        return null;
+        return new ListIterator<>() {
+            private int count = 0;
+
+            @Override
+            public boolean hasNext() {
+                return count < size;
+            }
+
+            @Override
+            public E next() {
+                count++;
+                return get(count - 1);
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                return count > 0;
+            }
+
+            @Override
+            public E previous() {
+                count--;
+                return get(count);
+            }
+
+            @Override
+            public int nextIndex() {
+                return count;
+            }
+
+            @Override
+            public int previousIndex() {
+                return count - 1;
+            }
+
+            @Override
+            public void remove() {
+                MyArrayList.this.remove(count);
+            }
+
+            @Override
+            public void set(E e) {
+                MyArrayList.this.set(count, e);
+            }
+
+            @Override
+            public void add(E e) {
+                MyArrayList.this.add(count - 1, e);
+            }
+        };
     }
 
     @Override
