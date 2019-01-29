@@ -8,21 +8,17 @@ public class MyArrayList<E> implements List<E> {
     private E[] array;
     //текущее количество элементов в списке
     private int size = 0;
-    //размер внутреннего массива
-    private int capacity;
 
     //готов - создается массив с размером по умолчанию 10
     @SuppressWarnings("unchecked")
     public MyArrayList() {
         array = (E[]) new Object[10];
-        capacity = array.length;
     }
 
     //готов - создается массив с переданным размером
     @SuppressWarnings("unchecked")
     public MyArrayList(int size) {
         array = (E[]) new Object[size];
-        capacity = array.length;
     }
 
     //готов - возвращает количество элементов в списке
@@ -103,8 +99,8 @@ public class MyArrayList<E> implements List<E> {
             throw new ArrayStoreException();
         } else {
             size++;
-            if ((size) * 100 / capacity > 75) {
-                enlargeCapacity((capacity * 1.5));
+            if ((size) * 100 / array.length > 75) {
+                enlargeCapacity((array.length * 1.5));
             }
             array[size - 1] = e;
             return true;
@@ -114,11 +110,11 @@ public class MyArrayList<E> implements List<E> {
     //готов - копирует содержимое старого внутреннего массива в новый массив большего размера
     private void enlargeCapacity(double newCapacity) {
         if (newCapacity > Integer.MAX_VALUE) {
-            capacity = Integer.MAX_VALUE;
+            E[] tempArray = array;
+            array = Arrays.copyOf(tempArray, Integer.MAX_VALUE);
         } else {
             E[] tempArray = array;
             array = Arrays.copyOf(tempArray, (int) newCapacity);
-            capacity = array.length;
         }
     }
 
@@ -155,7 +151,7 @@ public class MyArrayList<E> implements List<E> {
         if (newSize > Integer.MAX_VALUE) {
             throw new ArrayStoreException();
         } else {
-            if (newSize * 100 / capacity > 75) {
+            if (newSize * 100 / array.length > 75) {
                 enlargeCapacity(newSize * 2);
             }
             for (E e : c) {
@@ -179,7 +175,7 @@ public class MyArrayList<E> implements List<E> {
         if (newSize > Integer.MAX_VALUE) {
             throw new ArrayStoreException();
         } else {
-            if (newSize * 100 / capacity > 75) {
+            if (newSize * 100 / array.length > 75) {
                 enlargeCapacity(newSize * 2);
             }
             moveTailToRight(index, c.size());
@@ -250,7 +246,7 @@ public class MyArrayList<E> implements List<E> {
     @SuppressWarnings("unchecked")
     @Override
     public void clear() {
-        array = (E[]) new Object[capacity];
+        array = (E[]) new Object[array.length];
         size = 0;
     }
 
@@ -286,8 +282,8 @@ public class MyArrayList<E> implements List<E> {
             throw new ArrayStoreException();
         } else {
             size++;
-            if ((size) * 100 / capacity > 75) {
-                enlargeCapacity((capacity * 1.5));
+            if ((size) * 100 / array.length > 75) {
+                enlargeCapacity((array.length * 1.5));
             }
             moveTailToRight(index, 1);
             array[index] = element;
