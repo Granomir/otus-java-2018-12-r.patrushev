@@ -8,6 +8,7 @@ public class MyArrayList<E> implements List<E> {
     private E[] array;
     //текущее количество элементов в списке
     private int size = 0;
+    private int fillingDegree = 75;
 
     //готов - создается массив с размером по умолчанию 10
     @SuppressWarnings("unchecked")
@@ -99,7 +100,7 @@ public class MyArrayList<E> implements List<E> {
             throw new ArrayStoreException();
         } else {
             size++;
-            if ((size) * 100 / array.length > 75) {
+            if ((size) * 100 / array.length > fillingDegree) {
                 enlargeCapacity((array.length * 1.5));
             }
             array[size - 1] = e;
@@ -151,7 +152,7 @@ public class MyArrayList<E> implements List<E> {
         if (newSize > Integer.MAX_VALUE) {
             throw new ArrayStoreException();
         } else {
-            if (newSize * 100 / array.length > 75) {
+            if (newSize * 100 / array.length > fillingDegree) {
                 enlargeCapacity(newSize * 2);
             }
             for (E e : c) {
@@ -168,14 +169,12 @@ public class MyArrayList<E> implements List<E> {
     //все сущ. элементы начиная с переданного индекса переносятся вправо на значение, равное количеству элементов в переданной коллекции
     @Override
     public boolean addAll(int index, Collection<? extends E> c) {
-        if (index >= size || index < 0) {
-            throw new IndexOutOfBoundsException();
-        }
+        checkIndex(index);
         long newSize = (long) size + (long) c.size();
         if (newSize > Integer.MAX_VALUE) {
             throw new ArrayStoreException();
         } else {
-            if (newSize * 100 / array.length > 75) {
+            if (newSize * 100 / array.length > fillingDegree) {
                 enlargeCapacity(newSize * 2);
             }
             moveTailToRight(index, c.size());
@@ -253,18 +252,14 @@ public class MyArrayList<E> implements List<E> {
     //готов
     @Override
     public E get(int index) {
-        if (index >= size || index < 0) {
-            throw new IndexOutOfBoundsException();
-        }
+        checkIndex(index);
         return array[index];
     }
 
     //готов
     @Override
     public E set(int index, E element) {
-        if (index >= size || index < 0) {
-            throw new IndexOutOfBoundsException();
-        }
+        checkIndex(index);
         E temp = array[index];
         array[index] = element;
         return temp;
@@ -275,14 +270,12 @@ public class MyArrayList<E> implements List<E> {
     //все сущ. элементы начиная с переданного индекса переносятся вправо на единицу
     @Override
     public void add(int index, E element) {
-        if (index >= size || index < 0) {
-            throw new IndexOutOfBoundsException();
-        }
+        checkIndex(index);
         if (size == Integer.MAX_VALUE) {
             throw new ArrayStoreException();
         } else {
             size++;
-            if ((size) * 100 / array.length > 75) {
+            if ((size) * 100 / array.length > fillingDegree) {
                 enlargeCapacity((array.length * 1.5));
             }
             moveTailToRight(index, 1);
@@ -293,13 +286,17 @@ public class MyArrayList<E> implements List<E> {
     //готов
     @Override
     public E remove(int index) {
-        if (index >= size || index < 0) {
-            throw new IndexOutOfBoundsException();
-        }
+        checkIndex(index);
         E temp = array[index];
         moveTailToLeft(index);
         size--;
         return temp;
+    }
+
+    private void checkIndex(int index) {
+        if (index >= size || index < 0) {
+            throw new IndexOutOfBoundsException();
+        }
     }
 
     //готов

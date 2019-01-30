@@ -33,8 +33,8 @@ public class GcTracker {
     private static long totalGCDuration;
     private static int minuteNumber = 1;
 
-    //предварительная настройка отслеживания работы GC
-    static {
+    //настройка отслеживания работы GC
+    private static void initiateMonitoring() {
         //получаем список сборщиков мусора и выводим их названия в консоль
         List<GarbageCollectorMXBean> gcBeans = java.lang.management.ManagementFactory.getGarbageCollectorMXBeans();
         for (GarbageCollectorMXBean gcBean : gcBeans) {
@@ -78,6 +78,7 @@ public class GcTracker {
 
     @SuppressWarnings("InfiniteLoopStatement")
     public static void main(String[] args) {
+        initiateMonitoring();
         long applicationStartTime = System.nanoTime();
         long intermediateTimestamp = System.nanoTime();
         try {
