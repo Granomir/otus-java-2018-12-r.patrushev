@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <!--определение родительского POM-->
+    <parent>
+        <groupId>com.patrushev</groupId>
+        <artifactId>Home_work</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>home_work_05</artifactId>
+    <name>home_work_05</name>
+
+    <properties>
+        <!--по умолчанию в maven версия jdk 1.5, поэтому если в коде будут фишки более поздних версий, то приложение не скомпилируется
+        указание версии jdk нужно для того, чтобы этого избежать-->
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+    </properties>
+
+</project>
