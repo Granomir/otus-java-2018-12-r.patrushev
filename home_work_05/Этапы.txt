@@ -1,5 +1,0 @@
-1. проверка стоит ли конкретная аннотация (которая передается в метод) - я так понял, что это поможет определить какой метод когда вызывать в тестах (before и т.п.):
-
-final Default aDefault = tmpMainClass.getDeclaredAnnotation(Default.class); //типа если не равно null, значит есть?
-
-2. reflectionHelper
