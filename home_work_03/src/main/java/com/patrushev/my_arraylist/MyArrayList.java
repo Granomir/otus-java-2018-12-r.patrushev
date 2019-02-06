@@ -380,7 +380,7 @@ public class MyArrayList<E> implements List<E> {
             //не реализован
             @Override
             public void add(E e) {
-
+                throw new UnsupportedOperationException("not implemented");
             }
         };
     }
@@ -388,12 +388,12 @@ public class MyArrayList<E> implements List<E> {
     //не реализован
     @Override
     public ListIterator<E> listIterator(int index) {
-        return null;
+        throw new UnsupportedOperationException("not implemented");
     }
 
     //не реализован
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
-        return null;
+        throw new UnsupportedOperationException("not implemented");
     }
 }
