@@ -37,6 +37,7 @@ public class MyTestClass {
     @Test
     public void test1() {
         System.out.println("test1");
+        throw new AssertionError();
     }
 
     @Test
@@ -47,11 +48,13 @@ public class MyTestClass {
     @Test
     public void test3() {
         System.out.println("test3");
+        throw new AssertionError();
     }
 
     @Test
     public void test4() {
         System.out.println("test4");
+        throw new NullPointerException();
     }
 
     @AfterAll
