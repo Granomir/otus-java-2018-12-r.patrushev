@@ -1,0 +1,3 @@
+﻿ДЗ 06: My cache engine.
+
+Напишите свой cache engine с soft references.
