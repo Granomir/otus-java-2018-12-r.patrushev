@@ -1,4 +1,4 @@
-package ru.otus.l061.cache;
+package java.com.patrushev.my_cache_engine;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -6,29 +6,28 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Function;
 
-/**
- * Created by tully.
- */
 public class CacheEngineImpl<K, V> implements CacheEngine<K, V> {
+    //запас времени для подстраховки алгоритмов вытеснения, привязанных ко времени
     private static final int TIME_THRESHOLD_MS = 5;
 
     //размер кэша
     private final int maxElements;
-    //время хранения от создания
+    //время, прошедшее с момента внесения элемента кэш
     private final long lifeTimeMs;
-    //время хранения от последнего доступа
+    //время, прошедшее с момента последнего обращения к элементу извне
     private final long idleTimeMs;
-    //свойство того, что кэш хранит элементы бесконечно
+    //переключатель - либо элементы заносятся в кэш пока не будет OOM (true) - если lifeTimeMs и idleTimeMs равны 0,
+    //либо будет применяться какой-то алгоритм вытеснения (lifeTime или idleTime)
     private final boolean isEternal;
 
-    //запоминает в каком порядке в неё кладутся элементы
+    //внутреннее хранилище кэша, хранит элементы в порядке их внесения в кэш
     private final Map<K, MyElement<K, V>> elements = new LinkedHashMap<>();
-    //объект таймера
+    //объект таймера для поддержки работы алгоритмов вытеснения
     private final Timer timer = new Timer();
 
-    //счетчик попаданий
+    //счетчик успешных запросов элементов из кэша (элемент найден)
     private int hit = 0;
-    //счетчик промахов
+    //счетчик неудачных запросов элементов из кэша (элемент не найден)
     private int miss = 0;
 
     //в конструкторе заадется размер кэша, lifetime (макс время жизни элемента), idletime (макс время, за которое не будет ни одного обращения к элементу)
@@ -40,7 +39,7 @@ public class CacheEngineImpl<K, V> implements CacheEngine<K, V> {
         this.isEternal = lifeTimeMs == 0 && idleTimeMs == 0 || isEternal;
     }
 
-    //кладем новый элемент(наш аналог Entry из Map) в кэш
+    //кладем новый элемент в кэш
     public void put(MyElement<K, V> element) {
         //проверяем заполнен ли кэш
         if (elements.size() == maxElements) {

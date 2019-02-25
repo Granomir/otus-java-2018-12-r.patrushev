@@ -1,8 +1,5 @@
-package ru.otus.l061.cache;
+package java.com.patrushev.my_cache_engine;
 
-/**
- * Created by tully.
- */
 public interface CacheEngine<K, V> {
 
     void put(MyElement<K, V> element);
