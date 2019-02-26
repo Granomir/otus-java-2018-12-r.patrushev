@@ -1,10 +1,10 @@
-package java.com.patrushev.my_cache_engine;
+package com.patrushev.my_cache_engine;
 
 public interface CacheEngine<K, V> {
 
-    void put(MyElement<K, V> element);
+    void put(K key, V value);
 
-    MyElement<K, V> get(K key);
+    V get(K key);
 
     int getHitCount();
 

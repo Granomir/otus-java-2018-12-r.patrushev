@@ -1,4 +1,4 @@
-package java.com.patrushev.my_cache_engine;
+package com.patrushev.my_cache_engine;
 
 @SuppressWarnings("WeakerAccess")
 public class MyElement<K, V> {

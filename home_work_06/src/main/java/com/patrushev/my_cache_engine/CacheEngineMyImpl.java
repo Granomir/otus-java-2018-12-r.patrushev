@@ -1,29 +1,25 @@
-package java.com.patrushev.my_cache_engine;
+package com.patrushev.my_cache_engine;
 
 import java.lang.ref.SoftReference;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.function.Function;
 
 public class CacheEngineMyImpl<K, V> implements CacheEngine<K, V> {
-    //запас времени для подстраховки алгоритмов вытеснения, привязанных ко времени
+    //запас времени для подстраховки алгоритмов удаления устаревших элементов, привязанных ко времени
     private static final int TIME_THRESHOLD_MS = 5;
 
     //размер кэша
     private final int maxElements;
-    //время, прошедшее с момента внесения элемента кэш
+    //максимальное время, прошедшее с момента внесения элемента в кэш
     private final long lifeTimeMs;
-    //время, прошедшее с момента последнего обращения к элементу извне
+    //максимальное время, прошедшее с момента последнего обращения к элементу извне
     private final long idleTimeMs;
-    //переключатель - либо элементы заносятся в кэш пока не будет OOM (true) - если lifeTimeMs и idleTimeMs равны 0,
-    //либо будет применяться какой-то алгоритм вытеснения (lifeTime или idleTime)
+    //определяет, удалять ли устаревшие элементы с течением времени работы кэша
     private final boolean isEternal;
 
     //внутреннее хранилище кэша, хранит элементы в порядке их внесения в кэш
     private final Map<K, MyElement<K, SoftReference<V>>> elements = new LinkedHashMap<>();
-    //объект таймера для поддержки работы алгоритмов вытеснения
+    //объект таймера для поддержки работы алгоритмов удаления
     private final Timer timer = new Timer();
 
     //счетчик успешных запросов элементов из кэша (элемент найден)
@@ -31,8 +27,6 @@ public class CacheEngineMyImpl<K, V> implements CacheEngine<K, V> {
     //счетчик неудачных запросов элементов из кэша (элемент не найден)
     private int miss = 0;
 
-    //в конструкторе заадется размер кэша, lifetime (макс время жизни элемента), idletime (макс время, за которое не будет ни одного обращения к элементу)
-    //или хранятся ли элементы бесконечно (isEternal)
     CacheEngineMyImpl(int maxElements, long lifeTimeMs, long idleTimeMs, boolean isEternal) {
         this.maxElements = maxElements;
         this.lifeTimeMs = lifeTimeMs > 0 ? lifeTimeMs : 0;
@@ -42,86 +36,86 @@ public class CacheEngineMyImpl<K, V> implements CacheEngine<K, V> {
 
     //внесение нового элемента в кэш
     public void put(K key, V value) {
+        //если в качестве значения передается null - выбрасывается исключение
+        if (value == null) throw new IllegalArgumentException("it's forbidden to put null into the cache");
         //оборачиваем новый элемент
         MyElement<K, SoftReference<V>> element = new MyElement<>(key, new SoftReference<>(value));
 
         //чистка кэша от удаленных сборщиком мусора значений
-        /////////////////////////////////////////////////////
+        Iterator it = elements.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            if (pair.getValue() == null) {
+                it.remove();
+            }
+        }
 
         //проверка наличия свободного места в кэше
         if (elements.size() == maxElements) {
-            //если свободного места нет, то получаем ключ первого элемента, хранящегося в кэше
-            //(он же является первым элементом, который положили в кэш - т.е. самый старый)
+            //удаляется самый старый элемент кэша
             K firstKey = elements.keySet().iterator().next();
-            //и удаляем элемент по этому ключу из кэша
             elements.remove(firstKey);
         }
 
-        //затем кладем новый элемент в кэш по переданному ключу
+        //новый элемент вносится в кэш
         elements.put(key, element);
 
-        //если кэш настроен на работу по алгоритму вытеснения, то выполняем действия по настройке вытеснения
+        //если кэш настроен на автоматическое удаление устаревших элементов
         if (!isEternal) {
-            //если используется вытеснение по общему времени хранения элементов
+            //если удаление производится по общему времени хранения элемента
             if (lifeTimeMs != 0) {
-                //создаем задачу по удалению добавленного элемента, по истечении времени lifeTimeMs
+                //создаем задачу по удалению добавленного элемента, по истечении времени lifeTimeMs после создания
                 //момент времени, после которого элемент должен быть удален, определяется передаваемой Function
-                TimerTask lifeTimerTask = getTimerTask(key, new Function<>() {
-                    @Override
-                    public Long apply(MyElement<K, SoftReference<V>> lifeElement) {
-                        return lifeElement.getCreationTime() + lifeTimeMs;
-                    }
-                });
+                TimerTask lifeTimerTask = getTimerTask(key, lifeElement -> lifeElement.getCreationTime() + lifeTimeMs);
                 //планируем запуск созданной задачи через время lifeTimeMs
                 timer.schedule(lifeTimerTask, lifeTimeMs);
             }
 
-            //если используется вытеснение по последнему времени обращения к элементу
+            //если удаление производится по последнему времени обращения к элементу
             if (idleTimeMs != 0) {
-                TimerTask idleTimerTask = getTimerTask(key, new Function<MyElement<K, SoftReference<V>>, Long>() {
-                    @Override
-                    public Long apply(MyElement<K, SoftReference<V>> idleElement) {
-                        return idleElement.getLastAccessTime() + idleTimeMs;
-                    }
-                });
+                //создаем задачу по удалению добавленного элемента, по истечении времени idleTimeMs после последнего обращения к элементу
+                //момент времени, после которого элемент должен быть удален, определяется передаваемой Function
+                TimerTask idleTimerTask = getTimerTask(key, idleElement -> idleElement.getLastAccessTime() + idleTimeMs);
+                //планируем периодический запуск созданной задачи через время idleTimeMs
                 timer.schedule(idleTimerTask, idleTimeMs, idleTimeMs);
-                //ИТОГО - положили элемент в кэш и запустили таймер на время idleTimeMs, по истечении которого запустится выполнение timerTask
-                //с периодичностью, равной idleTimeMs,
-                //задача которого состоит в том, чтобы удалить этот элемент
             }
         }
     }
 
     //получаем элемент из кэша
-    public MyElement<K, SoftReference<V>> get(K key) {
-        //получакем элемент из внутренней Map
+    public V get(K key) {
+        //получаем обёртку элемента из внутренней Map
         MyElement<K, SoftReference<V>> element = elements.get(key);
-        //если элемент не null
         if (element != null) {
-            //увеличиваем счетчик успешных вытаскиваний элементов из кэша
+            //проверяем, что сборщик мусора не удалил обёрнутый элемент
+            if (element.getValue().get() == null) {
+                miss++;
+                elements.remove(key);
+                return null;
+            }
+            //увеличиваем счетчик успешных запросов элементов из кэша
             hit++;
             //обновляем время последнего доступа к элементу
             element.setAccessed();
+            return element.getValue().get();
         } else {
-            //увеличиваем счетчик неудачных вытаскиваний элементов из кэша
+            //увеличиваем счетчик неудачных запросов элементов из кэша
             miss++;
+            return null;
         }
-        //возвращаем элемент, даже если он равен null
-        return element;
     }
 
-    //возвращает кол-во удачных вытаскиваний
+    //возвращает кол-во удачных запросов
     public int getHitCount() {
         return hit;
     }
 
-    //возвращает кол-во неудачных вытаскиваний
+    //возвращает кол-во неудачных запросов
     public int getMissCount() {
         return miss;
     }
 
-    //останавливает таймер, отменяя все запланированные задачи
-    //в данном случае - задачи на удаление самых ненужных элементов
+    //отмена всех запланированных задач
     @Override
     public void dispose() {
         timer.cancel();

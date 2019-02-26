@@ -1,48 +1,41 @@
-package java.com.patrushev.my_cache_engine;
+package com.patrushev.my_cache_engine;
 
 public class CacheMain {
 
     public static void main(String[] args) throws InterruptedException {
-//        new CacheMain().eternalCacheExample();
+        new CacheMain().eternalCacheExample();
         new CacheMain().lifeCacheExample();
+        new CacheMain().idleCacheExample();
     }
 
     private void eternalCacheExample() {
-        //определяем размер кэша
         int size = 5;
-        //создаем объект кэша с размером 5 и неограниченным по времени хранением элементов
-        CacheEngine<Integer, String> cache = new CacheEngineImpl<>(size, 0, 0, true);
-        //кладем в кэш 10 элементов - элемент состоит из ключа и значения (значение и есть непосредственно то, что кладем в кэш)
-        //т.е. тут кладется не значение по ключу, как в Map, а сами создаем аналог Entry из Map и уже его кладем в кэш
+        CacheEngine<Integer, String> cache = new CacheEngineMyImpl<>(size, 0, 0, true);
         for (int i = 0; i < 10; i++) {
-            cache.put(new MyElement<>(i, "String: " + i));
+            cache.put(i, "String: " + i);
         }
-        //получаем элементы из кэша и выводим на экран
         for (int i = 0; i < 10; i++) {
-            //получаем элемент, если он есть в кеше, если нет то получаем null
-            MyElement<Integer, String> element = cache.get(i);
-            //выводим элемент на экран, лиюо если элемента в кеше не было, то выводим null
-            System.out.println("String for " + i + ": " + (element != null ? element.getValue() : "null"));
+            String element = cache.get(i);
+            System.out.println("String for " + i + ": " + (element != null ? element : "null"));
         }
-        //выводим кол-во полученных из кэша элементов
         System.out.println("Cache hits: " + cache.getHitCount());
-        //выводим кол-во неполученных из кэша элементов
         System.out.println("Cache misses: " + cache.getMissCount());
+        System.out.println();
 
         cache.dispose();
     }
 
     private void lifeCacheExample() throws InterruptedException {
         int size = 5;
-        CacheEngine<Integer, String> cache = new CacheEngineImpl<>(size, 1000, 0, false);
+        CacheEngine<Integer, String> cache = new CacheEngineMyImpl<>(size, 1000, 0, false);
 
         for (int i = 0; i < size; i++) {
-            cache.put(new MyElement<>(i, "String: " + i));
+            cache.put(i, "String: " + i);
         }
 
         for (int i = 0; i < size; i++) {
-            MyElement<Integer, String> element = cache.get(i);
-            System.out.println("String for " + i + ": " + (element != null ? element.getValue() : "null"));
+            String element = cache.get(i);
+            System.out.println("String for " + i + ": " + (element != null ? element : "null"));
         }
 
         System.out.println("Cache hits: " + cache.getHitCount());
@@ -51,8 +44,52 @@ public class CacheMain {
         Thread.sleep(1000);
 
         for (int i = 0; i < size; i++) {
-            MyElement<Integer, String> element = cache.get(i);
-            System.out.println("String for " + i + ": " + (element != null ? element.getValue() : "null"));
+            String element = cache.get(i);
+            System.out.println("String for " + i + ": " + (element != null ? element : "null"));
+        }
+
+        System.out.println("Cache hits: " + cache.getHitCount());
+        System.out.println("Cache misses: " + cache.getMissCount());
+        System.out.println();
+        cache.dispose();
+    }
+
+
+    private void idleCacheExample() throws InterruptedException {
+        int size = 5;
+        CacheEngine<Integer, String> cache = new CacheEngineMyImpl<>(size, 0, 1000, false);
+
+        for (int i = 0; i < size; i++) {
+            cache.put(i, "String: " + i);
+        }
+
+        for (int i = 0; i < size; i++) {
+            String element = cache.get(i);
+            System.out.println("String for " + i + ": " + (element != null ? element : "null"));
+        }
+
+        System.out.println("Cache hits: " + cache.getHitCount());
+        System.out.println("Cache misses: " + cache.getMissCount());
+
+        Thread.sleep(800);
+
+        System.out.println();
+        System.out.println(cache.get(1));
+        System.out.println(cache.get(2));
+        System.out.println();
+
+        Thread.sleep(800);
+
+        System.out.println();
+        System.out.println(cache.get(1));
+        System.out.println(cache.get(2));
+        System.out.println();
+
+        Thread.sleep(800);
+
+        for (int i = 0; i < size; i++) {
+            String element = cache.get(i);
+            System.out.println("String for " + i + ": " + (element != null ? element : "null"));
         }
 
         System.out.println("Cache hits: " + cache.getHitCount());
@@ -60,5 +97,4 @@ public class CacheMain {
 
         cache.dispose();
     }
-
 }
