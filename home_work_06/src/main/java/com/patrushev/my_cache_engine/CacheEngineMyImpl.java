@@ -18,7 +18,7 @@ public class CacheEngineMyImpl<K, V> implements CacheEngine<K, V> {
     private final boolean isEternal;
 
     //внутреннее хранилище кэша, хранит элементы в порядке их внесения в кэш
-    private final Map<K, MyElement<K, SoftReference<V>>> elements = new LinkedHashMap<>();
+    private final Map<K, MyElement> elements = new LinkedHashMap<>();
     //объект таймера для поддержки работы алгоритмов удаления
     private final Timer timer = new Timer();
 
@@ -39,16 +39,7 @@ public class CacheEngineMyImpl<K, V> implements CacheEngine<K, V> {
         //если в качестве значения передается null - выбрасывается исключение
         if (value == null) throw new IllegalArgumentException("it's forbidden to put null into the cache");
         //оборачиваем новый элемент
-        MyElement<K, SoftReference<V>> element = new MyElement<>(key, new SoftReference<>(value));
-
-        //чистка кэша от удаленных сборщиком мусора значений
-        Iterator it = elements.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            if (pair.getValue() == null) {
-                it.remove();
-            }
-        }
+        MyElement element = new MyElement(key, value);
 
         //проверка наличия свободного места в кэше
         if (elements.size() == maxElements) {
@@ -82,13 +73,23 @@ public class CacheEngineMyImpl<K, V> implements CacheEngine<K, V> {
         }
     }
 
+
+
+    /**
+     * удаляет софтреференсы, которые содержат null и устаревшие элементы
+     */
+    private void removeOldEntries() {
+        //чистка кэша от удаленных сборщиком мусора значений
+        elements.entrySet().removeIf(pair -> pair.getValue().getValue() == null);
+    }
+
     //получаем элемент из кэша
     public V get(K key) {
         //получаем обёртку элемента из внутренней Map
-        MyElement<K, SoftReference<V>> element = elements.get(key);
+        MyElement element = elements.get(key);
         if (element != null) {
             //проверяем, что сборщик мусора не удалил обёрнутый элемент
-            if (element.getValue().get() == null) {
+            if (element.getValue() == null) {
                 miss++;
                 elements.remove(key);
                 return null;
@@ -97,7 +98,7 @@ public class CacheEngineMyImpl<K, V> implements CacheEngine<K, V> {
             hit++;
             //обновляем время последнего доступа к элементу
             element.setAccessed();
-            return element.getValue().get();
+            return element.getValue();
         } else {
             //увеличиваем счетчик неудачных запросов элементов из кэша
             miss++;
@@ -122,12 +123,12 @@ public class CacheEngineMyImpl<K, V> implements CacheEngine<K, V> {
     }
 
     //создание задачи, которая потом передается таймеру
-    private TimerTask getTimerTask(final K key, Function<MyElement<K, SoftReference<V>>, Long> timeFunction) {
+    private TimerTask getTimerTask(final K key, Function<MyElement, Long> timeFunction) {
         return new TimerTask() {
             @Override
             public void run() {
                 //получаем нужный элемент по ключу
-                MyElement<K, SoftReference<V>> element = elements.get(key);
+                MyElement element = elements.get(key);
                 //если элемент null или если текущее время больше чем расчетное время удаления элемента
                 if (element == null || isT1BeforeT2(timeFunction.apply(element), System.currentTimeMillis())) {
                     //тогда удаляем этот элемент
@@ -142,5 +143,43 @@ public class CacheEngineMyImpl<K, V> implements CacheEngine<K, V> {
     //сравнивает переданные моменты времени с учетом запаса
     private boolean isT1BeforeT2(long t1, long t2) {
         return t1 < t2 + TIME_THRESHOLD_MS;
+    }
+
+    /**
+     * Оболочка для элемента кэша
+     */
+    public class MyElement {
+        private final K key;
+        private final SoftReference<V> value;
+        private final long creationTime;
+        private long lastAccessTime;
+
+
+        MyElement(K key, V value) {
+            this.key = key;
+            this.value = new SoftReference<>(value);
+            this.creationTime = System.currentTimeMillis();
+            this.lastAccessTime = System.currentTimeMillis();
+        }
+
+        K getKey() {
+            return key;
+        }
+
+        V getValue() {
+            return value.get();
+        }
+
+        long getCreationTime() {
+            return creationTime;
+        }
+
+        long getLastAccessTime() {
+            return lastAccessTime;
+        }
+
+        void setAccessed() {
+            lastAccessTime = System.currentTimeMillis();
+        }
     }
 }

@@ -3,12 +3,12 @@ package com.patrushev.my_cache_engine;
 public class CacheMain {
 
     public static void main(String[] args) throws InterruptedException {
-        new CacheMain().eternalCacheExample();
-        new CacheMain().lifeCacheExample();
-        new CacheMain().idleCacheExample();
+        eternalCacheExample();
+        lifeCacheExample();
+        idleCacheExample();
     }
 
-    private void eternalCacheExample() {
+    private static void eternalCacheExample() {
         int size = 5;
         CacheEngine<Integer, String> cache = new CacheEngineMyImpl<>(size, 0, 0, true);
         for (int i = 0; i < 10; i++) {
@@ -25,7 +25,7 @@ public class CacheMain {
         cache.dispose();
     }
 
-    private void lifeCacheExample() throws InterruptedException {
+    private static void lifeCacheExample() throws InterruptedException {
         int size = 5;
         CacheEngine<Integer, String> cache = new CacheEngineMyImpl<>(size, 1000, 0, false);
 
@@ -55,7 +55,7 @@ public class CacheMain {
     }
 
 
-    private void idleCacheExample() throws InterruptedException {
+    private static void idleCacheExample() throws InterruptedException {
         int size = 5;
         CacheEngine<Integer, String> cache = new CacheEngineMyImpl<>(size, 0, 1000, false);
 
