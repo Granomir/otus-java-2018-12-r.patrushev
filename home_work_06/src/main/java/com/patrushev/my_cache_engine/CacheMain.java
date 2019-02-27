@@ -3,14 +3,14 @@ package com.patrushev.my_cache_engine;
 public class CacheMain {
 
     public static void main(String[] args) throws InterruptedException {
-        eternalCacheExample();
-        lifeCacheExample();
+//        eternalCacheExample();
+//        lifeCacheExample();
         idleCacheExample();
     }
 
     private static void eternalCacheExample() {
         int size = 5;
-        CacheEngine<Integer, String> cache = new CacheEngineMyImpl<>(size, 0, 0, true);
+        CacheEngine<Integer, String> cache = new CacheEngineMyImpl<>(size, 0, 0);
         for (int i = 0; i < 10; i++) {
             cache.put(i, "String: " + i);
         }
@@ -27,7 +27,7 @@ public class CacheMain {
 
     private static void lifeCacheExample() throws InterruptedException {
         int size = 5;
-        CacheEngine<Integer, String> cache = new CacheEngineMyImpl<>(size, 1000, 0, false);
+        CacheEngine<Integer, String> cache = new CacheEngineMyImpl<>(size, 1000, 0);
 
         for (int i = 0; i < size; i++) {
             cache.put(i, "String: " + i);
@@ -41,7 +41,7 @@ public class CacheMain {
         System.out.println("Cache hits: " + cache.getHitCount());
         System.out.println("Cache misses: " + cache.getMissCount());
 
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         for (int i = 0; i < size; i++) {
             String element = cache.get(i);
@@ -57,7 +57,7 @@ public class CacheMain {
 
     private static void idleCacheExample() throws InterruptedException {
         int size = 5;
-        CacheEngine<Integer, String> cache = new CacheEngineMyImpl<>(size, 0, 1000, false);
+        CacheEngine<Integer, String> cache = new CacheEngineMyImpl<>(size, 0, 1000);
 
         for (int i = 0; i < size; i++) {
             cache.put(i, "String: " + i);

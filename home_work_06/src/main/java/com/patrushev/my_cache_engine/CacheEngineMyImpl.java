@@ -14,12 +14,10 @@ public class CacheEngineMyImpl<K, V> implements CacheEngine<K, V> {
     private final long lifeTimeMs;
     //максимальное время, прошедшее с момента последнего обращения к элементу извне
     private final long idleTimeMs;
-    //определяет, удалять ли устаревшие элементы с течением времени работы кэша
-    private final boolean isEternal;
 
     //внутреннее хранилище кэша, хранит элементы в порядке их внесения в кэш
     private final Map<K, MyElement> elements = new LinkedHashMap<>();
-    //объект таймера для поддержки работы алгоритмов удаления
+    //объект таймера для запуска задач по удалению устаревших элементов
     private final Timer timer = new Timer();
 
     //счетчик успешных запросов элементов из кэша (элемент найден)
@@ -27,19 +25,58 @@ public class CacheEngineMyImpl<K, V> implements CacheEngine<K, V> {
     //счетчик неудачных запросов элементов из кэша (элемент не найден)
     private int miss = 0;
 
-    CacheEngineMyImpl(int maxElements, long lifeTimeMs, long idleTimeMs, boolean isEternal) {
+    CacheEngineMyImpl(int maxElements, long lifeTimeMs, long idleTimeMs) {
+        if (maxElements <= 0) throw new IllegalArgumentException("capacity cannot be 0 or less");
+        if (lifeTimeMs < 0 || idleTimeMs < 0) throw new IllegalArgumentException("time cannot be less than 0");
         this.maxElements = maxElements;
-        this.lifeTimeMs = lifeTimeMs > 0 ? lifeTimeMs : 0;
-        this.idleTimeMs = idleTimeMs > 0 ? idleTimeMs : 0;
-        this.isEternal = lifeTimeMs == 0 && idleTimeMs == 0 || isEternal;
+        this.lifeTimeMs = lifeTimeMs;
+        this.idleTimeMs = idleTimeMs;
+        //запуск таймеров для автоматического удаления устаревших элементов
+        startNullsDeleterTimer();
+        if (lifeTimeMs > 0) {
+            startLifeTimer();
+        }
+        if (idleTimeMs > 0) {
+            startIdleTimer();
+        }
     }
 
-    //внесение нового элемента в кэш
+    private void startNullsDeleterTimer() {
+        //создаем задачу по периодическому удалению нулевых софтреференсов
+        TimerTask nullsDeleter = new TimerTask() {
+            @Override
+            public void run() {
+                elements.entrySet().removeIf(pair -> pair.getValue().getValue() == null);
+            }
+        };
+        //запускаем таймер на эту задачу с периодичностью 10 сек
+        timer.schedule(nullsDeleter, 10000, 10000);
+    }
+
+    private void startLifeTimer() {
+        //создаем задачу по удалению добавленного элемента, по истечении времени lifeTimeMs после создания
+        //момент времени, после которого элемент должен быть удален, определяется передаваемой Function
+        TimerTask lifeTimerTask = getTimerTask(lifeElement -> lifeElement.getCreationTime() + lifeTimeMs);
+        //планируем запуск созданной задачи через время lifeTimeMs
+        timer.schedule(lifeTimerTask, lifeTimeMs, lifeTimeMs);
+    }
+
+    private void startIdleTimer() {
+        //создаем задачу по удалению добавленного элемента, по истечении времени idleTimeMs после последнего обращения к элементу
+        //момент времени, после которого элемент должен быть удален, определяется передаваемой Function
+        TimerTask idleTimerTask = getTimerTask(idleElement -> idleElement.getLastAccessTime() + idleTimeMs);
+        //планируем периодический запуск созданной задачи через время idleTimeMs
+        timer.schedule(idleTimerTask, idleTimeMs, idleTimeMs);
+    }
+
+    /**
+     * внесение нового элемента в кэш
+     */
     public void put(K key, V value) {
         //если в качестве значения передается null - выбрасывается исключение
         if (value == null) throw new IllegalArgumentException("it's forbidden to put null into the cache");
         //оборачиваем новый элемент
-        MyElement element = new MyElement(key, value);
+        MyElement element = new MyElement(value);
 
         //проверка наличия свободного места в кэше
         if (elements.size() == maxElements) {
@@ -50,40 +87,11 @@ public class CacheEngineMyImpl<K, V> implements CacheEngine<K, V> {
 
         //новый элемент вносится в кэш
         elements.put(key, element);
-
-        //если кэш настроен на автоматическое удаление устаревших элементов
-        if (!isEternal) {
-            //если удаление производится по общему времени хранения элемента
-            if (lifeTimeMs != 0) {
-                //создаем задачу по удалению добавленного элемента, по истечении времени lifeTimeMs после создания
-                //момент времени, после которого элемент должен быть удален, определяется передаваемой Function
-                TimerTask lifeTimerTask = getTimerTask(key, lifeElement -> lifeElement.getCreationTime() + lifeTimeMs);
-                //планируем запуск созданной задачи через время lifeTimeMs
-                timer.schedule(lifeTimerTask, lifeTimeMs);
-            }
-
-            //если удаление производится по последнему времени обращения к элементу
-            if (idleTimeMs != 0) {
-                //создаем задачу по удалению добавленного элемента, по истечении времени idleTimeMs после последнего обращения к элементу
-                //момент времени, после которого элемент должен быть удален, определяется передаваемой Function
-                TimerTask idleTimerTask = getTimerTask(key, idleElement -> idleElement.getLastAccessTime() + idleTimeMs);
-                //планируем периодический запуск созданной задачи через время idleTimeMs
-                timer.schedule(idleTimerTask, idleTimeMs, idleTimeMs);
-            }
-        }
     }
-
-
 
     /**
-     * удаляет софтреференсы, которые содержат null и устаревшие элементы
+     * получение элемента из кэша
      */
-    private void removeOldEntries() {
-        //чистка кэша от удаленных сборщиком мусора значений
-        elements.entrySet().removeIf(pair -> pair.getValue().getValue() == null);
-    }
-
-    //получаем элемент из кэша
     public V get(K key) {
         //получаем обёртку элемента из внутренней Map
         MyElement element = elements.get(key);
@@ -106,41 +114,43 @@ public class CacheEngineMyImpl<K, V> implements CacheEngine<K, V> {
         }
     }
 
-    //возвращает кол-во удачных запросов
+    /**
+     * возвращает кол-во удачных запросов
+     */
     public int getHitCount() {
         return hit;
     }
 
-    //возвращает кол-во неудачных запросов
+    /**
+     * возвращает кол-во неудачных запросов
+     */
     public int getMissCount() {
         return miss;
     }
 
-    //отмена всех запланированных задач
+    /**
+     * отмена всех запланированных задач
+     */
     @Override
     public void dispose() {
         timer.cancel();
     }
 
-    //создание задачи, которая потом передается таймеру
-    private TimerTask getTimerTask(final K key, Function<MyElement, Long> timeFunction) {
+    /**
+     * создание задачи, которая потом передается таймеру
+     */
+    private TimerTask getTimerTask(Function<MyElement, Long> timeFunction) {
         return new TimerTask() {
             @Override
             public void run() {
-                //получаем нужный элемент по ключу
-                MyElement element = elements.get(key);
-                //если элемент null или если текущее время больше чем расчетное время удаления элемента
-                if (element == null || isT1BeforeT2(timeFunction.apply(element), System.currentTimeMillis())) {
-                    //тогда удаляем этот элемент
-                    elements.remove(key);
-                    //и отменяем таймертаск
-                    this.cancel();
-                }
+                elements.entrySet().removeIf(pair -> isT1BeforeT2(timeFunction.apply(pair.getValue()), System.currentTimeMillis()));
             }
         };
     }
 
-    //сравнивает переданные моменты времени с учетом запаса
+    /**
+     * сравнивает переданные моменты времени с учетом запаса
+     */
     private boolean isT1BeforeT2(long t1, long t2) {
         return t1 < t2 + TIME_THRESHOLD_MS;
     }
@@ -149,21 +159,14 @@ public class CacheEngineMyImpl<K, V> implements CacheEngine<K, V> {
      * Оболочка для элемента кэша
      */
     public class MyElement {
-        private final K key;
         private final SoftReference<V> value;
         private final long creationTime;
         private long lastAccessTime;
 
-
-        MyElement(K key, V value) {
-            this.key = key;
+        MyElement(V value) {
             this.value = new SoftReference<>(value);
             this.creationTime = System.currentTimeMillis();
             this.lastAccessTime = System.currentTimeMillis();
-        }
-
-        K getKey() {
-            return key;
         }
 
         V getValue() {
