@@ -1,9 +1,9 @@
 package com.patrushev.my_atm_emulator;
 
-public interface AtmInterface {
-    void depositMoney(CashInterface cash);
+public interface Atm {
+    void depositMoney(Cash cash);
 
-    int withdrawMoney();
+    Cash withdrawMoney(int amount);
 
     int checkBalance();
 }

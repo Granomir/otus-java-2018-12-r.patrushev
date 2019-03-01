@@ -9,6 +9,7 @@ public class CashImpl implements Cash {
     private final int oneHd;
 
     public CashImpl(int fiveTd, int twoTd, int oneTd, int fiveHd, int twoHd, int oneHd) {
+        if (fiveTd < 0 || twoTd < 0 || oneTd < 0 || fiveHd < 0 || twoHd < 0 || oneHd < 0) throw new IllegalArgumentException("Нельзя положить отрицательное число банкнот");
         this.fiveTd = fiveTd;
         this.twoTd = twoTd;
         this.oneTd = oneTd;
