@@ -1,27 +1,36 @@
 package com.patrushev.my_atm_emulator;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-public class AtmImpl implements Atm {
+public class AtmImplTwo implements Atm {
     /**
      * наличность, имеющаяся в банкомате
      */
-    private Cash atmCash;
+    private Map<Integer, Integer> atmCash;
 
     /**
-     *
-     * @param atmCash - от этого объекта зависит купюры какого номинала будет использовать банкомат
+     * номиналы, с которыми работает банкомат
      */
-    public AtmImpl(Cash atmCash) {
-        this.atmCash = atmCash;
+    private int[] denominations;
+
+    public AtmImplTwo(int... denominations) {
+        if(denominations.length == 0) throw new IllegalArgumentException("Должны быть заданы используемые номиналы банкнот");
+        atmCash = new HashMap<>();
+        for (int denomination : denominations) {
+            atmCash.put(denomination, 0);
+        }
+        Arrays.sort(denominations);
+        int[] tempDenominations = new int[denominations.length];
+        for (int i = denominations.length - 1, j = 0; i > -1; i--, j++) {
+            tempDenominations[j] = denominations[i];
+        }
+        this.denominations = tempDenominations;
     }
 
-    /**
-     * внесение наличности в банкомат пачкой с проверкой используемых в ней номиналов
-     * @param cash - пачка денег
-     */
     @Override
-    public void depositMoney(Cash cash) {
+    public void depositMoney(int banknoteDenomination, int quantity) {
         int[] denominations = cash.getDenominations();
         if(!Arrays.equals(denominations, atmCash.getDenominations())) throw new IllegalArgumentException("Попытка положить деньги неподдерживаемого номинала");
         for (int denomination : denominations) {
