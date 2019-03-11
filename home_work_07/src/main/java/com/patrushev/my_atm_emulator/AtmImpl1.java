@@ -2,36 +2,45 @@ package com.patrushev.my_atm_emulator;
 
 import java.util.*;
 
-public class AtmImpl implements Atm {
+public class AtmImpl1 implements Atm {
     /**
      * наличность, имеющаяся в банкомате (номинал и количество)
      */
-    private TreeMap<Integer, Integer> atmCash;
+    private Map<Integer, Integer> atmCash;
 
     /**
      * отсортированный по убыванию перечень номиналов, с которыми работает банкомат
      */
-    private Set<Integer> denominations;
+    private int[] denominations;
 
     /**
      * в конструктор передаются денежные кассеты (любое количество) с заданными номиналом банкнот, с которыми будет работать банкомат, а также их начальное количество.
      * @param cassettes - денежные кассеты
      */
-    public AtmImpl(MoneyCassette... cassettes) {
+    public AtmImpl1(MoneyCassette... cassettes) {
         if(cassettes.length == 0) throw new IllegalArgumentException("Должны быть вставлены денежные кассеты");
         atmCash = new TreeMap<>(new Comparator<Integer>() {
             @Override
             public int compare(Integer o1, Integer o2) {
-                return o2 - o1;
+                return o1 - o2;
             }
         });
         for (MoneyCassette cassette : cassettes) {
             atmCash.put(cassette.getDenomination(), cassette.getQuantity());
         }
-        this.denominations = atmCash.keySet();
-        for (Integer denomination : denominations) {
-            System.out.println(denomination);
+        int[] unsortedDenominations = new int[cassettes.length];
+        int k = 0;
+        for (Integer integer : atmCash.keySet()) {
+            unsortedDenominations[k] = integer;
+            k++;
         }
+//        Arrays.sort(unsortedDenominations);
+//        int[] sortedDenominations = new int[unsortedDenominations.length];
+//        for (int i = unsortedDenominations.length - 1, j = 0; i > -1; i--, j++) {
+//            sortedDenominations[j] = unsortedDenominations[i];
+//        }
+//        this.denominations = sortedDenominations;
+        this.denominations = unsortedDenominations;
     }
 
     /**
@@ -41,7 +50,7 @@ public class AtmImpl implements Atm {
      */
     @Override
     public void depositMoney(int banknoteDenomination, int quantity) {
-        if (denominations.contains(banknoteDenomination)) {
+        if (atmCash.keySet().contains(banknoteDenomination)) {
             atmCash.put(banknoteDenomination, atmCash.get(banknoteDenomination) + quantity);
         } else {
             throw new IllegalArgumentException("Данный номинал не поддерживается банкоматом.");
