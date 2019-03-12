@@ -11,38 +11,41 @@ public class AtmImplTest {
 
     @Before
     public void setUp() throws Exception {
-        rubleAtm = new AtmImpl(new MoneyCassette(5000, 0),
-                new MoneyCassette(2000, 0),
-                new MoneyCassette(1000, 0),
-                new MoneyCassette(500, 0),
-                new MoneyCassette(100, 1));
+        rubleAtm = new AtmImpl(new MoneyCassette(5000, 4),
+                new MoneyCassette(2000, 5),
+                new MoneyCassette(1000, 5),
+                new MoneyCassette(500, 4),
+                new MoneyCassette(100, 5));
     }
 
     @After
     public void tearDown() throws Exception {
-        rubleAtm = new AtmImpl(new MoneyCassette(5000, 0),
-                new MoneyCassette(2000, 0),
-                new MoneyCassette(1000, 0),
-                new MoneyCassette(500, 0),
-                new MoneyCassette(100, 1));
+        rubleAtm = new AtmImpl(new MoneyCassette(5000, 4),
+                new MoneyCassette(2000, 5),
+                new MoneyCassette(1000, 5),
+                new MoneyCassette(500, 5),
+                new MoneyCassette(100, 5));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void depositMoney() {
+    public void depositMoneyAndCheckBalance() {
+        assertEquals(37500, rubleAtm.checkBalance());
         rubleAtm.depositMoney(5000, 1);
-        rubleAtm.depositMoney(500, 3);
-        assertEquals(6600, rubleAtm.checkBalance());
+        rubleAtm.depositMoney(500, 1);
+        assertEquals(43000, rubleAtm.checkBalance());
         rubleAtm.depositMoney(1, 1);
     }
 
     @Test
     public void withdrawMoney() {
-    }
-
-    @Test
-    public void checkBalance() {
-        assertEquals(100, rubleAtm.checkBalance());
-        rubleAtm.depositMoney(5000, 1);
-        assertEquals(5100, rubleAtm.checkBalance());
+        assertEquals(37500, rubleAtm.checkBalance());
+        rubleAtm.withdrawMoney(new GreedyDispenser(),33000);
+        assertEquals(4500, rubleAtm.checkBalance());
+        rubleAtm.withdrawMoney(new GreedyDispenser(),2400);
+        assertEquals(2100, rubleAtm.checkBalance());
+        rubleAtm.withdrawMoney(new GreedyDispenser(),700);
+        assertEquals(2100, rubleAtm.checkBalance());
+        rubleAtm.withdrawMoney(new GreedyDispenser(),500);
+        assertEquals(1600, rubleAtm.checkBalance());
     }
 }
