@@ -1,5 +1,7 @@
 package com.patrushev.atm_department.atms;
 
+import com.patrushev.atm_department.AtmDepartment;
+
 import java.util.*;
 
 @SuppressWarnings("WeakerAccess")
@@ -16,16 +18,17 @@ public class AtmImpl implements Atm, EventListener {
 
     /**
      * в конструктор передаются денежные кассеты (любое количество) с заданными номиналом банкнот, с которыми будет работать банкомат, а также их начальное количество.
-     * Кроме этого конструктор сохраняет начальное состояние ATM в объекте Memento
+     * Кроме этого конструктор сохраняет начальное состояние ATM в объекте Memento и регистрирует ATM в ATM Department.
      * @param newCassettes - денежные кассеты
      */
-    public AtmImpl(MoneyCassette... newCassettes) {
+    public AtmImpl(AtmDepartment atmDepartment, MoneyCassette... newCassettes) {
         if(newCassettes.length == 0) throw new IllegalArgumentException("Должны быть вставлены денежные кассеты");
         cassettes = new TreeMap<>((o1, o2) -> o2 - o1);
         for (MoneyCassette cassette : newCassettes) {
             cassettes.put(cassette.getDenomination(), cassette.getQuantity());
         }
-        memento = new Memento(cassettes);
+        memento = new Memento();
+        atmDepartment.registerAtm(this);
     }
 
     /**
@@ -66,19 +69,25 @@ public class AtmImpl implements Atm, EventListener {
         return balance;
     }
 
-    private void restoreInitialState() {
+    /**
+     * восстанавливает исходное состояние банкомата
+     */
+    public void restoreInitialState() {
         cassettes = memento.getInitialState();
     }
 
+    /**
+     * Класс отвечающий за получение и хранение исходного состояния банкомата
+     */
     public class Memento {
-        private final TreeMap<Integer, Integer> cassettes;
+        private final TreeMap<Integer, Integer> initialCassettes;
 
-        public Memento(TreeMap<Integer, Integer> cassettes) {
-            this.cassettes = new TreeMap<>(cassettes);
+        public Memento() {
+            this.initialCassettes = new TreeMap<>(cassettes);
         }
 
         public TreeMap<Integer, Integer> getInitialState() {
-            return cassettes;
+            return initialCassettes;
         }
     }
 }

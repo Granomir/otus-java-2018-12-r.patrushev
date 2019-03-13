@@ -6,4 +6,6 @@ public interface Atm {
     void withdrawMoney(Dispenser dispenser, int amount);
 
     int checkBalance();
+
+    void restoreInitialState();
 }

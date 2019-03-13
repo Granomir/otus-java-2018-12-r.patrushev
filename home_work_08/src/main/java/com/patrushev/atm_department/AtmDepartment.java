@@ -1,21 +1,32 @@
-package com.patrushev;
+package com.patrushev.atm_department;
+
+import com.patrushev.atm_department.atms.Atm;
 
 import java.util.*;
 
+@SuppressWarnings("WeakerAccess")
 public class AtmDepartment {
-    Map<String, List<EventListener>> atms;
+    private ArrayList<Atm> atms;
 
     public AtmDepartment() {
-        atms = new HashMap<>();
-        atms.put("Total Balance", new ArrayList<>());
-        atms.put("Initial State", new ArrayList<>());
+        atms = new ArrayList<>();
     }
 
-    public int obtainTotalBalanceFromAllAtms() {
-        return 0;
+    public void registerAtm(Atm atm) {
+        atms.add(atm);
+    }
+
+    public void obtainTotalBalanceFromAllAtms() {
+        int totalBalance = 0;
+        for (Atm atm : atms) {
+            totalBalance += atm.checkBalance();
+        }
+        System.out.println(totalBalance);
     }
 
     public void resetStateOfAllAtms() {
-        
+        for (Atm atm : atms) {
+            atm.restoreInitialState();
+        }
     }
 }
