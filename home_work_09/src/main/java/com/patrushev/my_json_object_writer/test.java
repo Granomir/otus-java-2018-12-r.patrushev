@@ -1,31 +1,36 @@
 package com.patrushev.my_json_object_writer;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 public class test {
-    public static void main(String[] args) throws IllegalAccessException {
-        Ford car = new Ford();
-        Class<? extends Car> aClass = car.getClass();
-        List<Field> fields = new ArrayList<>();
-        getAllFields(fields, car.getClass());
-        System.out.println(fields.size());
-        for (Field field : fields) {
-            System.out.println(field.getName() + " : " + getFieldValue(car, field.getName()));
+    public static void main(String[] args) {
+//        //объект для сериализации
+//        Ford car = new Ford();
+//        //получаем класс объекта
+//        Class<? extends Car> aClass = car.getClass();
+//        //получаем все поля объекта (кроме статических), включая унаследованные
+//        List<Field> fields = new ArrayList<>();
+//        getAllFields(fields, car.getClass());
+//        //печатаем все полученные поля объекта и их значения
+//        System.out.println(fields.size());
+//        for (Field field : fields) {
+//            System.out.println(field.getName() + " : " + getFieldValue(car, field.getName()));
+//        }
+
+        MyObjectToJsonWriter test = new MyObjectToJsonWriter();
+        Ford ford = new Ford();
+        System.out.println(test.writeToJson(ford));
+        System.out.println();
+        String[] a = new String[10];
+        for (int i = 0; i < a.length; i++) {
+            a[i] = String.valueOf(i);
+
         }
+        System.out.println(test.writeToJson(a));
     }
 
     //занесение всех полей (включая унаследованные) в лист полей

@@ -1,8 +1,14 @@
 package com.patrushev.my_json_object_writer;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 public class MyObjectToJsonWriter implements ObjectToJsonWriter {
     /**
@@ -11,25 +17,99 @@ public class MyObjectToJsonWriter implements ObjectToJsonWriter {
      * 0.57 - reflection
      */
 
+
+    /**
+     * в текущей реализации вложенные объекты не сериализуются!!!!!!!!!!!!!!!!
+     *
+     * @param object - сериализуемый объект
+     * @param <T>    - тип сериализуемого объекта
+     * @return - сериализованный объект (строка) в формате JSON
+     */
     @Override
     public <T> String writeToJson(T object) {
-        //создаю Json-объект
+        JSONObject jsonObj = getJsonObject(object);
+        String result = jsonObj.toJSONString();
+        return result;
+    }
+
+    private <T> JSONObject getJsonObject(T object) {
         JSONObject jsonObj = new JSONObject();
-        //определяю класс объекта
         Class objectClass = object.getClass();
-        //получаю все поля объекта
-        Field[] fields = objectClass.getFields();
-        //кладу в Json-объект поля исходного объекта со значениями
+        List<Field> fields = new ArrayList<>();
+        getAllFields(fields, objectClass);
         for (Field field : fields) {
-            try {
-                jsonObj.put(field.getName(), field.get(object));
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+            if (field.getType().isPrimitive() || field.getType().getSimpleName().equals("String")) {
+                jsonObj.put(field.getName(), getFieldValue(object, field.getName()));
+                //////////////////////////////////////////////
+            } else if (field.getType().isArray()) {
+                if (getFieldValue(object, field.getName()) != null) {
+                    Object[] array = (Object[]) getFieldValue(object, field.getName());
+                    JSONArray jsonArray = new JSONArray();
+                    for (int i = 0; i < array.length; i++) {
+                        jsonArray.add(array[i]);
+
+                    }
+
+
+                    jsonObj.put(field.getName(), jsonArray);
+                    //////////////////////////////////////////////////
+                } else {
+                    jsonObj.put(field.getName(), null);
+                }
+            } else {
+                if (getFieldValue(object, field.getName()) != null) {
+                    jsonObj.put(field.getName(), getJsonObject(getFieldValue(object, field.getName())));
+                } else {
+                    jsonObj.put(field.getName(), null);
+                }
             }
         }
-        //вытаскиваю поля объекта и их значения (включая поля родителей)
-        //записываю все поля-значения в simple json
-        //записываю результат в файл
+        return jsonObj;
+    }
+
+    //занесение всех полей (включая унаследованные) в лист полей
+    private void getAllFields(List<Field> fields, Class<?> objectClass) {
+        fields.addAll(Arrays.asList(objectClass.getDeclaredFields()));
+        if (objectClass.getSuperclass() != null) {
+            fields.addAll(Arrays.asList(objectClass.getSuperclass().getDeclaredFields()));
+        }
+        Iterator<Field> iterator = fields.iterator();
+        while (iterator.hasNext()) {
+            if (Modifier.isStatic(iterator.next().getModifiers())) {
+                iterator.remove();
+            }
+        }
+    }
+
+    //получение самого поля, даже если оно объявлено в родителе (не значения)
+    private Field getField(Class<?> objClass, String name) {
+        Field field = null;
+        try {
+            field = objClass.getDeclaredField(name);
+        } catch (NoSuchFieldException e) {
+            if (objClass.getSuperclass() != null) {
+                field = getField(objClass.getSuperclass(), name);
+            }
+        }
+        return field;
+    }
+
+    //получение значения поля
+    private Object getFieldValue(Object object, String name) {
+        Field field = null;
+        boolean isAccessible = true;
+        try {
+            field = getField(object.getClass(), name); //getField() for public fields
+            isAccessible = field.canAccess(object);
+            field.setAccessible(true);
+            return field.get(object);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } finally {
+            if (field != null && !isAccessible) {
+                field.setAccessible(false);
+            }
+        }
         return null;
     }
 
