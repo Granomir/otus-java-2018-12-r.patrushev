@@ -22,20 +22,20 @@ public class test {
 //        }
 
         MyObjectToJsonWriter test = new MyObjectToJsonWriter();
-        Ford ford = new Ford();
+//        Ford ford = new Ford();
+////        System.out.println(test.writeToJson(ford));
+////        System.out.println();
+////        String[] a = new String[10];
+////        for (int i = 0; i < a.length; i++) {
+////            a[i] = String.valueOf(i);
+////
+////        }
 //        System.out.println(test.writeToJson(ford));
-//        System.out.println();
-//        String[] a = new String[10];
-//        for (int i = 0; i < a.length; i++) {
-//            a[i] = String.valueOf(i);
 //
-//        }
-        System.out.println(test.writeToJson(ford));
-
-        System.out.println();
-
-        Gson gson = new Gson();
-        System.out.println(gson.toJson(ford));
+//        System.out.println();
+//
+//        Gson gson = new Gson();
+//        System.out.println(gson.toJson(ford));
 
 //        List<Car> carList = new ArrayList<>();
 //        carList.add(new Car());
@@ -46,6 +46,16 @@ public class test {
 //
 //        Gson gson = new Gson();
 //        System.out.println(gson.toJson(carList));
+
+        List<Car> carList = new LinkedList<>();
+        carList.add(new Car());
+//        carList.add(new Car());
+        System.out.println(test.writeToJson(carList));
+
+        System.out.println();
+
+        Gson gson = new Gson();
+        System.out.println(gson.toJson(carList));
 
 //        Map<String, Car> cars = new HashMap<>();
 //        cars.put("1", new Car());

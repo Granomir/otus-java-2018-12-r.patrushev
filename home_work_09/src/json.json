@@ -1,50 +1,107 @@
 {
-  "doors": 5,
-  "rules1": [
-    [
-      {
-        "light": 1,
-        "name": "МОЙ РУЛЬ"
+  "size": 1,
+  "last": {
+    "next": null,
+    "item": {
+      "doors": 5,
+      "rules1": [
+        [
+          {
+            "light": 1,
+            "name": "МОЙ РУЛЬ"
+          }
+        ],
+        [
+          {
+            "light": 1,
+            "name": "МОЙ РУЛЬ"
+          }
+        ],
+        [
+          {
+            "light": 1,
+            "name": "МОЙ РУЛЬ"
+          }
+        ]
+      ],
+      "color": "Green",
+      "working": true,
+      "rules": [
+        {
+          "light": 1,
+          "name": "МОЙ РУЛЬ"
+        },
+        {
+          "light": 1,
+          "name": "МОЙ РУЛЬ"
+        },
+        {
+          "light": 1,
+          "name": "МОЙ РУЛЬ"
+        }
+      ],
+      "salon": {
+        "color": "black",
+        "coolness": 5,
+        "rule": {
+          "light": 1,
+          "name": "МОЙ РУЛЬ"
+        },
+        "seats": 5
       }
-    ],
-    [
-      {
-        "light": 1,
-        "name": "МОЙ РУЛЬ"
+    },
+    "prev": null
+  },
+  "first": {
+    "next": null,
+    "item": {
+      "doors": 5,
+      "rules1": [
+        [
+          {
+            "light": 1,
+            "name": "МОЙ РУЛЬ"
+          }
+        ],
+        [
+          {
+            "light": 1,
+            "name": "МОЙ РУЛЬ"
+          }
+        ],
+        [
+          {
+            "light": 1,
+            "name": "МОЙ РУЛЬ"
+          }
+        ]
+      ],
+      "color": "Green",
+      "working": true,
+      "rules": [
+        {
+          "light": 1,
+          "name": "МОЙ РУЛЬ"
+        },
+        {
+          "light": 1,
+          "name": "МОЙ РУЛЬ"
+        },
+        {
+          "light": 1,
+          "name": "МОЙ РУЛЬ"
+        }
+      ],
+      "salon": {
+        "color": "black",
+        "coolness": 5,
+        "rule": {
+          "light": 1,
+          "name": "МОЙ РУЛЬ"
+        },
+        "seats": 5
       }
-    ],
-    [
-      {
-        "light": 1,
-        "name": "МОЙ РУЛЬ"
-      }
-    ]
-  ],
-  "color": "Green",
-  "price": 1000,
-  "working": true,
-  "model": "Explorer",
-  "rules": [
-    {
-      "light": 1,
-      "name": "МОЙ РУЛЬ"
     },
-    {
-      "light": 1,
-      "name": "МОЙ РУЛЬ"
-    },
-    {
-      "light": 1,
-      "name": "МОЙ РУЛЬ"
-    }
-  ],
-  "salon": {
-    "color": "black",
-    "coolness": 5,
-    "rule": {
-      "light": 1,
-      "name": "МОЙ РУЛЬ"
-    },
-    "seats": 5
+    "prev": null
   }
 }
