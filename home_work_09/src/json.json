@@ -1,0 +1,50 @@
+{
+  "doors": 5,
+  "rules1": [
+    [
+      {
+        "light": 1,
+        "name": "МОЙ РУЛЬ"
+      }
+    ],
+    [
+      {
+        "light": 1,
+        "name": "МОЙ РУЛЬ"
+      }
+    ],
+    [
+      {
+        "light": 1,
+        "name": "МОЙ РУЛЬ"
+      }
+    ]
+  ],
+  "color": "Green",
+  "price": 1000,
+  "working": true,
+  "model": "Explorer",
+  "rules": [
+    {
+      "light": 1,
+      "name": "МОЙ РУЛЬ"
+    },
+    {
+      "light": 1,
+      "name": "МОЙ РУЛЬ"
+    },
+    {
+      "light": 1,
+      "name": "МОЙ РУЛЬ"
+    }
+  ],
+  "salon": {
+    "color": "black",
+    "coolness": 5,
+    "rule": {
+      "light": 1,
+      "name": "МОЙ РУЛЬ"
+    },
+    "seats": 5
+  }
+}

@@ -1,10 +1,10 @@
 package com.patrushev.my_json_object_writer;
 
+import com.google.gson.Gson;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class test {
     public static void main(String[] args) {
@@ -23,14 +23,39 @@ public class test {
 
         MyObjectToJsonWriter test = new MyObjectToJsonWriter();
         Ford ford = new Ford();
+//        System.out.println(test.writeToJson(ford));
+//        System.out.println();
+//        String[] a = new String[10];
+//        for (int i = 0; i < a.length; i++) {
+//            a[i] = String.valueOf(i);
+//
+//        }
         System.out.println(test.writeToJson(ford));
-        System.out.println();
-        String[] a = new String[10];
-        for (int i = 0; i < a.length; i++) {
-            a[i] = String.valueOf(i);
 
-        }
-        System.out.println(test.writeToJson(a));
+        System.out.println();
+
+        Gson gson = new Gson();
+        System.out.println(gson.toJson(ford));
+
+//        List<Car> carList = new ArrayList<>();
+//        carList.add(new Car());
+////        carList.add(new Car());
+//        System.out.println(test.writeToJson(carList));
+//
+//        System.out.println();
+//
+//        Gson gson = new Gson();
+//        System.out.println(gson.toJson(carList));
+
+//        Map<String, Car> cars = new HashMap<>();
+//        cars.put("1", new Car());
+////        cars.put("2", new Car());
+//        System.out.println(test.writeToJson(cars));
+//
+//        System.out.println();
+//
+//        Gson gson = new Gson();
+//        System.out.println(gson.toJson(cars));
     }
 
     //занесение всех полей (включая унаследованные) в лист полей

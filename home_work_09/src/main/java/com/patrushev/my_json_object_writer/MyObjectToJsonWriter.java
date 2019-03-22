@@ -3,6 +3,7 @@ package com.patrushev.my_json_object_writer;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -38,33 +39,48 @@ public class MyObjectToJsonWriter implements ObjectToJsonWriter {
         List<Field> fields = new ArrayList<>();
         getAllFields(fields, objectClass);
         for (Field field : fields) {
-            if (field.getType().isPrimitive() || field.getType().getSimpleName().equals("String")) {
-                jsonObj.put(field.getName(), getFieldValue(object, field.getName()));
-                //////////////////////////////////////////////
-            } else if (field.getType().isArray()) {
-                if (getFieldValue(object, field.getName()) != null) {
-                    Object[] array = (Object[]) getFieldValue(object, field.getName());
-                    JSONArray jsonArray = new JSONArray();
-                    for (int i = 0; i < array.length; i++) {
-                        jsonArray.add(array[i]);
-
+//            if (!Modifier.isTransient(field.getModifiers())) {
+                if (field.getType().isPrimitive() || field.getType().getSimpleName().equals("String")) {
+                    jsonObj.put(field.getName(), getFieldValue(object, field.getName()));
+                } else if (field.getType().isArray()) {
+                    Object array = getFieldValue(object, field.getName());
+                    if (array != null) {
+                        JSONArray jsonArray = getJsonArray(array);
+                        jsonObj.put(field.getName(), jsonArray);
+                    } else {
+                        jsonObj.put(field.getName(), null);
                     }
-
-
-                    jsonObj.put(field.getName(), jsonArray);
-                    //////////////////////////////////////////////////
                 } else {
-                    jsonObj.put(field.getName(), null);
+                    if (getFieldValue(object, field.getName()) != null) {
+                        jsonObj.put(field.getName(), getJsonObject(getFieldValue(object, field.getName())));
+                    } else {
+                        jsonObj.put(field.getName(), null);
+                    }
                 }
-            } else {
-                if (getFieldValue(object, field.getName()) != null) {
-                    jsonObj.put(field.getName(), getJsonObject(getFieldValue(object, field.getName())));
-                } else {
-                    jsonObj.put(field.getName(), null);
-                }
-            }
+//            }
         }
         return jsonObj;
+    }
+
+    private JSONArray getJsonArray(Object object) {
+        JSONArray jsonArray = new JSONArray();
+        //для ArrayList и т.п. здесь передается массив определенного размера, даже если в самом списке нет столько элементов
+        for (int i = 0; i < Array.getLength(object); i++) {
+            Object arrayElement = Array.get(object, i);
+
+            if (arrayElement != null) {
+                if (arrayElement.getClass().isPrimitive() || arrayElement.getClass().getSimpleName().equals("String")) {
+                    jsonArray.add(arrayElement);
+                } else if (arrayElement.getClass().isArray()) {
+                    jsonArray.add(getJsonArray(arrayElement));
+                } else {
+                    jsonArray.add(getJsonObject(arrayElement));
+                }
+            } else {
+                jsonArray.add(null);
+            }
+        }
+        return jsonArray;
     }
 
     //занесение всех полей (включая унаследованные) в лист полей
