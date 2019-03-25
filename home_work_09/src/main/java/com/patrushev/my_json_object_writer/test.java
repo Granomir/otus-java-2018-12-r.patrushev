@@ -11,15 +11,23 @@ public class test {
 
         MyObjectToJsonWriter test = new MyObjectToJsonWriter();
 
-//        myObjectTest(test);
+        myObjectTest(test);
 //
-//        arrayListTest(test);
-//
-//        linkedListTest(test);
-//
+        arrayListTest(test);
+
+        linkedListTest(test);
+
         mapTest(test);
 
-//        hashSetTest(test);
+        hashSetTest(test);
+
+        stringTest(test);
+
+        arrayPrimTest(test);
+
+        arrayObjTest(test);
+//
+        intTest(test);
     }
 
     private static void mapTest(MyObjectToJsonWriter test) {
@@ -80,5 +88,45 @@ public class test {
 
         Gson gson = new Gson();
         System.out.println(gson.toJson(carList));
+    }
+
+    private static void stringTest(MyObjectToJsonWriter test) {
+
+        System.out.println(test.writeToJson("Hello World!"));
+
+        System.out.println();
+
+        Gson gson = new Gson();
+        System.out.println(gson.toJson("Hello World!"));
+    }
+
+    private static void arrayPrimTest(MyObjectToJsonWriter test) {
+        int[] ints = {1, 2, 3, 4, 5, 6};
+        System.out.println(test.writeToJson(ints));
+
+        System.out.println();
+
+        Gson gson = new Gson();
+        System.out.println(gson.toJson(ints));
+    }
+
+    private static void arrayObjTest(MyObjectToJsonWriter test) {
+        Car[] cars = {new Car(), new Car()};
+        System.out.println(test.writeToJson(cars));
+
+        System.out.println();
+
+        Gson gson = new Gson();
+        System.out.println(gson.toJson(cars));
+    }
+
+    private static void intTest(MyObjectToJsonWriter test) {
+
+        System.out.println(test.writeToJson(1));
+
+        System.out.println();
+
+        Gson gson = new Gson();
+        System.out.println(gson.toJson(1));
     }
 }

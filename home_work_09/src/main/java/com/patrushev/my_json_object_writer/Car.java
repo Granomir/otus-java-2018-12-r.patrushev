@@ -7,18 +7,18 @@ import java.util.Map;
 public class Car {
     private static int wheels = 4;
     private int doors = 5;
-//    private int[] drivers = {1, 2, 3, 4};
+    private int[] drivers = {1, 2, 3, 4};
     private Rule[] rules = {new Rule(), new Rule(), new Rule()};
     private Rule[][] rules1 = {{new Rule()}, {new Rule()}, {new Rule()}};
-    private String color = "Green";
+    private String color = null;
     private boolean working = true;
-    private Salon salon = new Salon();
+    private Salon salon = null;
 //    private Salon salon = null;
     private ArrayList<Map<String, Rule>> rules3 = new ArrayList<>();
 
     {
         Map<String, Rule> maps = new HashMap<>();
-        maps.put("1", new Rule());
+        maps.put("1", null);
         rules3.add(maps);
 //        rules3.add(new Rule());
 //        rules3.add(new Rule());
