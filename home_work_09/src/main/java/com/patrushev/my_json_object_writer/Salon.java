@@ -5,5 +5,4 @@ public class Salon {
     private int seats = 5;
     private String color = "black";
     private Rule rule = new Rule();
-//    private Rule rule = null;
 }

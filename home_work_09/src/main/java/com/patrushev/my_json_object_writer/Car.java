@@ -13,15 +13,12 @@ public class Car {
     private String color = null;
     private boolean working = true;
     private Salon salon = null;
-//    private Salon salon = null;
     private ArrayList<Map<String, Rule>> rules3 = new ArrayList<>();
 
     {
         Map<String, Rule> maps = new HashMap<>();
         maps.put("1", null);
         rules3.add(maps);
-//        rules3.add(new Rule());
-//        rules3.add(new Rule());
     }
 
     @Override

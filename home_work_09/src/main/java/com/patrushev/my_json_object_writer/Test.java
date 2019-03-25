@@ -2,17 +2,15 @@ package com.patrushev.my_json_object_writer;
 
 import com.google.gson.Gson;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.*;
 
-public class test {
+public class Test {
     public static void main(String[] args) {
 
         MyObjectToJsonWriter test = new MyObjectToJsonWriter();
 
         myObjectTest(test);
-//
+
         arrayListTest(test);
 
         linkedListTest(test);
@@ -23,16 +21,16 @@ public class test {
 
         stringTest(test);
 
-        arrayPrimTest(test);
+        arrayPrimitiveTest(test);
 
         arrayObjTest(test);
-//
+
         intTest(test);
     }
 
     private static void mapTest(MyObjectToJsonWriter test) {
-        Map<String, Car> cars = new HashMap<>();
-        cars.put("1", new Car());
+        Map<String, int[]> cars = new HashMap<>();
+        cars.put("1", null);
 //        cars.put("2", new Car());
         System.out.println(test.writeToJson(cars));
 
@@ -55,8 +53,9 @@ public class test {
     }
 
     private static void arrayListTest(MyObjectToJsonWriter test) {
-        List<Car> carList = new ArrayList<>();
-        carList.add(new Car());
+        List<String> carList = new ArrayList<>();
+        carList.add("1");
+        carList.add(null);
 //        carList.add(new Car());
         System.out.println(test.writeToJson(carList));
 
@@ -80,7 +79,7 @@ public class test {
 
     private static void hashSetTest(MyObjectToJsonWriter test) {
         Set<Car> carList = new HashSet<>();
-        carList.add(new Car());
+        carList.add(null);
 //        carList.add(new Car());
         System.out.println(test.writeToJson(carList));
 
@@ -92,16 +91,16 @@ public class test {
 
     private static void stringTest(MyObjectToJsonWriter test) {
 
-        System.out.println(test.writeToJson("Hello World!"));
+        System.out.println(test.writeToJson(null));
 
         System.out.println();
 
         Gson gson = new Gson();
-        System.out.println(gson.toJson("Hello World!"));
+        System.out.println(gson.toJson(null));
     }
 
-    private static void arrayPrimTest(MyObjectToJsonWriter test) {
-        int[] ints = {1, 2, 3, 4, 5, 6};
+    private static void arrayPrimitiveTest(MyObjectToJsonWriter test) {
+        int[][] ints = {{1, 2, 3}, {4, 5, 6}};
         System.out.println(test.writeToJson(ints));
 
         System.out.println();
@@ -111,7 +110,7 @@ public class test {
     }
 
     private static void arrayObjTest(MyObjectToJsonWriter test) {
-        Car[] cars = {new Car(), new Car()};
+        Car[][] cars = {{null}, {new Car()}};
         System.out.println(test.writeToJson(cars));
 
         System.out.println();
