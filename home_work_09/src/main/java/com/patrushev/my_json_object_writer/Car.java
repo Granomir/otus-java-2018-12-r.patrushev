@@ -1,5 +1,9 @@
 package com.patrushev.my_json_object_writer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 public class Car {
     private static int wheels = 4;
     private int doors = 5;
@@ -10,6 +14,15 @@ public class Car {
     private boolean working = true;
     private Salon salon = new Salon();
 //    private Salon salon = null;
+    private ArrayList<Map<String, Rule>> rules3 = new ArrayList<>();
+
+    {
+        Map<String, Rule> maps = new HashMap<>();
+        maps.put("1", new Rule());
+        rules3.add(maps);
+//        rules3.add(new Rule());
+//        rules3.add(new Rule());
+    }
 
     @Override
     public String toString() {

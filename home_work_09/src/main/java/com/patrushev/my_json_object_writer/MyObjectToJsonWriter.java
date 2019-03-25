@@ -1,15 +1,15 @@
 package com.patrushev.my_json_object_writer;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.lang.reflect.Type;
+import java.util.*;
 
 public class MyObjectToJsonWriter implements ObjectToJsonWriter {
     /**
@@ -28,36 +28,73 @@ public class MyObjectToJsonWriter implements ObjectToJsonWriter {
      */
     @Override
     public <T> String writeToJson(T object) {
-        JSONObject jsonObj = getJsonObject(object);
-        String result = jsonObj.toJSONString();
+//        JSONObject jsonObj;
+//        Class objectClass = object.getClass();
+        String result;
+//        List<Class> allInterfaces = new ArrayList<>();
+        if (object instanceof Collection) {
+            result = getJsonCollection(object).toJSONString();
+        } else if (object instanceof Map) {
+            result = getJsonMap(object).toJSONString();
+        }
+
+//        JSONObject jsonObj = getJsonObject(object);
+        else {
+//            jsonObj = getJsonObject(object);
+            result = getJsonObject(object).toJSONString();
+        }
         return result;
     }
+
+    private <T> JSONObject getJsonMap(T object) {
+        Map tempCollection = (Map) object;
+        JSONObject jsonObject = new JSONObject();
+        for (Object o : tempCollection.keySet()) {
+            jsonObject.put(o, getJsonObject(tempCollection.get(o)));
+        }
+        return jsonObject;
+    }
+
+    private JSONArray getJsonCollection(Object object) {
+        Collection tempCollection = (Collection) object;
+        JSONArray jsonArray = new JSONArray();
+        for (Object o : tempCollection) {
+            jsonArray.add(getJsonObject(o));
+        }
+        return jsonArray;
+    }
+
+
 
     private <T> JSONObject getJsonObject(T object) {
         JSONObject jsonObj = new JSONObject();
         Class objectClass = object.getClass();
+
+
         List<Field> fields = new ArrayList<>();
         getAllFields(fields, objectClass);
         for (Field field : fields) {
-//            if (!Modifier.isTransient(field.getModifiers())) {
-                if (field.getType().isPrimitive() || field.getType().getSimpleName().equals("String")) {
-                    jsonObj.put(field.getName(), getFieldValue(object, field.getName()));
-                } else if (field.getType().isArray()) {
-                    Object array = getFieldValue(object, field.getName());
-                    if (array != null) {
-                        JSONArray jsonArray = getJsonArray(array);
-                        jsonObj.put(field.getName(), jsonArray);
-                    } else {
-                        jsonObj.put(field.getName(), null);
-                    }
+            if (field.getType().isPrimitive() || field.getType().getSimpleName().equals("String")) {
+                jsonObj.put(field.getName(), getFieldValue(object, field.getName()));
+            } else if (field.getType().isArray()) {
+                Object array = getFieldValue(object, field.getName());
+                if (array != null) {
+                    JSONArray jsonArray = getJsonArray(array);
+                    jsonObj.put(field.getName(), jsonArray);
                 } else {
-                    if (getFieldValue(object, field.getName()) != null) {
-                        jsonObj.put(field.getName(), getJsonObject(getFieldValue(object, field.getName())));
-                    } else {
-                        jsonObj.put(field.getName(), null);
-                    }
+                    jsonObj.put(field.getName(), null);
                 }
-//            }
+            } else if (getFieldValue(object, field.getName()) instanceof Collection) {
+                jsonObj.put(field.getName(), getJsonCollection(getFieldValue(object, field.getName())));
+            } else if (getFieldValue(object, field.getName()) instanceof Map) {
+                jsonObj.put(field.getName(), getJsonMap(getFieldValue(object, field.getName())));
+            } else {
+                if (getFieldValue(object, field.getName()) != null) {
+                    jsonObj.put(field.getName(), getJsonObject(getFieldValue(object, field.getName())));
+                } else {
+                    jsonObj.put(field.getName(), null);
+                }
+            }
         }
         return jsonObj;
     }
@@ -82,6 +119,18 @@ public class MyObjectToJsonWriter implements ObjectToJsonWriter {
         }
         return jsonArray;
     }
+
+//    private static List<Class> getAllInterfaces(Class iclass, List<Class> interfaces) {
+//        Class<?>[] interfaces1 = iclass.getInterfaces();
+//        for (int i = 0; i < interfaces1.length; i++) {
+//            Class<?> aClass = interfaces1[i];
+//            interfaces.add(aClass);
+//            if (aClass.getInterfaces().length != 0) {
+//                getAllInterfaces(aClass, interfaces);
+//            }
+//        }
+//        return interfaces;
+//    }
 
     //занесение всех полей (включая унаследованные) в лист полей
     private void getAllFields(List<Field> fields, Class<?> objectClass) {

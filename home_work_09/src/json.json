@@ -1,107 +1,69 @@
-{
-  "size": 1,
-  "last": {
-    "next": null,
-    "item": {
-      "doors": 5,
-      "rules1": [
-        [
-          {
-            "light": 1,
-            "name": "МОЙ РУЛЬ"
-          }
-        ],
-        [
-          {
-            "light": 1,
-            "name": "МОЙ РУЛЬ"
-          }
-        ],
-        [
-          {
-            "light": 1,
-            "name": "МОЙ РУЛЬ"
-          }
-        ]
-      ],
-      "color": "Green",
-      "working": true,
-      "rules": [
-        {
-          "light": 1,
-          "name": "МОЙ РУЛЬ"
-        },
-        {
-          "light": 1,
-          "name": "МОЙ РУЛЬ"
-        },
+[
+  {
+    "doors": 5,
+    "rules1": [
+      [
         {
           "light": 1,
           "name": "МОЙ РУЛЬ"
         }
       ],
-      "salon": {
-        "color": "black",
-        "coolness": 5,
-        "rule": {
-          "light": 1,
-          "name": "МОЙ РУЛЬ"
-        },
-        "seats": 5
-      }
-    },
-    "prev": null
-  },
-  "first": {
-    "next": null,
-    "item": {
-      "doors": 5,
-      "rules1": [
-        [
-          {
-            "light": 1,
-            "name": "МОЙ РУЛЬ"
-          }
-        ],
-        [
-          {
-            "light": 1,
-            "name": "МОЙ РУЛЬ"
-          }
-        ],
-        [
-          {
-            "light": 1,
-            "name": "МОЙ РУЛЬ"
-          }
-        ]
-      ],
-      "color": "Green",
-      "working": true,
-      "rules": [
-        {
-          "light": 1,
-          "name": "МОЙ РУЛЬ"
-        },
-        {
-          "light": 1,
-          "name": "МОЙ РУЛЬ"
-        },
+      [
         {
           "light": 1,
           "name": "МОЙ РУЛЬ"
         }
       ],
-      "salon": {
-        "color": "black",
-        "coolness": 5,
-        "rule": {
+      [
+        {
+          "light": 1,
+          "name": "МОЙ РУЛЬ"
+        }
+      ]
+    ],
+    "color": "Green",
+    "rules3": {
+      "modCount": 1,
+      "size": 1,
+      "elementData": [
+        {
           "light": 1,
           "name": "МОЙ РУЛЬ"
         },
-        "seats": 5
-      }
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
     },
-    "prev": null
+    "working": true,
+    "rules": [
+      {
+        "light": 1,
+        "name": "МОЙ РУЛЬ"
+      },
+      {
+        "light": 1,
+        "name": "МОЙ РУЛЬ"
+      },
+      {
+        "light": 1,
+        "name": "МОЙ РУЛЬ"
+      }
+    ],
+    "salon": {
+      "color": "black",
+      "coolness": 5,
+      "rule": {
+        "light": 1,
+        "name": "МОЙ РУЛЬ"
+      },
+      "seats": 5
+    }
   }
-}
+]

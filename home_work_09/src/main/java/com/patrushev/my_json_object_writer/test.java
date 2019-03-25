@@ -8,46 +8,46 @@ import java.util.*;
 
 public class test {
     public static void main(String[] args) {
-//        //объект для сериализации
-//        Ford car = new Ford();
-//        //получаем класс объекта
-//        Class<? extends Car> aClass = car.getClass();
-//        //получаем все поля объекта (кроме статических), включая унаследованные
-//        List<Field> fields = new ArrayList<>();
-//        getAllFields(fields, car.getClass());
-//        //печатаем все полученные поля объекта и их значения
-//        System.out.println(fields.size());
-//        for (Field field : fields) {
-//            System.out.println(field.getName() + " : " + getFieldValue(car, field.getName()));
-//        }
 
         MyObjectToJsonWriter test = new MyObjectToJsonWriter();
-//        Ford ford = new Ford();
-////        System.out.println(test.writeToJson(ford));
-////        System.out.println();
-////        String[] a = new String[10];
-////        for (int i = 0; i < a.length; i++) {
-////            a[i] = String.valueOf(i);
-////
-////        }
-//        System.out.println(test.writeToJson(ford));
-//
-//        System.out.println();
-//
-//        Gson gson = new Gson();
-//        System.out.println(gson.toJson(ford));
 
-//        List<Car> carList = new ArrayList<>();
-//        carList.add(new Car());
-////        carList.add(new Car());
-//        System.out.println(test.writeToJson(carList));
+//        myObjectTest(test);
 //
-//        System.out.println();
+//        arrayListTest(test);
 //
-//        Gson gson = new Gson();
-//        System.out.println(gson.toJson(carList));
+//        linkedListTest(test);
+//
+        mapTest(test);
 
+//        hashSetTest(test);
+    }
+
+    private static void mapTest(MyObjectToJsonWriter test) {
+        Map<String, Car> cars = new HashMap<>();
+        cars.put("1", new Car());
+//        cars.put("2", new Car());
+        System.out.println(test.writeToJson(cars));
+
+        System.out.println();
+
+        Gson gson = new Gson();
+        System.out.println(gson.toJson(cars));
+    }
+
+    private static void linkedListTest(MyObjectToJsonWriter test) {
         List<Car> carList = new LinkedList<>();
+        carList.add(new Car());
+        carList.add(new Car());
+        System.out.println(test.writeToJson(carList));
+
+        System.out.println();
+
+        Gson gson = new Gson();
+        System.out.println(gson.toJson(carList));
+    }
+
+    private static void arrayListTest(MyObjectToJsonWriter test) {
+        List<Car> carList = new ArrayList<>();
         carList.add(new Car());
 //        carList.add(new Car());
         System.out.println(test.writeToJson(carList));
@@ -56,61 +56,29 @@ public class test {
 
         Gson gson = new Gson();
         System.out.println(gson.toJson(carList));
-
-//        Map<String, Car> cars = new HashMap<>();
-//        cars.put("1", new Car());
-////        cars.put("2", new Car());
-//        System.out.println(test.writeToJson(cars));
-//
-//        System.out.println();
-//
-//        Gson gson = new Gson();
-//        System.out.println(gson.toJson(cars));
     }
 
-    //занесение всех полей (включая унаследованные) в лист полей
-    static void getAllFields(List<Field> fields, Class<?> objectClass) {
-        fields.addAll(Arrays.asList(objectClass.getDeclaredFields()));
-        if (objectClass.getSuperclass() != null) {
-            fields.addAll(Arrays.asList(objectClass.getSuperclass().getDeclaredFields()));
-        }
-        Iterator<Field> iterator = fields.iterator();
-        while (iterator.hasNext()) {
-            if(Modifier.isStatic(iterator.next().getModifiers())) {
-                iterator.remove();
-            }
-        }
+    private static MyObjectToJsonWriter myObjectTest(MyObjectToJsonWriter test) {
+
+        Ford ford = new Ford();
+        System.out.println(test.writeToJson(ford));
+
+        System.out.println();
+
+        Gson gson = new Gson();
+        System.out.println(gson.toJson(ford));
+        return test;
     }
 
-    //получение самого поля, даже если оно объявлено в родителе (не значения)
-    static Field getField(Class<?> objClass, String name) {
-        Field field = null;
-        try {
-            field = objClass.getDeclaredField(name);
-        } catch (NoSuchFieldException e) {
-            if (objClass.getSuperclass() != null) {
-                field = getField(objClass.getSuperclass(), name);
-            }
-        }
-        return field;
-    }
+    private static void hashSetTest(MyObjectToJsonWriter test) {
+        Set<Car> carList = new HashSet<>();
+        carList.add(new Car());
+//        carList.add(new Car());
+        System.out.println(test.writeToJson(carList));
 
-    //получение значения поля
-    static Object getFieldValue(Object object, String name) {
-        Field field = null;
-        boolean isAccessible = true;
-        try {
-            field = getField(object.getClass(), name); //getField() for public fields
-            isAccessible = field.canAccess(object);
-            field.setAccessible(true);
-            return field.get(object);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } finally {
-            if (field != null && !isAccessible) {
-                field.setAccessible(false);
-            }
-        }
-        return null;
+        System.out.println();
+
+        Gson gson = new Gson();
+        System.out.println(gson.toJson(carList));
     }
 }
