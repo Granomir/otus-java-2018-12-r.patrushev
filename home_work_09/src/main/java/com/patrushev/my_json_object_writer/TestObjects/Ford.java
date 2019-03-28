@@ -1,4 +1,4 @@
-package com.patrushev.my_json_object_writer;
+package com.patrushev.my_json_object_writer.TestObjects;
 
 public class Ford extends Car {
     private String model = "Explorer";

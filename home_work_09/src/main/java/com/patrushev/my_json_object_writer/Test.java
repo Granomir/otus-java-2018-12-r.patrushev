@@ -1,6 +1,8 @@
 package com.patrushev.my_json_object_writer;
 
 import com.google.gson.Gson;
+import com.patrushev.my_json_object_writer.TestObjects.Car;
+import com.patrushev.my_json_object_writer.TestObjects.Ford;
 
 import java.util.*;
 
