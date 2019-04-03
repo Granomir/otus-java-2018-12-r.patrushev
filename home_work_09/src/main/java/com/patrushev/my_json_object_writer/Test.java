@@ -32,7 +32,8 @@ public class Test {
 
     private static void mapTest(MyObjectToJsonWriter test) {
         Map<String, int[]> cars = new HashMap<>();
-        cars.put("1", null);
+        int[] ints = {1, 2, 3};
+        cars.put("1", ints);
 //        cars.put("2", new Car());
         System.out.println(test.writeToJson(cars));
 
@@ -81,7 +82,7 @@ public class Test {
 
     private static void hashSetTest(MyObjectToJsonWriter test) {
         Set<Car> carList = new HashSet<>();
-        carList.add(null);
+        carList.add(new Car());
 //        carList.add(new Car());
         System.out.println(test.writeToJson(carList));
 
@@ -93,12 +94,12 @@ public class Test {
 
     private static void stringTest(MyObjectToJsonWriter test) {
 
-        System.out.println(test.writeToJson(null));
+        System.out.println(test.writeToJson("Привет"));
 
         System.out.println();
 
         Gson gson = new Gson();
-        System.out.println(gson.toJson(null));
+        System.out.println(gson.toJson("Привет"));
     }
 
     private static void arrayPrimitiveTest(MyObjectToJsonWriter test) {

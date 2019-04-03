@@ -1,6 +1,7 @@
 package com.patrushev.my_json_object_writer;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
 
 import java.lang.reflect.Array;
@@ -11,18 +12,18 @@ import java.util.*;
 @SuppressWarnings("unchecked")
 public class MyObjectToJsonWriter implements ObjectToJsonWriter {
 
-    private Set<Class<?>> ret = new HashSet<>();
+    private Set<Class<?>> wrappers = new HashSet<>();
 
     {
-        ret.add(Boolean.class);
-        ret.add(Character.class);
-        ret.add(Byte.class);
-        ret.add(Short.class);
-        ret.add(Integer.class);
-        ret.add(Long.class);
-        ret.add(Float.class);
-        ret.add(Double.class);
-        ret.add(Void.class);
+        wrappers.add(Boolean.class);
+        wrappers.add(Character.class);
+        wrappers.add(Byte.class);
+        wrappers.add(Short.class);
+        wrappers.add(Integer.class);
+        wrappers.add(Long.class);
+        wrappers.add(Float.class);
+        wrappers.add(Double.class);
+        wrappers.add(Void.class);
     }
 
     /**
@@ -33,144 +34,80 @@ public class MyObjectToJsonWriter implements ObjectToJsonWriter {
     @Override
     public <T> String writeToJson(T object) {
         if (object != null) {
-            String result;
-            if (object instanceof Collection) {
-                result = getJsonCollection(object).toJSONString();
-            } else if (object instanceof Map) {
-                result = getJsonMap(object).toJSONString();
-            } else if (isWrapperType(object)) {
-                result = object.toString();
+            if (isWrapperType(object)) {
+                return object.toString();
             } else if (object instanceof String) {
-                result = "\"" + object.toString() + "\"";
-            } else if (object.getClass().isArray()) {
-                result = getJsonArray(object).toJSONString();
+                return "\"" + object.toString() + "\"";
             } else {
-                JSONObject jsonObject = getJsonObject(object);
-                if (jsonObject != null) {
-                    result = jsonObject.toJSONString();
-                } else {
-                    result = "";
-                }
+                return ((JSONAware) getJsonObject(object)).toJSONString();
             }
-            return result;
         } else {
             return null;
         }
     }
+
+
+    private Object getJsonObject(Object object) {
+        if (object instanceof Collection) {
+            Collection tempCollection = (Collection) object;
+            JSONArray jsonArray = new JSONArray();
+            for (Object o : tempCollection) {
+                if (o != null) {
+                    jsonArray.add(getJsonObject(o));
+                } else {
+                    jsonArray.add(null);
+                }
+            }
+            return jsonArray;
+        } else if (object instanceof Map) {
+            Map tempMap = (Map) object;
+            JSONObject jsonObject = new JSONObject();
+            for (Object o : tempMap.keySet()) {
+                Object o1 = tempMap.get(o);
+                if (o1 != null) {
+                    jsonObject.put(o, getJsonObject(o1));
+                }
+            }
+            return jsonObject;
+        } else if (isWrapperType(object)) {
+            return object;
+        } else if (object instanceof String) {
+            return object;
+        } else if (object.getClass().isArray()) {
+            JSONArray jsonArray = new JSONArray();
+            for (int i = 0; i < Array.getLength(object); i++) {
+                Object arrayElement = Array.get(object, i);
+                if (arrayElement != null) {
+                    jsonArray.add(getJsonObject(arrayElement));
+                } else {
+                    jsonArray.add(null);
+                }
+            }
+            return jsonArray;
+        } else {
+            JSONObject jsonObject = getCustomJsonObject(object);
+            return Objects.requireNonNullElse(jsonObject, "");
+        }
+    }
+
 
     /**
      * Определяет, является ли аргумент примитивным типом в обёртке
      */
     private boolean isWrapperType(Object obj) {
-        return ret.contains(obj.getClass());
+        return wrappers.contains(obj.getClass());
     }
 
-    private <T> JSONObject getJsonMap(T object) {
-        Map tempMap = (Map) object;
-        JSONObject jsonObject = new JSONObject();
-        for (Object o : tempMap.keySet()) {
-            Object o1 = tempMap.get(o);
-            if (o1 != null) {
-                if (o1 instanceof Collection) {
-                    jsonObject.put(o, getJsonCollection(o1));
-                } else if (o1 instanceof Map) {
-                    jsonObject.put(o, getJsonMap(o1));
-                } else if (isWrapperType(o1)) {
-                    jsonObject.put(o, o1);
-                } else if (o1.getClass().isArray()) {
-                    jsonObject.put(o, getJsonArray(o1));
-                } else if (o1 instanceof String) {
-                    jsonObject.put(o, o1);
-                } else {
-                    JSONObject tempJsonObject = getJsonObject(o1);
-                    if (tempJsonObject != null) {
-                        jsonObject.put(o, tempJsonObject);
-                    }
-                }
+    private <T> JSONObject getCustomJsonObject(T object) {
+        JSONObject jsonObj = new JSONObject();
+        List<Field> fields = getAllFields(object);
+        for (Field field : fields) {
+            Object fieldValue = getFieldValue(object, field.getName());
+            if (fieldValue != null) {
+                jsonObj.put(field.getName(), getJsonObject(fieldValue));
             }
         }
-        return jsonObject;
-    }
-
-    private <T> JSONArray getJsonCollection(T object) {
-        Collection tempCollection = (Collection) object;
-        JSONArray jsonArray = new JSONArray();
-        for (Object o : tempCollection) {
-            if (o != null) {
-                if (o instanceof Collection) {
-                    jsonArray.add(getJsonCollection(o));
-                } else if (o instanceof Map) {
-                    jsonArray.add(getJsonMap(o));
-                } else if (isWrapperType(o)) {
-                    jsonArray.add(o);
-                } else if (o.getClass().isArray()) {
-                    jsonArray.add(getJsonArray(o));
-                } else if (o instanceof String) {
-                    jsonArray.add(o);
-                } else {
-                    JSONObject jsonObject = getJsonObject(o);
-                    if (jsonObject != null) {
-                        jsonArray.add(jsonObject);
-                    }
-                }
-            } else {
-                jsonArray.add(null);
-            }
-        }
-        return jsonArray;
-    }
-
-
-    private <T> JSONObject getJsonObject(T object) {
-        if (object != null) {
-            JSONObject jsonObj = new JSONObject();
-            List<Field> fields = getAllFields(object);
-            for (Field field : fields) {
-                Object fieldValue = getFieldValue(object, field.getName());
-                if (fieldValue != null) {
-                    if (field.getType().isPrimitive() || field.getType().getSimpleName().equals("String")) {
-                        jsonObj.put(field.getName(), fieldValue);
-                    } else if (field.getType().isArray()) {
-                        JSONArray jsonArray = getJsonArray(fieldValue);
-                        jsonObj.put(field.getName(), jsonArray);
-                    } else if (fieldValue instanceof Collection) {
-                        jsonObj.put(field.getName(), getJsonCollection(fieldValue));
-                    } else if (fieldValue instanceof Map) {
-                        jsonObj.put(field.getName(), getJsonMap(fieldValue));
-                    } else {
-                        JSONObject jsonObject = getJsonObject(fieldValue);
-                        if (jsonObject != null) {
-                            jsonObj.put(field.getName(), jsonObject);
-                        }
-                    }
-                }
-            }
-            return jsonObj;
-        } else {
-            return null;
-        }
-    }
-
-    private <T> JSONArray getJsonArray(T object) {
-        JSONArray jsonArray = new JSONArray();
-        for (int i = 0; i < Array.getLength(object); i++) {
-            Object arrayElement = Array.get(object, i);
-            if (arrayElement != null) {
-                if (isWrapperType(arrayElement) || arrayElement.getClass().getSimpleName().equals("String")) {
-                    jsonArray.add(arrayElement);
-                } else if (arrayElement.getClass().isArray()) {
-                    jsonArray.add(getJsonArray(arrayElement));
-                } else {
-                    JSONObject jsonObject = getJsonObject(arrayElement);
-                    if (jsonObject != null) {
-                        jsonArray.add(jsonObject);
-                    }
-                }
-            } else {
-                jsonArray.add(null);
-            }
-        }
-        return jsonArray;
+        return jsonObj;
     }
 
     /**
@@ -188,8 +125,9 @@ public class MyObjectToJsonWriter implements ObjectToJsonWriter {
 
     /**
      * возвращает объект запрашиваемого поля
-      * @param objClass - интересующий класс
-     * @param name - имя интересующего поля
+     *
+     * @param objClass - интересующий класс
+     * @param name     - имя интересующего поля
      */
     private Field getField(Class<?> objClass, String name) {
         Field field = null;
@@ -205,8 +143,9 @@ public class MyObjectToJsonWriter implements ObjectToJsonWriter {
 
     /**
      * возвращает конкретное значение поля экземпляра
+     *
      * @param object - объект некого класса
-     * @param name - имя интересующего поля
+     * @param name   - имя интересующего поля
      */
     private Object getFieldValue(Object object, String name) {
         Field field = null;
