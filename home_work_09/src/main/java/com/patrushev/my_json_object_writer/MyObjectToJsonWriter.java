@@ -34,12 +34,10 @@ public class MyObjectToJsonWriter implements ObjectToJsonWriter {
     @Override
     public <T> String writeToJson(T object) {
         if (object != null) {
-            if (isWrapperType(object)) {
-                return object.toString();
-            } else if (object instanceof String) {
+            if (object instanceof String) {
                 return "\"" + object.toString() + "\"";
             } else {
-                return ((JSONAware) getJsonObject(object)).toJSONString();
+                return getJsonObject(object).toString();
             }
         } else {
             return null;
