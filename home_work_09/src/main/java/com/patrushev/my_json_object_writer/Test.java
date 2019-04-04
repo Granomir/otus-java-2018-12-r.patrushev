@@ -1,8 +1,8 @@
 package com.patrushev.my_json_object_writer;
 
 import com.google.gson.Gson;
-import com.patrushev.my_json_object_writer.TestObjects.Car;
-import com.patrushev.my_json_object_writer.TestObjects.Ford;
+import com.patrushev.my_json_object_writer.testObjects.Car;
+import com.patrushev.my_json_object_writer.testObjects.Ford;
 
 import java.util.*;
 
@@ -28,6 +28,8 @@ public class Test {
         arrayObjTest(test);
 
         intTest(test);
+
+        charTest(test);
     }
 
     private static void mapTest(MyObjectToJsonWriter test) {
@@ -130,5 +132,15 @@ public class Test {
 
         Gson gson = new Gson();
         System.out.println(gson.toJson(1));
+    }
+
+    private static void charTest(MyObjectToJsonWriter test) {
+
+        System.out.println(test.writeToJson('Z'));
+
+        System.out.println();
+
+        Gson gson = new Gson();
+        System.out.println(gson.toJson('Z'));
     }
 }

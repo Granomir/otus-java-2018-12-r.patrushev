@@ -1,4 +1,4 @@
-package com.patrushev.my_json_object_writer.TestObjects;
+package com.patrushev.my_json_object_writer.testObjects;
 
 import java.util.ArrayList;
 import java.util.HashMap;

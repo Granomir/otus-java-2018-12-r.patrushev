@@ -1,4 +1,4 @@
-package com.patrushev.my_json_object_writer.TestObjects;
+package com.patrushev.my_json_object_writer.testObjects;
 
 public class Rule {
     private int light = 1;

@@ -1,4 +1,4 @@
-package com.patrushev.my_json_object_writer.TestObjects;
+package com.patrushev.my_json_object_writer.testObjects;
 
 public class Salon {
     private int coolness = 5;
