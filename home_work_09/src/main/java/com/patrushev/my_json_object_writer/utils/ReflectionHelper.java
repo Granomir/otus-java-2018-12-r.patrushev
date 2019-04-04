@@ -2,11 +2,22 @@ package com.patrushev.my_json_object_writer.utils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class ReflectionHelper {
+    private static Set<Class<?>> wrappers = new HashSet<>();
+
+    static {
+        wrappers.add(Boolean.class);
+        wrappers.add(Byte.class);
+        wrappers.add(Short.class);
+        wrappers.add(Integer.class);
+        wrappers.add(Long.class);
+        wrappers.add(Float.class);
+        wrappers.add(Double.class);
+        wrappers.add(Void.class);
+    }
+
 
     /**
      * возвращает список всех полей переданного объекта (включая унаследованные)
@@ -61,5 +72,12 @@ public class ReflectionHelper {
             }
         }
         return null;
+    }
+
+    /**
+     * Определяет, является ли аргумент примитивным типом в обёртке
+     */
+    public static boolean isWrapperType(Object obj) {
+        return wrappers.contains(obj.getClass());
     }
 }

@@ -10,18 +10,7 @@ import java.util.*;
 
 @SuppressWarnings("unchecked")
 public class MyObjectToJsonWriter implements ObjectToJsonWriter {
-    private Set<Class<?>> wrappers = new HashSet<>();
 
-    {
-        wrappers.add(Boolean.class);
-        wrappers.add(Byte.class);
-        wrappers.add(Short.class);
-        wrappers.add(Integer.class);
-        wrappers.add(Long.class);
-        wrappers.add(Float.class);
-        wrappers.add(Double.class);
-        wrappers.add(Void.class);
-    }
 
     /**
      * @param object - сериализуемый объект
@@ -46,7 +35,7 @@ public class MyObjectToJsonWriter implements ObjectToJsonWriter {
             return getJsonCollection((Collection) object);
         } else if (object instanceof Map) {
             return getJsonMap((Map) object);
-        } else if (isWrapperType(object)) {
+        } else if (ReflectionHelper.isWrapperType(object)) {
             return object;
         } else if (object instanceof String) {
             return object;
@@ -106,10 +95,5 @@ public class MyObjectToJsonWriter implements ObjectToJsonWriter {
         return jsonObj;
     }
 
-    /**
-     * Определяет, является ли аргумент примитивным типом в обёртке
-     */
-    private boolean isWrapperType(Object obj) {
-        return wrappers.contains(obj.getClass());
-    }
+
 }
