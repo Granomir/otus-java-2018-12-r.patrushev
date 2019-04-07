@@ -1,4 +1,4 @@
-package com.patrushev.my_json_object_writer.utils;
+package com.patrushev.my_orm.utils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -34,7 +34,6 @@ public class ReflectionHelper {
 
     /**
      * возвращает объект запрашиваемого поля
-     *
      * @param objClass - интересующий класс
      * @param name     - имя интересующего поля
      */
@@ -52,7 +51,6 @@ public class ReflectionHelper {
 
     /**
      * возвращает конкретное значение поля экземпляра
-     *
      * @param object - объект некого класса
      * @param name   - имя интересующего поля
      */

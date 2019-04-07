@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.StringJoiner;
 
+//сделать всё статическим и передавать в методы connection?
 public class DBServiceImpl implements DBService {
     private static final String CREATE_TABLE_USER = "CREATE TABLE IF NOT EXISTS UserDataSet (\n" +
             "  id        BIGSERIAL NOT NULL PRIMARY KEY,\n" +
@@ -33,8 +34,9 @@ public class DBServiceImpl implements DBService {
         return joiner.toString();
     }
 
+    //переделать под создание таблицы конкретной
     @Override
-    public void prepareTables() throws SQLException {
+    public void createTable(String createTableQuery) throws SQLException {
         try (final Statement statement = connection.createStatement()) {
             statement.executeUpdate(CREATE_TABLE_USER);
         }
