@@ -1,5 +1,6 @@
 package com.patrushev.my_orm;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 public interface DBService {
@@ -10,4 +11,8 @@ public interface DBService {
     void deleteTables() throws SQLException;
 
     boolean checkTableAvailability(String tableName);
+
+    void createDB(String dbName);
+
+    Connection getCurrentConnection();
 }
