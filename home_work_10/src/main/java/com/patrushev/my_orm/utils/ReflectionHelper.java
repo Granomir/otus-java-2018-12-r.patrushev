@@ -1,5 +1,7 @@
 package com.patrushev.my_orm.utils;
 
+import com.patrushev.my_orm.DataSet;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -22,6 +24,13 @@ public class ReflectionHelper {
     /**
      * возвращает список всех полей переданного объекта (включая унаследованные)
      */
+    public static List<Field> getAllDeclaredFields(Object object) {
+        Class<?> objectClass = object.getClass();
+        List<Field> fields = new ArrayList<>(Arrays.asList(objectClass.getDeclaredFields()));
+        fields.removeIf(field -> Modifier.isStatic(field.getModifiers()));
+        return fields;
+    }
+
     public static List<Field> getAllFields(Object object) {
         Class<?> objectClass = object.getClass();
         List<Field> fields = new ArrayList<>(Arrays.asList(objectClass.getDeclaredFields()));
@@ -30,6 +39,15 @@ public class ReflectionHelper {
         }
         fields.removeIf(field -> Modifier.isStatic(field.getModifiers()));
         return fields;
+    }
+
+    public static <T extends DataSet> Map<String, Object> getDeclaredFieldsAndValues(T entity) {
+        Map<String, Object> fieldsAndValues = new HashMap<>();
+        List<Field> fields = ReflectionHelper.getAllDeclaredFields(entity);
+        for (Field field : fields) {
+            fieldsAndValues.put(field.getName(), ReflectionHelper.getFieldValue(entity, field.getName()));
+        }
+        return fieldsAndValues;
     }
 
     /**

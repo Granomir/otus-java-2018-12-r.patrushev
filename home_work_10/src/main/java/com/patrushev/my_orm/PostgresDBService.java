@@ -39,16 +39,21 @@ public class PostgresDBService implements DBService {
      * @throws SQLException
      */
     @Override
-    public void createTable(String createTableQuery) throws SQLException {
+    public void createTable(String createTableQuery) {
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(createTableQuery);
+            Thread.sleep(500);
+        } catch (SQLException | InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
     @Override
-    public void deleteTables() throws SQLException {
+    public void deleteTables() {
         try (final Statement statement = connection.createStatement()) {
             statement.executeUpdate(DROP_TABLE_USER);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -57,7 +62,7 @@ public class PostgresDBService implements DBService {
         try (Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery("SELECT table_name FROM information_schema.tables WHERE table_schema='public';");
             while (resultSet.next()) {
-                if (resultSet.getString(1).equals(tableName)) return true;
+                if (resultSet.getString(1).equals(tableName.toLowerCase())) return true;
             }
         } catch (SQLException e) {
             e.printStackTrace();

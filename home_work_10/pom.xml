@@ -13,7 +13,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>home_work_10</artifactId>
-    <name>home_work_10</name>
+    <user_name>home_work_10</user_name>
 
     <properties>
         <!--по умолчанию в maven версия jdk 1.5, поэтому если в коде будут фишки более поздних версий, то приложение не скомпилируется
@@ -23,8 +23,11 @@
     </properties>
 
     <dependencies>
-        
-
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.5</version>
+        </dependency>
     </dependencies>
 
 </project>
