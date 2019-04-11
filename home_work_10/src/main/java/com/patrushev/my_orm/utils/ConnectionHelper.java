@@ -9,7 +9,6 @@ public class ConnectionHelper {
 
     /**
      * @return подключение к базе данных, имя которой записано в currentDB
-     * @throws SQLException
      */
     public static Connection getPostgresqlConnection() throws SQLException {
         final String connString = "jdbc:postgresql://" +    // db type
@@ -25,7 +24,6 @@ public class ConnectionHelper {
      *
      * @param dbName - имя новой БД
      * @return подключение к базе данных, имя которой записано в currentDB
-     * @throws SQLException
      */
     public static Connection getPostgresqlConnection(String dbName) throws SQLException {
         currentDB = dbName;

@@ -21,8 +21,6 @@ public class ReflectionHelper {
 
     /**
      * возвращает список полей, объявленных в классе переданного объекта
-     * @param object
-     * @return
      */
     public static List<Field> getAllDeclaredFields(Object object) {
         Class<?> objectClass = object.getClass();
@@ -33,8 +31,6 @@ public class ReflectionHelper {
 
     /**
      * возвращает список всех полей переданного объекта (включая унаследованные)
-     * @param object
-     * @return
      */
     public static List<Field> getAllFields(Object object) {
         Class<?> objectClass = object.getClass();
@@ -48,8 +44,6 @@ public class ReflectionHelper {
 
     /**
      * возвращает поля, объявленные в классе переданного объекта, с их значениями
-     * @param entity
-     * @return
      */
     public static Map<String, Object> getDeclaredFieldsAndValues(Object entity) {
         Map<String, Object> fieldsAndValues = new HashMap<>();
@@ -104,8 +98,6 @@ public class ReflectionHelper {
 
     /**
      * Определяет, является ли переданный объект примитивным типом в обёртке
-     * @param obj
-     * @return
      */
     public static boolean isWrapperType(Object obj) {
         return wrappers.contains(obj.getClass());
@@ -116,7 +108,6 @@ public class ReflectionHelper {
      * @param entity - редактируемый объект
      * @param field - поле, которому присваивается значение
      * @param value - присваиваемое значение
-     * @throws IllegalAccessException
      */
     public static void setFieldValue(Object entity, Field field, Object value) throws IllegalAccessException {
         boolean isAccessible = field.canAccess(entity);

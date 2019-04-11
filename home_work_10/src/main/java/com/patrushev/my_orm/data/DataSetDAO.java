@@ -24,9 +24,6 @@ public class DataSetDAO {
 
     /**
      * Сохраняет переданный объект в БД, если она содержит таблицу, хранящие данные типа переданного объекта
-     * @param entity
-     * @param <T>
-     * @throws SQLException
      */
     public <T extends DataSet> void save(T entity) throws SQLException {
         String entityClassName = entity.getClass().getSimpleName();
@@ -54,36 +51,16 @@ public class DataSetDAO {
 
     /**
      * возвращает объект, созданный на основе данных полученных из БД по переданному индексу (если БД содержит таблицу, хранящую объекты этого типа)
-     * @param id
-     * @param clazz
-     * @param <T>
-     * @return
-     * @throws SQLException
-     * @throws InvocationTargetException
-     * @throws NoSuchMethodException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
      */
     public <T extends DataSet> T load(long id, Class<T> clazz) throws SQLException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        //проверяем есть ли таблица в БД для хранения данных переданного типа, если нет - кидаем исключение
         String className = clazz.getSimpleName();
         if (!dbService.checkTableAvailability(className))
             throw new IllegalArgumentException("База данных не содержит таблицу, хранящую объекты типа " + className);
-        //считать строку с базы по id
         return Executor.query(dbConnection, "SELECT * FROM " + className + " WHERE id = " + id + ";", DataSetDAO::getT, clazz);
     }
 
     /**
      * возвращает объект переданного класса, собранный из данных, полученных из БД
-     * @param clazz
-     * @param resultSet
-     * @param <T>
-     * @return
-     * @throws SQLException
-     * @throws NoSuchMethodException
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
-     * @throws InstantiationException
      */
     private static <T extends DataSet> T getT(Class<T> clazz, ResultSet resultSet) throws SQLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         if (resultSet.next()) {

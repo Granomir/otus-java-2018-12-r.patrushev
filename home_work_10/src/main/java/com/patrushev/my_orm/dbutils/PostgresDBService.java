@@ -10,7 +10,6 @@ public class PostgresDBService implements DBService {
 
     /**
      * возвращает актуальное подключение к БД (к БД с определенным именем)
-     * @return
      */
     public Connection getCurrentConnection() {
         return connection;
@@ -22,7 +21,6 @@ public class PostgresDBService implements DBService {
 
     /**
      * создает новуб таблицу в БД, согласно переданному SQL-запросу
-     * @param createTableQuery
      */
     @Override
     public void createTable(String createTableQuery) {
@@ -36,8 +34,6 @@ public class PostgresDBService implements DBService {
 
     /**
      * удаляет БД с переданным именем
-     * @param dbName
-     * @throws SQLException
      */
     @Override
     public void dropDB(String dbName) throws SQLException {
@@ -51,8 +47,6 @@ public class PostgresDBService implements DBService {
 
     /**
      * проверка наличия таблицы с переданным именем в БД
-     * @param tableName
-     * @return
      */
     @Override
     public boolean checkTableAvailability(String tableName) {
@@ -69,7 +63,6 @@ public class PostgresDBService implements DBService {
 
     /**
      * создает новую БД на сервере Postgres и заменяет старое подключение на новое - к этой новой БД
-     * @param dbName
      */
     @Override
     public void createDB(String dbName) {
