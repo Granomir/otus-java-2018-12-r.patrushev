@@ -1,5 +1,6 @@
 package com.patrushev.my_orm;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -7,9 +8,10 @@ import java.sql.Statement;
 
 public class Executor {
 
-    public static ResultSet query(Connection connection, String query) throws SQLException {
+    public static <T> T query(Connection connection, String query, TResultHandler<T> handler, Class<T> clazz) throws SQLException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         try (Statement statement = connection.createStatement()) {
-            return statement.executeQuery(query);
+            ResultSet result = statement.executeQuery(query);
+            return handler.handle(clazz, result);
         }
     }
 

@@ -1,6 +1,8 @@
 package com.patrushev.my_orm;
 
-import com.patrushev.my_orm.dbcommon.ConnectionHelper;
+import com.patrushev.my_orm.dbutils.ConnectionHelper;
+import com.patrushev.my_orm.dbutils.DBService;
+import com.patrushev.my_orm.dbutils.PostgresDBService;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
@@ -28,10 +30,14 @@ public class Main {
         dao.save(user4);
         //выгрузка элементов из БД
         UserDataSet user11 = dao.load(1, UserDataSet.class);
-        System.out.println(user1.equals(user11));
-
-//        UserDataSet user2 = dao.load(2, UserDataSet.class);
-//        UserDataSet user3 = dao.load(3, UserDataSet.class);
-//        UserDataSet user4 = dao.load(4, UserDataSet.class);
+        System.out.println("user 1 equals user 11: " + user1.equals(user11));
+        UserDataSet user22 = dao.load(2, UserDataSet.class);
+        System.out.println("user 2 equals user 22: " + user2.equals(user22));
+        UserDataSet user33 = dao.load(3, UserDataSet.class);
+        System.out.println("user 3 equals user 33: " + user3.equals(user33));
+        UserDataSet user44 = dao.load(4, UserDataSet.class);
+        System.out.println("user 4 equals user 44: " + user4.equals(user44));
+        //удаление БД
+        postgresDbService.dropDB("mydb");
     }
 }

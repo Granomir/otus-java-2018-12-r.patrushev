@@ -1,5 +1,6 @@
 package com.patrushev.my_orm;
 
+import com.patrushev.my_orm.dbutils.DBService;
 import com.patrushev.my_orm.utils.ReflectionHelper;
 
 import java.lang.reflect.Constructor;
@@ -8,6 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 public class DataSetDAO {
@@ -20,18 +22,16 @@ public class DataSetDAO {
     }
 
     /**
-     * сохраняет переданный объект в БД, определяя по его типу в какую таблицу его следует сохранить
-     * @param entity - объект
-     * @param <T> - тип объекта
+     * Сохраняет переданный объект в БД, если она содержит таблицу, хранящие данные типа переданного объекта
+     * @param entity
+     * @param <T>
      * @throws SQLException
      */
     <T extends DataSet> void save(T entity) throws SQLException {
-        //проверяем есть ли таблица в БД для хранения данных переданного типа, если нет - кидаем исключение
-        String entityClassName = entity.getClass ().getSimpleName();
-        if (!dbService.checkTableAvailability(entityClassName)) throw new IllegalArgumentException("База данных не содержит таблицы для хранения объектов типа " + entityClassName);
-        //разбираем entity на поля+значения
+        String entityClassName = entity.getClass().getSimpleName();
+        if (!dbService.checkTableAvailability(entityClassName))
+            throw new IllegalArgumentException("База данных не содержит таблицы для хранения объектов типа " + entityClassName);
         Map<String, Object> fieldsAndValues = ReflectionHelper.getDeclaredFieldsAndValues(entity);
-        //создаем INSERT-запрос на основе полученных полей
         StringBuilder insertQuery = new StringBuilder();
         insertQuery.append("INSERT INTO ").append(entityClassName).append(" (");
         for (String s : fieldsAndValues.keySet()) {
@@ -48,37 +48,54 @@ public class DataSetDAO {
         }
         insertQuery.delete(insertQuery.length() - 2, insertQuery.length());
         insertQuery.append(");");
-        //передаем запрос экзекутору
-        System.out.println(insertQuery);
         Executor.update(dbConnection, insertQuery.toString());
     }
 
-    <T extends DataSet> T load(long id, Class<T> clazz) throws SQLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    /**
+     * возвращает объект, созданный на основе данных полученных из БД по переданному индексу (если БД содержит таблицу, хранящую объекты этого типа)
+     * @param id
+     * @param clazz
+     * @param <T>
+     * @return
+     * @throws SQLException
+     * @throws InvocationTargetException
+     * @throws NoSuchMethodException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    <T extends DataSet> T load(long id, Class<T> clazz) throws SQLException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         //проверяем есть ли таблица в БД для хранения данных переданного типа, если нет - кидаем исключение
         String className = clazz.getSimpleName();
-        if (!dbService.checkTableAvailability(className)) throw new IllegalArgumentException("База данных не содержит таблицу, хранящую объекты типа " + className);
+        if (!dbService.checkTableAvailability(className))
+            throw new IllegalArgumentException("База данных не содержит таблицу, хранящую объекты типа " + className);
         //считать строку с базы по id
-        ResultSet resultSet = Executor.query(dbConnection, "SELECT * FROM " + className.toLowerCase() + " WHERE id = " + id + ";");
-        //создать объект на основе полученных данных
+        return Executor.query(dbConnection, "SELECT * FROM " + className + " WHERE id = " + id + ";", DataSetDAO::getT, clazz);
+    }
+
+    /**
+     * возвращает объект переданного класса, собранный из данных, полученных из БД
+     * @param clazz
+     * @param resultSet
+     * @param <T>
+     * @return
+     * @throws SQLException
+     * @throws NoSuchMethodException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     * @throws InstantiationException
+     */
+    private static <T extends DataSet> T getT(Class<T> clazz, ResultSet resultSet) throws SQLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         if (resultSet.next()) {
             Constructor<T> constructor = clazz.getConstructor();
+            //а что делать, если у класса нет конструктора по умолчанию?
             T entity = constructor.newInstance();
-            //получить все поля класса (включая унаследованные)
-            Field[] fields = clazz.getFields();
+            List<Field> fields = ReflectionHelper.getAllFields(entity);
             for (Field field : fields) {
-                //получаю имя поля
                 String fieldName = field.getName();
-                //получаю значение для записи в поле из БД
                 Object value = resultSet.getObject(fieldName);
-                field.set(entity, value);
+                ReflectionHelper.setFieldValue(entity, field, value);
             }
             return entity;
-            //получить по названиям этих полей данные из resultSet
-
-            //создать объект
-
-            //проинициализировать поля
-
         }
         return null;
     }

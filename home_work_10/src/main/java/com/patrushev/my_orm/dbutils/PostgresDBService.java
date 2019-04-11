@@ -1,42 +1,26 @@
-package com.patrushev.my_orm;
-
-import com.patrushev.my_orm.dbcommon.ConnectionHelper;
+package com.patrushev.my_orm.dbutils;
 
 import java.sql.*;
-import java.util.StringJoiner;
 
-//сделать всё статическим и передавать в методы connection?
 public class PostgresDBService implements DBService {
 
-    private static final String DROP_TABLE_USER = "DROP TABLE IF EXISTS otus.otus_user;";
+    private Connection connection;
 
+    /**
+     * возвращает актуальное подключение к БД (к БД с определенным именем)
+     * @return
+     */
     public Connection getCurrentConnection() {
         return connection;
     }
-
-    private Connection connection;
 
     public PostgresDBService(Connection connection) {
         this.connection = connection;
     }
 
-    @Override
-    public String getMetaData() throws SQLException {
-        final StringJoiner joiner = new StringJoiner("\n");
-        joiner.add("Autocommit: " + connection.getAutoCommit());
-        final DatabaseMetaData metaData = connection.getMetaData();
-        joiner.add("DB name: " + metaData.getDatabaseProductName());
-        joiner.add("DB version: " + metaData.getDatabaseProductVersion());
-        joiner.add("Driver name: " + metaData.getDriverName());
-        joiner.add("Driver version: " + metaData.getDriverVersion());
-        joiner.add("JDBC version: " + metaData.getJDBCMajorVersion() + '.' + metaData.getJDBCMinorVersion());
-        return joiner.toString();
-    }
-
     /**
-     * создает новую таблицу в БД
-     * @param createTableQuery - SQL-запрос на создание новой таблицы
-     * @throws SQLException
+     * создает новуб таблицу в БД, согласно переданному SQL-запросу
+     * @param createTableQuery
      */
     @Override
     public void createTable(String createTableQuery) {
@@ -48,15 +32,26 @@ public class PostgresDBService implements DBService {
         }
     }
 
+    /**
+     * удаляет БД с переданным именем
+     * @param dbName
+     * @throws SQLException
+     */
     @Override
-    public void deleteTables() {
-        try (final Statement statement = connection.createStatement()) {
-            statement.executeUpdate(DROP_TABLE_USER);
+    public void dropDB(String dbName) throws SQLException {
+        connection.close();
+        try (Connection con = ConnectionHelper.getPostgresqlConnection("postgres"); Statement statement = con.createStatement()) {
+            statement.executeUpdate("DROP DATABASE IF EXISTS " + dbName + ";");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * проверка наличия таблицы с переданным именем в БД
+     * @param tableName
+     * @return
+     */
     @Override
     public boolean checkTableAvailability(String tableName) {
         try (Statement statement = connection.createStatement()) {
@@ -72,14 +67,12 @@ public class PostgresDBService implements DBService {
 
     /**
      * создает новую БД на сервере Postgres и заменяет старое подключение на новое - к этой новой БД
-     * @param dbName - имя новой БД
+     * @param dbName
      */
     @Override
     public void createDB(String dbName) {
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate("CREATE DATABASE " + dbName);
-            //нужно ли здесь, перед тем как обновлять коннекшн, закрыть старый коннекшн? т.е. написать connection.close()
-            connection.close();
             Thread.sleep(500);
             connection = ConnectionHelper.getPostgresqlConnection(dbName);
         } catch (SQLException | InterruptedException e) {

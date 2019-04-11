@@ -1,14 +1,13 @@
-package com.patrushev.my_orm;
+package com.patrushev.my_orm.dbutils;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public interface DBService {
-    String getMetaData() throws SQLException;
 
     void createTable(String createTableQuery) throws SQLException;
 
-    void deleteTables() throws SQLException;
+    void dropDB(String dbName) throws SQLException;
 
     boolean checkTableAvailability(String tableName);
 

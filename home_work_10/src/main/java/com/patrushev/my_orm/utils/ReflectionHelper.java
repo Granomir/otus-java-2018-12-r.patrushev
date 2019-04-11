@@ -1,7 +1,5 @@
 package com.patrushev.my_orm.utils;
 
-import com.patrushev.my_orm.DataSet;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -22,7 +20,9 @@ public class ReflectionHelper {
 
 
     /**
-     * возвращает список всех полей переданного объекта (включая унаследованные)
+     * возвращает список полей, объявленных в классе переданного объекта
+     * @param object
+     * @return
      */
     public static List<Field> getAllDeclaredFields(Object object) {
         Class<?> objectClass = object.getClass();
@@ -31,6 +31,11 @@ public class ReflectionHelper {
         return fields;
     }
 
+    /**
+     * возвращает список всех полей переданного объекта (включая унаследованные)
+     * @param object
+     * @return
+     */
     public static List<Field> getAllFields(Object object) {
         Class<?> objectClass = object.getClass();
         List<Field> fields = new ArrayList<>(Arrays.asList(objectClass.getDeclaredFields()));
@@ -41,7 +46,12 @@ public class ReflectionHelper {
         return fields;
     }
 
-    public static <T extends DataSet> Map<String, Object> getDeclaredFieldsAndValues(T entity) {
+    /**
+     * возвращает поля, объявленные в классе переданного объекта, с их значениями
+     * @param entity
+     * @return
+     */
+    public static Map<String, Object> getDeclaredFieldsAndValues(Object entity) {
         Map<String, Object> fieldsAndValues = new HashMap<>();
         List<Field> fields = ReflectionHelper.getAllDeclaredFields(entity);
         for (Field field : fields) {
@@ -51,7 +61,8 @@ public class ReflectionHelper {
     }
 
     /**
-     * возвращает объект запрашиваемого поля
+     * возвращает объект запрашиваемого по имени поля
+     *
      * @param objClass - интересующий класс
      * @param name     - имя интересующего поля
      */
@@ -68,7 +79,8 @@ public class ReflectionHelper {
     }
 
     /**
-     * возвращает конкретное значение поля экземпляра
+     * возвращает конкретное значение поля переданного объекта
+     *
      * @param object - объект некого класса
      * @param name   - имя интересующего поля
      */
@@ -91,9 +103,32 @@ public class ReflectionHelper {
     }
 
     /**
-     * Определяет, является ли аргумент примитивным типом в обёртке
+     * Определяет, является ли переданный объект примитивным типом в обёртке
+     * @param obj
+     * @return
      */
     public static boolean isWrapperType(Object obj) {
         return wrappers.contains(obj.getClass());
+    }
+
+    /**
+     * присваивает переданное значение конкретного поля переданного объекта
+     * @param entity - редактируемый объект
+     * @param field - поле, которому присваивается значение
+     * @param value - присваиваемое значение
+     * @throws IllegalAccessException
+     */
+    public static void setFieldValue(Object entity, Field field, Object value) throws IllegalAccessException {
+        boolean isAccessible = field.canAccess(entity);
+        if (isAccessible) {
+            field.set(entity, value);
+        } else {
+            try {
+                field.setAccessible(true);
+                field.set(entity, value);
+            } finally {
+                field.setAccessible(false);
+            }
+        }
     }
 }

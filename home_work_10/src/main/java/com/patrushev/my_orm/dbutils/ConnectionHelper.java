@@ -1,4 +1,4 @@
-package com.patrushev.my_orm.dbcommon;
+package com.patrushev.my_orm.dbutils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,7 +8,6 @@ public class ConnectionHelper {
     private static String currentDB = "postgres";
 
     /**
-     *
      * @return подключение к базе данных, имя которой записано в currentDB
      * @throws SQLException
      */
@@ -23,6 +22,7 @@ public class ConnectionHelper {
 
     /**
      * изменяет значение currentDB для подключения к другой БД
+     *
      * @param dbName - имя новой БД
      * @return подключение к базе данных, имя которой записано в currentDB
      * @throws SQLException

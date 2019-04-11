@@ -2,10 +2,12 @@ package com.patrushev.my_orm;
 
 import java.util.Objects;
 
-//конкретная сущность User, хранящаяся в БД - строка в БД
 public class UserDataSet extends DataSet {
     private String user_name;
+
     private int age;
+    public UserDataSet() {
+    }
 
     public UserDataSet(String user_name, int age) {
         this.user_name = user_name;
@@ -32,5 +34,13 @@ public class UserDataSet extends DataSet {
     @Override
     public int hashCode() {
         return Objects.hash(user_name, age);
+    }
+
+    @Override
+    public String toString() {
+        return "UserDataSet{" +
+                "user_name='" + user_name + '\'' +
+                ", age=" + age +
+                '}';
     }
 }
