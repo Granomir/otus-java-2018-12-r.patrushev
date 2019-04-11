@@ -2,6 +2,9 @@ package com.patrushev.my_orm;
 
 import com.patrushev.my_orm.utils.ReflectionHelper;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -50,23 +53,33 @@ public class DataSetDAO {
         Executor.update(dbConnection, insertQuery.toString());
     }
 
-    <T extends DataSet> T load(long id, Class<T> clazz) throws SQLException {
+    <T extends DataSet> T load(long id, Class<T> clazz) throws SQLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         //проверяем есть ли таблица в БД для хранения данных переданного типа, если нет - кидаем исключение
         String className = clazz.getSimpleName();
         if (!dbService.checkTableAvailability(className)) throw new IllegalArgumentException("База данных не содержит таблицу, хранящую объекты типа " + className);
         //считать строку с базы по id
-        StringBuilder selectQuery = new StringBuilder();
-        selectQuery.append("SELECT * FROM ").append(className).append(" WHERE id = ").append(id).append(";");
-        ResultSet resultSet = Executor.query(dbConnection, selectQuery.toString());
+        ResultSet resultSet = Executor.query(dbConnection, "SELECT * FROM " + className.toLowerCase() + " WHERE id = " + id + ";");
         //создать объект на основе полученных данных
         if (resultSet.next()) {
+            Constructor<T> constructor = clazz.getConstructor();
+            T entity = constructor.newInstance();
+            //получить все поля класса (включая унаследованные)
+            Field[] fields = clazz.getFields();
+            for (Field field : fields) {
+                //получаю имя поля
+                String fieldName = field.getName();
+                //получаю значение для записи в поле из БД
+                Object value = resultSet.getObject(fieldName);
+                field.set(entity, value);
+            }
+            return entity;
+            //получить по названиям этих полей данные из resultSet
 
-            return null;
+            //создать объект
+
+            //проинициализировать поля
+
         }
-        return null;
-    }
-
-    private static <T> T extract(ResultSet resultSet) {
         return null;
     }
 }

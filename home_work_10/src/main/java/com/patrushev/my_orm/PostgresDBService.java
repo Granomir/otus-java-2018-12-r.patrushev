@@ -79,6 +79,7 @@ public class PostgresDBService implements DBService {
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate("CREATE DATABASE " + dbName);
             //нужно ли здесь, перед тем как обновлять коннекшн, закрыть старый коннекшн? т.е. написать connection.close()
+            connection.close();
             Thread.sleep(500);
             connection = ConnectionHelper.getPostgresqlConnection(dbName);
         } catch (SQLException | InterruptedException e) {
