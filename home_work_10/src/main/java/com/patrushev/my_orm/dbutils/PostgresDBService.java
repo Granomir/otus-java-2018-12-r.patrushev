@@ -1,5 +1,7 @@
 package com.patrushev.my_orm.dbutils;
 
+import com.patrushev.my_orm.utils.ConnectionHelper;
+
 import java.sql.*;
 
 public class PostgresDBService implements DBService {

@@ -1,4 +1,4 @@
-package com.patrushev.my_orm;
+package com.patrushev.my_orm.data;
 
 public abstract class DataSet {
     private long id;

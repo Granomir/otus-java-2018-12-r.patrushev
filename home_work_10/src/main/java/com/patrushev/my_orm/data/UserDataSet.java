@@ -1,4 +1,4 @@
-package com.patrushev.my_orm;
+package com.patrushev.my_orm.data;
 
 import java.util.Objects;
 

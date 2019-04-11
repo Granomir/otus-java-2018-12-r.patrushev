@@ -1,4 +1,4 @@
-package com.patrushev.my_orm;
+package com.patrushev.my_orm.executors;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;

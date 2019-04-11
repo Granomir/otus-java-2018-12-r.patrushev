@@ -1,4 +1,4 @@
-package com.patrushev.my_orm.dbutils;
+package com.patrushev.my_orm.utils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

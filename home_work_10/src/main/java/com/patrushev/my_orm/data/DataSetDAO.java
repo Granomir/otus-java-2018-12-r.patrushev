@@ -1,6 +1,7 @@
-package com.patrushev.my_orm;
+package com.patrushev.my_orm.data;
 
 import com.patrushev.my_orm.dbutils.DBService;
+import com.patrushev.my_orm.executors.Executor;
 import com.patrushev.my_orm.utils.ReflectionHelper;
 
 import java.lang.reflect.Constructor;
@@ -27,7 +28,7 @@ public class DataSetDAO {
      * @param <T>
      * @throws SQLException
      */
-    <T extends DataSet> void save(T entity) throws SQLException {
+    public <T extends DataSet> void save(T entity) throws SQLException {
         String entityClassName = entity.getClass().getSimpleName();
         if (!dbService.checkTableAvailability(entityClassName))
             throw new IllegalArgumentException("База данных не содержит таблицы для хранения объектов типа " + entityClassName);
@@ -63,7 +64,7 @@ public class DataSetDAO {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    <T extends DataSet> T load(long id, Class<T> clazz) throws SQLException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public <T extends DataSet> T load(long id, Class<T> clazz) throws SQLException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         //проверяем есть ли таблица в БД для хранения данных переданного типа, если нет - кидаем исключение
         String className = clazz.getSimpleName();
         if (!dbService.checkTableAvailability(className))

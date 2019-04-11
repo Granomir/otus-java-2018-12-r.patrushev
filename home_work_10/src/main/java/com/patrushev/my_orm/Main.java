@@ -1,6 +1,8 @@
 package com.patrushev.my_orm;
 
-import com.patrushev.my_orm.dbutils.ConnectionHelper;
+import com.patrushev.my_orm.data.DataSetDAO;
+import com.patrushev.my_orm.data.UserDataSet;
+import com.patrushev.my_orm.utils.ConnectionHelper;
 import com.patrushev.my_orm.dbutils.DBService;
 import com.patrushev.my_orm.dbutils.PostgresDBService;
 
