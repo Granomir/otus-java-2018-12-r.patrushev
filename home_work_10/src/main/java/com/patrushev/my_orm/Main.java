@@ -9,6 +9,21 @@ import com.patrushev.my_orm.dbutils.PostgresDBService;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 
+/**
+ * в данном примере у меня connection к БД закрывается только если я удаляю созданную в начале БД (в методе dropDB),
+ *         т.е. если бы я её не удалял, то подключение к БД так бы и осталось открытым до конца работы приложения.
+ *         вообщем не очень ясное управление закрытием ресурсов.
+ *         у меня создается коннекшн сначала к базе "postgres" для создания своей БД, который передается в DBService,
+ *         и там внутри он уже обновляется после создания новой БД (mydb), закрывая старый коннекшн
+ *         получается что из main я уже не могу управлять заркытием этого коннекшена.
+ *         на ум приходит только добавить метод closeCurrentConnection в DBService и вызвать его в конце метода main для закрытия ресурсов.
+ *         и возможно сделать метод setCurrentConnection для того, чтобы управлять всеми подключениями из метода main ->
+ *         т.е. сначала создать DBService передавая ему коннекшн к postgres,
+ *         после создания mydb закрыть из метода main (методом closeCurrent...) старый коннекшн и обновить его методом setCurrent...
+ *         то же самое выполнить при удалении БД и в конце метода main просто закрыть connection методом closeCurrent...
+ *         насколько правильно/неправильно мыслю?
+ */
+
 public class Main {
     public static void main(String[] args) throws SQLException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         //подготовка БД
