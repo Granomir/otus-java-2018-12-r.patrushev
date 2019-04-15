@@ -30,6 +30,15 @@ public class ReflectionHelper {
     }
 
     /**
+     * возвращает список полей, объявленных в классе переданного объекта
+     */
+    public static List<Field> getAllDeclaredFieldsFromClass(Class clazz) {
+        List<Field> fields = new ArrayList<>(Arrays.asList(clazz.getDeclaredFields()));
+        fields.removeIf(field -> Modifier.isStatic(field.getModifiers()));
+        return fields;
+    }
+
+    /**
      * возвращает список всех полей переданного объекта (включая унаследованные)
      */
     public static List<Field> getAllFields(Object object) {
@@ -37,6 +46,18 @@ public class ReflectionHelper {
         List<Field> fields = new ArrayList<>(Arrays.asList(objectClass.getDeclaredFields()));
         if (objectClass.getSuperclass() != null) {
             fields.addAll(Arrays.asList(objectClass.getSuperclass().getDeclaredFields()));
+        }
+        fields.removeIf(field -> Modifier.isStatic(field.getModifiers()));
+        return fields;
+    }
+
+    /**
+     * возвращает список всех полей переданного класса (включая унаследованные)
+     */
+    public static List<Field> getAllFieldsFromClass(Class clazz) {
+        List<Field> fields = new ArrayList<>(Arrays.asList(clazz.getDeclaredFields()));
+        if (clazz.getSuperclass() != null) {
+            fields.addAll(Arrays.asList(clazz.getSuperclass().getDeclaredFields()));
         }
         fields.removeIf(field -> Modifier.isStatic(field.getModifiers()));
         return fields;

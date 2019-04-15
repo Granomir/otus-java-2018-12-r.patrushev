@@ -1,8 +1,8 @@
 package com.patrushev.my_orm.data;
 
 import com.patrushev.my_orm.dbutils.DBService;
+import com.patrushev.my_orm.dbutils.DMLHelper;
 import com.patrushev.my_orm.executors.Executor;
-import com.patrushev.my_orm.utils.ConnectionHelper;
 import com.patrushev.my_orm.utils.ReflectionHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,47 +15,60 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class DataSetDAO {
+    private DMLHelper dmlHelper;
     private static Logger logger = LoggerFactory.getLogger(DataSetDAO.class);
     private Connection dbConnection;
     private DBService dbService;
+    private Map<String, List<String>> usableClasses;
 
-    public DataSetDAO(DBService dbService) {
+    public DataSetDAO(DMLHelper dmlHelper, DBService dbService) {
+        this.dmlHelper = dmlHelper;
         this.dbConnection = dbService.getCurrentConnection();
         this.dbService = dbService;
     }
 
-    /**
-     * Сохраняет переданный объект в БД, если она содержит таблицу, хранящие данные типа переданного объекта
-     */
-    public <T extends DataSet> void save(T entity) throws SQLException {
+    public <T extends DataSet> void save(Connection connection, T entity) throws SQLException {
+        //есть ли таблица в БД
 
-        String entityClassName = entity.getClass().getSimpleName();
-        logger.info("Осуществляется попытка записи в БД объекта типа " + entityClassName);
-        logger.info("Проверяется наличие таблицы в БД, которая может содержать объекты переданного типа");
-        if (!dbService.checkTableAvailability(entityClassName))
-            throw new IllegalArgumentException("База данных не содержит таблицы для хранения объектов типа " + entityClassName);
-        Map<String, Object> fieldsAndValues = ReflectionHelper.getDeclaredFieldsAndValues(entity);
-        logger.info("Получены поля и их значения переданного объекта");
-        StringBuilder insertQuery = new StringBuilder();
-        insertQuery.append("INSERT INTO ").append(entityClassName).append(" (");
-        for (String s : fieldsAndValues.keySet()) {
-            insertQuery.append(s).append(", ");
-        }
-        insertQuery.delete(insertQuery.length() - 2, insertQuery.length());
-        insertQuery.append(") VALUES (");
-        for (String s : fieldsAndValues.keySet()) {
-            if (fieldsAndValues.get(s) instanceof String) {
-                insertQuery.append("'").append(fieldsAndValues.get(s)).append("', ");
-            } else {
-                insertQuery.append(fieldsAndValues.get(s)).append(", ");
-            }
-        }
-        insertQuery.delete(insertQuery.length() - 2, insertQuery.length());
-        insertQuery.append(");");
-        Executor.update(dbConnection, insertQuery.toString());
+        //если нет, то разбираем
+
+
+        Executor.update(connection, dmlHelper.getInsertQuery(entity));
     }
+
+//    /**
+//     * Сохраняет переданный объект в БД, если она содержит таблицу, хранящие данные типа переданного объекта
+//     */
+//    public <T extends DataSet> void save(T entity) throws SQLException {
+//
+//        String entityClassName = entity.getClass().getSimpleName();
+//        logger.info("Осуществляется попытка записи в БД объекта типа " + entityClassName);
+//        logger.info("Проверяется наличие таблицы в БД, которая может содержать объекты переданного типа");
+//        if (!dbService.checkTableAvailability(entityClassName))
+//            throw new IllegalArgumentException("База данных не содержит таблицы для хранения объектов типа " + entityClassName);
+//        Map<String, Object> fieldsAndValues = ReflectionHelper.getDeclaredFieldsAndValues(entity);
+//        logger.info("Получены поля и их значения переданного объекта");
+//        StringBuilder insertQuery = new StringBuilder();
+//        insertQuery.append("INSERT INTO ").append(entityClassName).append(" (");
+//        for (String s : fieldsAndValues.keySet()) {
+//            insertQuery.append(s).append(", ");
+//        }
+//        insertQuery.delete(insertQuery.length() - 2, insertQuery.length());
+//        insertQuery.append(") VALUES (");
+//        for (String s : fieldsAndValues.keySet()) {
+//            if (fieldsAndValues.get(s) instanceof String) {
+//                insertQuery.append("'").append(fieldsAndValues.get(s)).append("', ");
+//            } else {
+//                insertQuery.append(fieldsAndValues.get(s)).append(", ");
+//            }
+//        }
+//        insertQuery.delete(insertQuery.length() - 2, insertQuery.length());
+//        insertQuery.append(");");
+//        Executor.update(dbConnection, insertQuery.toString());
+//    }
 
     /**
      * возвращает объект, созданный на основе данных полученных из БД по переданному индексу (если БД содержит таблицу, хранящую объекты этого типа)

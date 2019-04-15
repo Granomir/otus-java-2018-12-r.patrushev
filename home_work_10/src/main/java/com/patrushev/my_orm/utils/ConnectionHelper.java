@@ -14,6 +14,7 @@ public class ConnectionHelper {
     /**
      * @return подключение к базе данных, имя которой записано в currentDB
      */
+    //сделать тут загрузку всех данных из проперти???
     public static Connection getPostgresqlConnection() throws SQLException {
         final String connString = "jdbc:postgresql://" +    // db type
                 "localhost:" +                              // host name
@@ -22,16 +23,5 @@ public class ConnectionHelper {
                 "user=postgres";                            // login
         logger.info("Создано подключение к БД " + currentDB + " по запросу: " + connString);
         return DriverManager.getConnection(connString);
-    }
-
-    /**
-     * изменяет значение currentDB для подключения к другой БД
-     *
-     * @param dbName - имя новой БД
-     * @return подключение к базе данных, имя которой записано в currentDB
-     */
-    public static Connection getPostgresqlConnection(String dbName) throws SQLException {
-        currentDB = dbName;
-        return getPostgresqlConnection();
     }
 }

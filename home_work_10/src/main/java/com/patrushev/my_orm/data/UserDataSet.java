@@ -4,8 +4,8 @@ import java.util.Objects;
 
 public class UserDataSet extends DataSet {
     private String user_name;
-
     private int age;
+
     public UserDataSet() {
     }
 
