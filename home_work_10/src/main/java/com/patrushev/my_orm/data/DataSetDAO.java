@@ -2,6 +2,7 @@ package com.patrushev.my_orm.data;
 
 import com.patrushev.my_orm.dbutils.DBService;
 import com.patrushev.my_orm.dbutils.DMLHelper;
+import com.patrushev.my_orm.dbutils.QueryingHelper;
 import com.patrushev.my_orm.executors.Executor;
 import com.patrushev.my_orm.utils.ReflectionHelper;
 import org.slf4j.Logger;
@@ -11,11 +12,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class DataSetDAO {
     private DMLHelper dmlHelper;
@@ -24,19 +25,31 @@ public class DataSetDAO {
     private DBService dbService;
     private Map<String, List<String>> usableClasses;
 
-    public DataSetDAO(DMLHelper dmlHelper, DBService dbService) {
-        this.dmlHelper = dmlHelper;
-        this.dbConnection = dbService.getCurrentConnection();
-        this.dbService = dbService;
+    public DataSetDAO() {
     }
 
-    public <T extends DataSet> void save(Connection connection, T entity) throws SQLException {
-        //есть ли таблица в БД
-
-        //если нет, то разбираем
-
-
-        Executor.update(connection, dmlHelper.getInsertQuery(entity));
+    public <T extends DataSet> void save(Connection connection, QueryingHelper queryingHelper, T entity) throws SQLException {
+        logger.info("Сохраняем объект " + entity.toString() + " в БД");
+        try (PreparedStatement preparedStatement = connection.prepareStatement(queryingHelper.getInsertQuery(entity))) {
+            int count = 1;
+            for (Field field : queryingHelper.getFieldList(entity.getClass().getSimpleName())) {
+                Class<?> fieldType = field.getType();
+                if (fieldType.equals(Long.TYPE))
+                    preparedStatement.setLong(count, (long) ReflectionHelper.getFieldValue(entity, field.getName()));
+                if (fieldType.equals(Integer.TYPE))
+                    preparedStatement.setInt(count, (int) ReflectionHelper.getFieldValue(entity, field.getName()));
+                if (fieldType.equals(Short.TYPE) || fieldType.equals(Byte.TYPE))
+                    preparedStatement.setShort(count, (short) ReflectionHelper.getFieldValue(entity, field.getName()));
+                if (fieldType.equals(Double.TYPE))
+                    preparedStatement.setDouble(count, (double) ReflectionHelper.getFieldValue(entity, field.getName()));
+                if (fieldType.equals(Float.TYPE))
+                    preparedStatement.setFloat(count, (float) ReflectionHelper.getFieldValue(entity, field.getName()));
+                if (fieldType.equals(Character.TYPE) || fieldType.equals(String.class))
+                    preparedStatement.setString(count, (String) ReflectionHelper.getFieldValue(entity, field.getName()));
+                count++;
+            }
+            Executor.updatePrepared(connection, preparedStatement);
+        }
     }
 
 //    /**

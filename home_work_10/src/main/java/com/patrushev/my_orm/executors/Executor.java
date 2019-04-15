@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class Executor {
     private static Logger logger = LoggerFactory.getLogger(Executor.class);
@@ -24,6 +21,13 @@ public class Executor {
         try (Statement statement = connection.createStatement()) {
             logger.info("Выполнен изменяющий SQL-запрос в БД: " + update);
             statement.executeUpdate(update);
+        }
+    }
+
+    public static void updatePrepared(Connection connection, PreparedStatement update) throws SQLException {
+        try (update) {
+            logger.info("Выполнен изменяющий SQL-запрос в БД: " + update);
+            update.executeUpdate();
         }
     }
 }

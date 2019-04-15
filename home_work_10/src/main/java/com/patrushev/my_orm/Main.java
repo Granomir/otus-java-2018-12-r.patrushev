@@ -1,9 +1,10 @@
 package com.patrushev.my_orm;
 
 import com.patrushev.my_orm.data.DataSet;
+import com.patrushev.my_orm.data.DataSetDAO;
 import com.patrushev.my_orm.data.UserDataSet;
-import com.patrushev.my_orm.dbutils.DDLHelper;
-import com.patrushev.my_orm.dbutils.PostgresDDLHelper;
+import com.patrushev.my_orm.dbutils.QueryingHelper;
+import com.patrushev.my_orm.dbutils.PostgresQueryingHelper;
 import com.patrushev.my_orm.utils.ConnectionHelper;
 import com.patrushev.my_orm.dbutils.DBService;
 import com.patrushev.my_orm.dbutils.PostgresDBService;
@@ -30,8 +31,9 @@ public class Main {
     public static void main(String[] args) throws SQLException {
         try (Connection postgresConnection = ConnectionHelper.getPostgresqlConnection()){
             DataSet savingUser = new UserDataSet("Roman", 29);
-            DDLHelper postgresDDLHelper = new PostgresDDLHelper();
-            DBService postgresDBService = new PostgresDBService(postgresConnection, postgresDDLHelper, dataSetDAO);
+            QueryingHelper postgresQueryingHelper = new PostgresQueryingHelper();
+            DataSetDAO dataSetDAO = new DataSetDAO();
+            DBService postgresDBService = new PostgresDBService(postgresConnection, postgresQueryingHelper, dataSetDAO);
             postgresDBService.save(savingUser);
 //            DataSet loadedUser = postgresDBService.load(1);
         } catch (SQLException e) {

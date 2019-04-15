@@ -15,7 +15,7 @@ public class PostgresDBService implements DBService {
     private static Logger logger = LoggerFactory.getLogger(PostgresDBService.class);
     private Connection connection;
     private Set<Class> usableClasses;
-    private DDLHelper ddlHelper;
+    private QueryingHelper queryingHelper;
     private DataSetDAO dataSetDAO;
 
     /**
@@ -33,20 +33,19 @@ public class PostgresDBService implements DBService {
         if (!usableClasses.contains(entityClass)) {
             logger.info("БД не содержит таблицы, хранящей объекты типа " + entityClass.getSimpleName() + " - сейчас создадим!");
             //если таблицы нет - создаю
-            Executor.update(connection, ddlHelper.getCreateTableQuery(entityClass));
+            Executor.update(connection, queryingHelper.getCreateTableQuery(entityClass));
             logger.info("Таблица для хранения " + entityClass.getSimpleName() + " создана");
-            //как-то проверить что таблица успешно создана и добавить в коллекцию сущ. таблиц
             usableClasses.add(entityClass);
         }
         //сохраняю элемент в БД через ДАО
-        dataSetDAO.save(connection, entity);
+        dataSetDAO.save(connection, queryingHelper, entity);
     }
 
-    public PostgresDBService(Connection connection, DDLHelper ddlHelper, DataSetDAO dataSetDAO) {
+    public PostgresDBService(Connection connection, QueryingHelper queryingHelper, DataSetDAO dataSetDAO) {
         this.connection = connection;
         this.dataSetDAO = dataSetDAO;
         usableClasses = new HashSet<>();
-        this.ddlHelper = ddlHelper;
+        this.queryingHelper = queryingHelper;
     }
 
     /**
