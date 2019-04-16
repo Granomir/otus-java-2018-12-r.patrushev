@@ -9,19 +9,17 @@ import java.sql.SQLException;
 
 public class ConnectionHelper {
     private static Logger logger = LoggerFactory.getLogger(ConnectionHelper.class);
-    private static String currentDB = "postgres";
 
     /**
-     * @return подключение к базе данных, имя которой записано в currentDB
+     * @return подключение к базе данных "postgres"
      */
-    //сделать тут загрузку всех данных из проперти???
     public static Connection getPostgresqlConnection() throws SQLException {
         final String connString = "jdbc:postgresql://" +    // db type
                 "localhost:" +                              // host name
                 "5432/" +                                   // port
-                currentDB + "?" +                           // db name
+                "postgres?" +                               // db name
                 "user=postgres";                            // login
-        logger.info("Создано подключение к БД " + currentDB + " по запросу: " + connString);
+        logger.info("Создано подключение к БД postgres.");
         return DriverManager.getConnection(connString);
     }
 }

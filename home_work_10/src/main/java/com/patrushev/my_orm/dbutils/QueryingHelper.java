@@ -10,7 +10,7 @@ public interface QueryingHelper {
 
     <T> String getInsertQuery(T entity);
 
-    <T> String getSelectQuery(T entity);
+    <T> String getSelectQuery(long id, Class<T> clazz);
 
     List<Field> getFieldList(String className);
 }

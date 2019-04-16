@@ -9,10 +9,9 @@ import java.sql.*;
 public class Executor {
     private static Logger logger = LoggerFactory.getLogger(Executor.class);
 
-    public static <T> T query(Connection connection, String query, TResultHandler<T> handler, Class<T> clazz) throws SQLException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        try (Statement statement = connection.createStatement(); ResultSet result = statement.executeQuery(query)) {
-            logger.info("Выполнен читающий SQL-запрос в БД: " + query);
-            //я правильно понял, что после завершения метода handle() result закроется автоматически?
+    public static <T> T queryPrepared(PreparedStatement select, TResultHandler<T> handler, Class<T> clazz) throws SQLException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        try (select; ResultSet result = select.executeQuery()) {
+            logger.info("Выполнен читающий SQL-запрос в БД: " + select);
             return handler.handle(clazz, result);
         }
     }
@@ -24,7 +23,7 @@ public class Executor {
         }
     }
 
-    public static void updatePrepared(Connection connection, PreparedStatement update) throws SQLException {
+    public static void updatePrepared(PreparedStatement update) throws SQLException {
         try (update) {
             logger.info("Выполнен изменяющий SQL-запрос в БД: " + update);
             update.executeUpdate();
