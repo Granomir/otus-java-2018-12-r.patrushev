@@ -3,11 +3,15 @@ package com.patrushev.my_orm.dbutils;
 import com.patrushev.my_orm.data.DataSet;
 import com.patrushev.my_orm.data.DataSetDAO;
 import com.patrushev.my_orm.utils.HibernateSessionFactory;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
+
+import java.util.function.Function;
 
 public class DBServiceHibernateImpl implements DBService {
     private SessionFactory sessionFactory;
@@ -38,6 +42,20 @@ public class DBServiceHibernateImpl implements DBService {
 
     @Override
     public <T extends DataSet> T load(long id, Class<T> clazz) {
-        return null;
+        return runInSession((Session session) -> {
+            DataSetDAO dao = new DataSetDAO(session);
+            T object = dao.load(id, clazz);
+            Hibernate.initialize(object);
+            return object;
+        });
+    }
+
+    private <R> R runInSession(Function<Session, R> function) {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            R result = function.apply(session);
+            transaction.commit();
+            return result;
+        }
     }
 }

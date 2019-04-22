@@ -25,7 +25,6 @@ public class UserDataSet extends DataSet {
     }
 
     public UserDataSet(String user_name, int age, AddressDataSet address, PhoneDataSet... phones) {
-        this.setId(-1);
         this.user_name = user_name;
         this.age = age;
         address.setOwner(this);
@@ -79,10 +78,10 @@ public class UserDataSet extends DataSet {
                 Objects.equals(phones, that.phones);
     }
 
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(user_name, age, address, phones);
-//    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(user_name, age);
+    }
 
     @Override
     public String toString() {

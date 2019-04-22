@@ -41,20 +41,20 @@ public class PhoneDataSet extends DataSet {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PhoneDataSet that = (PhoneDataSet) o;
-        return Objects.equals(number, that.number) &&
-                Objects.equals(owner, that.owner);
+        return Objects.equals(number, that.number);
+//                Objects.equals(owner, that.owner);
     }
 
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(number, owner);
-//    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(number);
+    }
 
     @Override
     public String toString() {
         return "PhoneDataSet{" +
                 "number='" + number + '\'' +
-                ", owner=" + owner +
+//                ", owner=" + owner +
                 '}';
     }
 }

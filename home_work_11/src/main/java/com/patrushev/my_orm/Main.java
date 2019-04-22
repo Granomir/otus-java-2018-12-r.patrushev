@@ -31,10 +31,11 @@ public class Main {
         postgresDBService.save(savingUser2);
         postgresDBService.save(savingUser3);
         postgresDBService.save(savingUser4);
-//            DataSet loadedUser1 = postgresDBService.load(1, UserDataSet.class);
-//            DataSet loadedUser2 = postgresDBService.load(2, UserDataSet.class);
-//            DataSet loadedUser3 = postgresDBService.load(3, UserDataSet.class);
-//            DataSet loadedUser4 = postgresDBService.load(4, UserDataSet.class);
+            DataSet loadedUser1 = postgresDBService.load(1, UserDataSet.class);
+        System.out.println(loadedUser1);
+            DataSet loadedUser2 = postgresDBService.load(2, UserDataSet.class);
+            DataSet loadedUser3 = postgresDBService.load(3, UserDataSet.class);
+            DataSet loadedUser4 = postgresDBService.load(4, UserDataSet.class);
 //            System.out.println(loadedUser1.equals(savingUser1));
 //            System.out.println(loadedUser2.equals(savingUser2));
 //            System.out.println(loadedUser3.equals(savingUser3));

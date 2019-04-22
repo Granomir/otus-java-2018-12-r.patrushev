@@ -84,4 +84,8 @@ public class DataSetDAO {
     public <T extends DataSet> void save(T entity) {
         session.save(entity);
     }
+
+    public <T extends DataSet> T load(long id, Class<T> clazz) {
+        return session.load(clazz, id);
+    }
 }
