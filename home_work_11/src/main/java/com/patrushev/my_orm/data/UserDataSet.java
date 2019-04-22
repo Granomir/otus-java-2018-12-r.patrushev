@@ -15,11 +15,10 @@ public class UserDataSet extends DataSet {
     @Column(name = "age")
     private int age;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "address_id", referencedColumnName = "id")
+    @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL)
     private AddressDataSet address;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private Set<PhoneDataSet> phones = new HashSet<>();
 
     public UserDataSet() {

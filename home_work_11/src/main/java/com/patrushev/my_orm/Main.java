@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 //        try (Connection postgresConnection = ConnectionHelper.getPostgresqlConnection()) {
         //создаю юзеров
-        DataSet savingUser1 = new UserDataSet("Roman", 29, new AddressDataSet("P"), new PhoneDataSet("937"));
+        DataSet savingUser1 = new UserDataSet("Roman", 29, new AddressDataSet("P"), new PhoneDataSet("937"), new PhoneDataSet("955"));
         DataSet savingUser2 = new UserDataSet("Tatiana", 28, new AddressDataSet("M"), new PhoneDataSet("964"));
         DataSet savingUser3 = new UserDataSet("Anna", 4, new AddressDataSet("SD"), new PhoneDataSet("917"));
         DataSet savingUser4 = new UserDataSet("Aleksandra", 3, new AddressDataSet("MD"), new PhoneDataSet("915"));

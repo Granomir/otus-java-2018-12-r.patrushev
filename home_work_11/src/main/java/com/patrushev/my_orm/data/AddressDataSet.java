@@ -10,7 +10,8 @@ public class AddressDataSet extends DataSet {
     @Column(name = "street")
     private String street;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "address")
+    @OneToOne
+    @JoinColumn(name = "owner", referencedColumnName = "id")
     private UserDataSet owner;
 
     public AddressDataSet(String street) {
