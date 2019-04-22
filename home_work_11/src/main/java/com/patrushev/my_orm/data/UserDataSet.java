@@ -16,6 +16,7 @@ public class UserDataSet extends DataSet {
     private int age;
 
     @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "owner", referencedColumnName = "id")
     private AddressDataSet address;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade = CascadeType.ALL)
@@ -79,10 +80,10 @@ public class UserDataSet extends DataSet {
                 Objects.equals(phones, that.phones);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(user_name, age, address, phones);
-    }
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(user_name, age, address, phones);
+//    }
 
     @Override
     public String toString() {

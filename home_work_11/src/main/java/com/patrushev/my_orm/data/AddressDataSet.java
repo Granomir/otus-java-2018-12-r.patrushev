@@ -10,8 +10,7 @@ public class AddressDataSet extends DataSet {
     @Column(name = "street")
     private String street;
 
-    @OneToOne
-    @JoinColumn(name = "owner", referencedColumnName = "id")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "address")
     private UserDataSet owner;
 
     public AddressDataSet(String street) {
@@ -42,10 +41,10 @@ public class AddressDataSet extends DataSet {
         return Objects.equals(street, that.street);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(street);
-    }
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(street);
+//    }
 
     @Override
     public String toString() {

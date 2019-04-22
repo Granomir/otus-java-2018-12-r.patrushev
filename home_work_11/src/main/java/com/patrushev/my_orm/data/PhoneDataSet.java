@@ -45,10 +45,10 @@ public class PhoneDataSet extends DataSet {
                 Objects.equals(owner, that.owner);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(number, owner);
-    }
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(number, owner);
+//    }
 
     @Override
     public String toString() {
