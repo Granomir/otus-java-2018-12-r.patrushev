@@ -16,7 +16,7 @@ public class UserDataSet extends DataSet {
     private int age;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "owner", referencedColumnName = "id")
+    @JoinColumn(name = "address_id", referencedColumnName = "id")
     private AddressDataSet address;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade = CascadeType.ALL)
