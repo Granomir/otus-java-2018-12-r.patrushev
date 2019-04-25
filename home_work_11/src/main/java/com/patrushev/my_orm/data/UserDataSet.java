@@ -18,7 +18,7 @@ public class UserDataSet extends DataSet {
     @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL)
     private AddressDataSet address;
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<PhoneDataSet> phones = new HashSet<>();
 
     public UserDataSet() {

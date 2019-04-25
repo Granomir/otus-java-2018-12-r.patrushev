@@ -15,6 +15,7 @@
         <property name="hbm2ddl.auto">create</property>
         <property name="show_sql">true</property>
         <property name="connection.useSSL">false</property>
+<!--        <property name="enable_lazy_load_no_trans">true</property>-->
         <!-- NOTE that after automapping with IDEA property username and password will delete -->
         <mapping class="com.patrushev.my_orm.data.UserDataSet"/>
         <mapping class="com.patrushev.my_orm.data.PhoneDataSet"/>

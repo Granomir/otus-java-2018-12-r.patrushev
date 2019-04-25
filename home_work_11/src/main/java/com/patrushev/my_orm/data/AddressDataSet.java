@@ -40,7 +40,6 @@ public class AddressDataSet extends DataSet {
         if (o == null || getClass() != o.getClass()) return false;
         AddressDataSet that = (AddressDataSet) o;
         return Objects.equals(street, that.street);
-//                Objects.equals(owner, that.owner);
     }
 
     @Override
@@ -52,7 +51,6 @@ public class AddressDataSet extends DataSet {
     public String toString() {
         return "AddressDataSet{" +
                 "street='" + street + '\'' +
-//                ", owner=" + owner +
                 '}';
     }
 

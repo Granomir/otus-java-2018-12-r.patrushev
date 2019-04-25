@@ -42,7 +42,6 @@ public class PhoneDataSet extends DataSet {
         if (o == null || getClass() != o.getClass()) return false;
         PhoneDataSet that = (PhoneDataSet) o;
         return Objects.equals(number, that.number);
-//                Objects.equals(owner, that.owner);
     }
 
     @Override
@@ -54,7 +53,6 @@ public class PhoneDataSet extends DataSet {
     public String toString() {
         return "PhoneDataSet{" +
                 "number='" + number + '\'' +
-//                ", owner=" + owner +
                 '}';
     }
 }
