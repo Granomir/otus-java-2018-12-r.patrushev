@@ -3,8 +3,7 @@ package com.patrushev.my_orm;
 import com.patrushev.my_orm.data.*;
 import com.patrushev.my_orm.dbutils.DBService;
 import com.patrushev.my_orm.dbutils.DBServiceHibernateImpl;
-import com.patrushev.my_orm.utils.HibernateSessionFactory;
-import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 
 public class Main {
     public static void main(String[] args) {
@@ -14,10 +13,11 @@ public class Main {
         UserDataSet savingUser3 = new UserDataSet("Anna", 4, new AddressDataSet("SD"), new PhoneDataSet("917"));
         UserDataSet savingUser4 = new UserDataSet("Aleksandra", 3, new AddressDataSet("MD"), new PhoneDataSet("915"));
 
-        try (SessionFactory sessionFactory = HibernateSessionFactory.getSessionFactory()) {
-            //создаю DBService
-            DBService postgresDBService = new DBServiceHibernateImpl(sessionFactory, new DataSetDAO());
+        //создаю конфигурацию на основе конфигурационного файла xml
+        Configuration configuration = new Configuration();
+        configuration.configure();
 
+        try (DBService postgresDBService = new DBServiceHibernateImpl(configuration, new DataSetDAO())) {
             //сохраняю юзеров в БД
             postgresDBService.save(savingUser1);
             postgresDBService.save(savingUser2);
@@ -33,6 +33,8 @@ public class Main {
             System.out.println(loadedUser2.equals(savingUser2));
             System.out.println(loadedUser3.equals(savingUser3));
             System.out.println(loadedUser4.equals(savingUser4));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

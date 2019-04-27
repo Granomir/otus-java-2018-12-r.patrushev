@@ -2,7 +2,7 @@ package com.patrushev.my_orm.dbutils;
 
 import com.patrushev.my_orm.data.DataSet;
 
-public interface DBService {
+public interface DBService extends AutoCloseable {
 
     <T extends DataSet> void save(T entity);
 

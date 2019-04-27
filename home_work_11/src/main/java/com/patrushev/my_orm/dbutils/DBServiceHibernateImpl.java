@@ -6,6 +6,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,13 +18,8 @@ public class DBServiceHibernateImpl implements DBService {
     private DataSetDAO dao;
     private SessionFactory sessionFactory;
 
-    public DBServiceHibernateImpl(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-        logger.info("Создан DBService на основе Hibernate с переданной SessionFactory.");
-    }
-
-    public DBServiceHibernateImpl(SessionFactory sessionFactory, DataSetDAO dataSetDAO) {
-        this.sessionFactory = sessionFactory;
+    public DBServiceHibernateImpl(Configuration configuration, DataSetDAO dataSetDAO) {
+        this.sessionFactory = configuration.buildSessionFactory();
         dao = dataSetDAO;
         logger.info("Создан DBService на основе Hibernate с переданной SessionFactory.");
     }
@@ -31,9 +27,10 @@ public class DBServiceHibernateImpl implements DBService {
     @Override
     public <T extends DataSet> void save(T entity) {
         logger.info("Началось сохранение объекта в БД");
-        try (Session session = sessionFactory.openSession()) {
+        runInSession(session -> {
             dao.save(session, entity);
-        }
+            return null;
+        });
     }
 
     @Override
@@ -56,5 +53,10 @@ public class DBServiceHibernateImpl implements DBService {
             logger.info("Закрыта транзакция");
             return result;
         }
+    }
+
+    @Override
+    public void close() {
+        sessionFactory.close();
     }
 }
