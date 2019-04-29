@@ -1,6 +1,6 @@
 package com.patrushev.web_server;
 
-import com.patrushev.web_server.servlets.CrudServlet;
+import com.patrushev.web_server.servlets.IndexServlet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
@@ -34,7 +34,7 @@ public class Main {
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         //создается наш сервлет и передается сервлетхолдеру jetty, который передается в контекст jetty
         //еще передается путь, перейдя по которому (адрес:порт/timer) откроется страница, управлямая нашим сервлетом
-        context.addServlet(new ServletHolder(new CrudServlet()), "/crud");
+        context.addServlet(new ServletHolder(new IndexServlet()), "/index");
 
         //сервер jetty, ему передается порт - видимо это сам веб-сервер
         Server server = new Server(PORT);
