@@ -1,0 +1,44 @@
+﻿<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Админка</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+<form method="post">
+<div>
+    <h3>Добавление пользователя.</h3>
+    Введите имя:<br/>
+    <input type="text" name="name" accept-charset="UTF-8"><br/>
+    Введите возраст:<br/>
+    <input type="text" name="age" accept-charset="UTF-8"><br/>
+    Введите адрес:<br/>
+    <input type="text" name="address" accept-charset="UTF-8"><br/>
+    Введите номера телефонов через запятую (без пробелов):<br/>
+    <input type="text" name="phones" accept-charset="UTF-8"><br/>
+    <input type='hidden' name='action' value="insertUser"/>
+    <button type="submit">Добавить!</button>
+</div>
+</form>
+<form method="get">
+    <div>
+        <h3>Поиск имени пользователя по id.</h3>
+        Введите id пользователя:<br/>
+        <input type="text" name="id" accept-charset="UTF-8"><br/>
+        <input type='hidden' name='action' value="findUser"/>
+        <button type="submit">Найти!</button>
+    </div>
+    <#if foundUser??>
+    <div>
+        <p>Имя пользователя с таким id - ${foundUser.user_name}</p>
+    </div>
+    </#if>
+</form>
+<form method="get">
+    <div>
+        <h3>Получение количества пользователей в БД.</h3>
+        <input type='hidden' name='action' value="getCount"/>
+        <button type="submit">Получить!</button>
+    </div>
+</form>
+</body>
+</html>

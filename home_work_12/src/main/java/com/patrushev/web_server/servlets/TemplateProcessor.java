@@ -18,7 +18,7 @@ class TemplateProcessor {
 
     TemplateProcessor() throws IOException {
         configuration = new Configuration(Configuration.VERSION_2_3_28);
-        configuration.setDirectoryForTemplateLoading(new File(HTML_DIR));  // for directory
+//        configuration.setDirectoryForTemplateLoading(new File(HTML_DIR));  // for directory
         configuration.setClassForTemplateLoading(this.getClass(), HTML_DIR); // for resource
         configuration.setDefaultEncoding("UTF-8");
     }

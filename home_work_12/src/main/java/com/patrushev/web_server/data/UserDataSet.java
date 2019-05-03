@@ -27,11 +27,15 @@ public class UserDataSet extends DataSet {
     public UserDataSet(String user_name, int age, AddressDataSet address, PhoneDataSet... phones) {
         this.user_name = user_name;
         this.age = age;
-        address.setOwner(this);
+        if (address != null) {
+            address.setOwner(this);
+        }
         this.address = address;
-        for (PhoneDataSet phone : phones) {
-            phone.setOwner(this);
-            this.phones.add(phone);
+        if (phones != null) {
+            for (PhoneDataSet phone : phones) {
+                phone.setOwner(this);
+                this.phones.add(phone);
+            }
         }
     }
 

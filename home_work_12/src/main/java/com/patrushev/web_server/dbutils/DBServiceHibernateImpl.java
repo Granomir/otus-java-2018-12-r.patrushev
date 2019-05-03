@@ -58,5 +58,6 @@ public class DBServiceHibernateImpl implements DBService {
     @Override
     public void close() {
         sessionFactory.close();
+        System.out.println("Нету больше sessionFactory! :(");
     }
 }

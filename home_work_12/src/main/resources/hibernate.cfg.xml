@@ -20,6 +20,7 @@
         <mapping class="com.patrushev.web_server.data.UserDataSet"/>
         <mapping class="com.patrushev.web_server.data.PhoneDataSet"/>
         <mapping class="com.patrushev.web_server.data.AddressDataSet"/>
+        <mapping class="com.patrushev.web_server.data.AdminDataSet"/>
         <!-- DB schema will be updated if needed -->
     </session-factory>
 </hibernate-configuration>
