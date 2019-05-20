@@ -17,7 +17,7 @@ public class MainORM {
         Configuration configuration = new Configuration();
         configuration.configure();
 
-        try (DBService postgresDBService = new DBServiceHibernateImpl(configuration, new DataSetDAO())) {
+        try (DBService postgresDBService = new DBServiceHibernateImpl(configuration, new UserDataSetDAO())) {
             //сохраняю юзеров в БД
             postgresDBService.save(savingUser1);
             postgresDBService.save(savingUser2);

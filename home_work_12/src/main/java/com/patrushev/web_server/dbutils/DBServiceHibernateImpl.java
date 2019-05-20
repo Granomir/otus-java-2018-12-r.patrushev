@@ -1,7 +1,7 @@
 package com.patrushev.web_server.dbutils;
 
 import com.patrushev.web_server.data.DataSet;
-import com.patrushev.web_server.data.DataSetDAO;
+import com.patrushev.web_server.data.UserDataSetDAO;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -15,12 +15,12 @@ import java.util.function.Function;
 public class DBServiceHibernateImpl implements DBService {
     private Logger logger = LoggerFactory.getLogger(DBServiceHibernateImpl.class);
 
-    private DataSetDAO dao;
+    private UserDataSetDAO dao;
     private SessionFactory sessionFactory;
 
-    public DBServiceHibernateImpl(Configuration configuration, DataSetDAO dataSetDAO) {
+    public DBServiceHibernateImpl(Configuration configuration, UserDataSetDAO userDataSetDAO) {
         this.sessionFactory = configuration.buildSessionFactory();
-        dao = dataSetDAO;
+        dao = userDataSetDAO;
         logger.info("Создан DBService на основе Hibernate с переданной SessionFactory.");
     }
 

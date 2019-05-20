@@ -1,6 +1,7 @@
 package com.patrushev.web_server.servlets;
 
 import com.patrushev.web_server.data.AddressDataSet;
+import com.patrushev.web_server.data.AdminDataSet;
 import com.patrushev.web_server.data.PhoneDataSet;
 import com.patrushev.web_server.data.UserDataSet;
 import com.patrushev.web_server.dbutils.DBService;
@@ -52,7 +53,14 @@ public class CrudServlet extends HttpServlet {
             if (req.getParameter("action").equals("login")) {
                 logger.info("Пользователь начинает авторизацию");
                 String login = req.getParameter("login");
+                logger.info("Пользователь ввел логин: " + login);
                 String pass = req.getParameter("pass");
+                logger.info("Пользователь ввел пароль: " + pass);
+                //TODO проверка наличия такого админа
+                
+                //TODO если нет такого админа - возврат ошибки???
+                resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                //TODO если есть такой админ - создание сессии
 
                 //TODO совершить авторизацию
             }
@@ -64,8 +72,8 @@ public class CrudServlet extends HttpServlet {
             }
         }
         resp.setContentType("text/html;charset=utf-8");
-        resp.getWriter().println(templateProcessor.getPage("crud.html", pageVariables));
-        resp.setStatus(HttpServletResponse.SC_OK);
+//        resp.getWriter().println(templateProcessor.getPage("crud.html", pageVariables));
+//        resp.setStatus(HttpServletResponse.SC_OK);
     }
 
     private UserDataSet getUserDataSet(HttpServletRequest req) {

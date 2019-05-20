@@ -1,9 +1,7 @@
 package com.patrushev.web_server;
 
 import com.patrushev.web_server.data.AdminDataSet;
-import com.patrushev.web_server.data.DataSet;
-import com.patrushev.web_server.data.DataSetDAO;
-import com.patrushev.web_server.data.UserDataSet;
+import com.patrushev.web_server.data.UserDataSetDAO;
 import com.patrushev.web_server.dbutils.DBService;
 import com.patrushev.web_server.dbutils.DBServiceHibernateImpl;
 import com.patrushev.web_server.servlets.CrudServlet;
@@ -14,11 +12,6 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
 import org.hibernate.cfg.Configuration;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 
 public class Main {
     private final static int PORT = 8080;
@@ -31,7 +24,7 @@ public class Main {
     private void start() throws Exception {
         Configuration configuration = new Configuration();
         configuration.configure();
-        try (DBService dbService = new DBServiceHibernateImpl(configuration, new DataSetDAO())) {
+        try (DBService dbService = new DBServiceHibernateImpl(configuration, new UserDataSetDAO())) {
             createAdmin(dbService);
 
             //создается ресурсхэндлер jetty и ему передается путь к папке с ресурсами (html-страницы, картинки и т.п.)
@@ -59,7 +52,7 @@ public class Main {
 
     private void createAdmin(DBService dbService) {
         AdminDataSet adminDataSet = new AdminDataSet("admin", "admin");
-        //сохраняю юзеров в БД
+        //сохраняю админов в БД
         dbService.save(adminDataSet);
     }
 }
