@@ -20,7 +20,7 @@ public class CrudServlet extends HttpServlet {
     private final TemplateProcessor templateProcessor;
     private final DBService dbService;
 
-    public CrudServlet(DBService dbService) throws IOException {
+    public CrudServlet(DBService dbService) {
         this.dbService = dbService;
         this.templateProcessor = new TemplateProcessor();
     }
@@ -30,7 +30,7 @@ public class CrudServlet extends HttpServlet {
         logger.info("отправлен метод GET");
         Map<String, Object> pageVariables = new HashMap<>();
         if (req.getParameter("action") != null) {
-            //поиск юзера по id
+            //получение имени юзера по id
             if (req.getParameter("action").equals("findUser")) {
                 final String id = req.getParameter("id");
                 logger.info("Пользователь ищет user по id = " + id);
@@ -46,7 +46,6 @@ public class CrudServlet extends HttpServlet {
             if (req.getParameter("action").equals("getCount")) {
                 logger.info("Пользователь запрашивает количество user в БД");
                 pageVariables.put("count", dbService.getAllUsers().size());
-                //TODO получить количество user из БД и записать в шаблон
             }
         }
         resp.setContentType("text/html;charset=utf-8");
@@ -59,7 +58,7 @@ public class CrudServlet extends HttpServlet {
         logger.info("отправлен метод POST");
         Map<String, Object> pageVariables = new HashMap<>();
         if (req.getParameter("action") != null) {
-            //создание новго юзера в БД
+            //создание нового юзера в БД
             if (req.getParameter("action").equals("insertUser")) {
                 logger.info("Пользователь добавляет user в БД");
                 UserDataSet userDataSet = getUserDataSet(req);
@@ -73,13 +72,14 @@ public class CrudServlet extends HttpServlet {
     }
 
     private UserDataSet getUserDataSet(HttpServletRequest req) {
+        logger.info("получение данных из форм для создания пользователя");
         String name = null;
         if (!req.getParameter("name").equals("")) {
             name = req.getParameter("name");
         }
         String pass = null;
         if (!req.getParameter("pass").equals("")) {
-            name = req.getParameter("pass");
+            pass = req.getParameter("pass");
         }
         int age = 0;
         if (!req.getParameter("age").equals("")) {

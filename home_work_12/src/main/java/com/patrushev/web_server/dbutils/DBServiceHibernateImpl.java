@@ -8,13 +8,9 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.function.Function;
 
@@ -64,11 +60,7 @@ public class DBServiceHibernateImpl implements DBService {
     @Override
     public List<UserDataSet> getAllUsers() {
         logger.info("Началась выгрузка всех пользователей из БД");
-        return runInSession(session -> {
-            //            Hibernate.initialize(user);
-//            logger.info("Пользователь из БД инициализирован");
-            return dao.readAll(session);
-        });
+        return runInSession(session -> dao.readAll(session));
     }
 
     private <R> R runInSession(Function<Session, R> function) {

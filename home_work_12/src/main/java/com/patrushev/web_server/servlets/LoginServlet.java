@@ -21,15 +21,15 @@ public class LoginServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         logger.info("Пользователь начинает аутентификацию");
         String login = req.getParameter("login");
         logger.info("Пользователь ввел логин: " + login);
         String pass = req.getParameter("pass");
         logger.info("Пользователь ввел пароль: " + pass);
-        //проверка наличия такого админа
+        //проверка наличия такого юзера
         if (authenticateUser(login, pass)) {
-            logger.info("Пользователь ввел правильный пароль");
+            logger.info("Пользователь ввел правильный пароль, создается сессия");
             HttpSession session = req.getSession();
             session.setMaxInactiveInterval(300);
             logger.info("Создана сессия");

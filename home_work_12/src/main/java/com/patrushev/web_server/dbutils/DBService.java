@@ -4,7 +4,6 @@ import com.patrushev.web_server.data.DataSet;
 import com.patrushev.web_server.data.UserDataSet;
 
 import java.util.List;
-import java.util.Map;
 
 public interface DBService extends AutoCloseable {
 

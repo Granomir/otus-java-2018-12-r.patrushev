@@ -1,6 +1,5 @@
 package com.patrushev.web_server.auth;
 
-import com.patrushev.web_server.servlets.CrudServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,12 +11,6 @@ import java.io.IOException;
 
 public class AuthorizationFilter implements Filter {
     private final Logger logger = LoggerFactory.getLogger(AuthorizationFilter.class);
-    private ServletContext context;
-
-    @Override
-    public void init(FilterConfig filterConfig) {
-        this.context = filterConfig.getServletContext();
-    }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -25,7 +18,7 @@ public class AuthorizationFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) servletResponse;
 
         String uri = req.getRequestURI();
-        this.context.log("Requested Resource:" + uri);
+        logger.info("Requested Resource:" + uri);
 
         HttpSession session = req.getSession(false);
         logger.info("Проверка наличия активной сессии");
@@ -36,10 +29,5 @@ public class AuthorizationFilter implements Filter {
             logger.info("Активная сессия существует");
             filterChain.doFilter(servletRequest, servletResponse);
         }
-    }
-
-    @Override
-    public void destroy() {
-
     }
 }
