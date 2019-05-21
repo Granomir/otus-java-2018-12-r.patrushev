@@ -1,13 +1,15 @@
 package com.patrushev.web_server;
 
-import com.patrushev.web_server.data.AdminDataSet;
-import com.patrushev.web_server.data.UserDataSetDAO;
+import com.patrushev.web_server.auth.AuthorizationFilter;
+import com.patrushev.web_server.data.*;
 import com.patrushev.web_server.dbutils.DBService;
 import com.patrushev.web_server.dbutils.DBServiceHibernateImpl;
 import com.patrushev.web_server.servlets.CrudServlet;
+import com.patrushev.web_server.servlets.LoginServlet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
@@ -25,7 +27,7 @@ public class Main {
         Configuration configuration = new Configuration();
         configuration.configure();
         try (DBService dbService = new DBServiceHibernateImpl(configuration, new UserDataSetDAO())) {
-            createAdmin(dbService);
+            createSomeUsers(dbService);
 
             //создается ресурсхэндлер jetty и ему передается путь к папке с ресурсами (html-страницы, картинки и т.п.)
             ResourceHandler resourceHandler = new ResourceHandler();
@@ -37,6 +39,8 @@ public class Main {
             //создается наш сервлет и передается сервлетхолдеру jetty, который передается в контекст jetty
             //еще передается путь, перейдя по которому (адрес:порт/timer) откроется страница, управлямая нашим сервлетом
             context.addServlet(new ServletHolder(new CrudServlet(dbService)), "/crud");
+            context.addServlet(new ServletHolder(new LoginServlet(dbService)), "/login");
+            context.addFilter(new FilterHolder(new AuthorizationFilter()), "/crud", null);
 
             //сервер jetty, ему передается порт - видимо это сам веб-сервер
             Server server = new Server(PORT);
@@ -50,9 +54,14 @@ public class Main {
         }
     }
 
-    private void createAdmin(DBService dbService) {
-        AdminDataSet adminDataSet = new AdminDataSet("admin", "admin");
-        //сохраняю админов в БД
-        dbService.save(adminDataSet);
+    private void createSomeUsers(DBService dbService) {
+        UserDataSet savingUser1 = new UserDataSet("Roman", "123", 29, new AddressDataSet("P"), new PhoneDataSet("937"));
+        UserDataSet savingUser2 = new UserDataSet("Tatiana", "456",  28, new AddressDataSet("M"), new PhoneDataSet("964"));
+        UserDataSet savingUser3 = new UserDataSet("Anna", "789",  4, new AddressDataSet("SD"), new PhoneDataSet("917"));
+        UserDataSet savingUser4 = new UserDataSet("Aleksandra", "321",  3, new AddressDataSet("MD"), new PhoneDataSet("915"));
+        dbService.save(savingUser1);
+        dbService.save(savingUser2);
+        dbService.save(savingUser3);
+        dbService.save(savingUser4);
     }
 }

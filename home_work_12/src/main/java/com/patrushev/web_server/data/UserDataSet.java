@@ -21,11 +21,15 @@ public class UserDataSet extends DataSet {
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<PhoneDataSet> phones = new HashSet<>();
 
+    @Column(name = "pass")
+    private String pass;
+
     public UserDataSet() {
     }
 
-    public UserDataSet(String user_name, int age, AddressDataSet address, PhoneDataSet... phones) {
+    public UserDataSet(String user_name, String pass,int age, AddressDataSet address, PhoneDataSet... phones) {
         this.user_name = user_name;
+        this.pass = pass;
         this.age = age;
         if (address != null) {
             address.setOwner(this);
@@ -41,6 +45,14 @@ public class UserDataSet extends DataSet {
 
     public void setUser_name(String user_name) {
         this.user_name = user_name;
+    }
+
+    public String getPass() {
+        return pass;
+    }
+
+    public void setPass(String pass) {
+        this.pass = pass;
     }
 
     public void setAge(int age) {

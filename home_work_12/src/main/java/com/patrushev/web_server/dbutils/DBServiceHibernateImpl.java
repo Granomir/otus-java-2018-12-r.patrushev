@@ -1,15 +1,21 @@
 package com.patrushev.web_server.dbutils;
 
 import com.patrushev.web_server.data.DataSet;
+import com.patrushev.web_server.data.UserDataSet;
 import com.patrushev.web_server.data.UserDataSetDAO;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import java.util.List;
 import java.util.function.Function;
 
 public class DBServiceHibernateImpl implements DBService {
@@ -35,12 +41,33 @@ public class DBServiceHibernateImpl implements DBService {
 
     @Override
     public <T extends DataSet> T load(long id, Class<T> clazz) {
-        logger.info("Началось выгрузка объекта из БД");
+        logger.info("Началась выгрузка объекта из БД");
         return runInSession(session -> {
             T object = dao.load(session, id, clazz);
             Hibernate.initialize(object);
             logger.info("Объект из БД инициализирован");
             return object;
+        });
+    }
+
+    @Override
+    public UserDataSet loadUserByName(String name) {
+        logger.info("Началась выгрузка пользователя из БД по имени");
+        return runInSession(session -> {
+            UserDataSet user = dao.readByName(session, name);
+            Hibernate.initialize(user);
+            logger.info("Пользователь из БД инициализирован");
+            return user;
+        });
+    }
+
+    @Override
+    public List<UserDataSet> getAllUsers() {
+        logger.info("Началась выгрузка всех пользователей из БД");
+        return runInSession(session -> {
+            //            Hibernate.initialize(user);
+//            logger.info("Пользователь из БД инициализирован");
+            return dao.readAll(session);
         });
     }
 
