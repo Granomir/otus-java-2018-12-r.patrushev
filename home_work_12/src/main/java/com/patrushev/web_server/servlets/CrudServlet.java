@@ -4,6 +4,7 @@ import com.patrushev.web_server.data.AddressDataSet;
 import com.patrushev.web_server.data.PhoneDataSet;
 import com.patrushev.web_server.data.UserDataSet;
 import com.patrushev.web_server.dbutils.DBService;
+import com.patrushev.web_server.view.TemplateProcessor;
 import org.hibernate.ObjectNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +21,9 @@ public class CrudServlet extends HttpServlet {
     private final TemplateProcessor templateProcessor;
     private final DBService dbService;
 
-    public CrudServlet(DBService dbService) {
+    public CrudServlet(DBService dbService, TemplateProcessor templateProcessor) {
         this.dbService = dbService;
-        this.templateProcessor = new TemplateProcessor();
+        this.templateProcessor = templateProcessor;
     }
 
     @Override
@@ -32,25 +33,33 @@ public class CrudServlet extends HttpServlet {
         if (req.getParameter("action") != null) {
             //получение имени юзера по id
             if (req.getParameter("action").equals("findUser")) {
-                final String id = req.getParameter("id");
-                logger.info("Пользователь ищет user по id = " + id);
-                final UserDataSet foundUser;
-                try {
-                    foundUser = dbService.load(Long.parseLong(id), UserDataSet.class);
-                    pageVariables.put("foundUser", foundUser.getUser_name());
-                } catch (ObjectNotFoundException e) {
-                    pageVariables.put("foundUser", "такой пользователь отсутсвует");
-                }
+                doFindUser(req, pageVariables);
             }
             //получение количества юзеров в БД
             if (req.getParameter("action").equals("getCount")) {
-                logger.info("Пользователь запрашивает количество user в БД");
-                pageVariables.put("count", dbService.getAllUsers().size());
+                doGetCount(pageVariables);
             }
         }
         resp.setContentType("text/html;charset=utf-8");
         resp.getWriter().println(templateProcessor.getPage("crud.html", pageVariables));
         resp.setStatus(HttpServletResponse.SC_OK);
+    }
+
+    private void doGetCount(Map<String, Object> pageVariables) {
+        logger.info("Пользователь запрашивает количество user в БД");
+        pageVariables.put("count", dbService.getAllUsers().size());
+    }
+
+    private void doFindUser(HttpServletRequest req, Map<String, Object> pageVariables) {
+        final String id = req.getParameter("id");
+        logger.info("Пользователь ищет user по id = " + id);
+        final UserDataSet foundUser;
+        try {
+            foundUser = dbService.load(Long.parseLong(id), UserDataSet.class);
+            pageVariables.put("foundUser", foundUser.getUser_name());
+        } catch (ObjectNotFoundException e) {
+            pageVariables.put("foundUser", "такой пользователь отсутсвует");
+        }
     }
 
     @Override
@@ -60,10 +69,7 @@ public class CrudServlet extends HttpServlet {
         if (req.getParameter("action") != null) {
             //создание нового юзера в БД
             if (req.getParameter("action").equals("insertUser")) {
-                logger.info("Пользователь добавляет user в БД");
-                UserDataSet userDataSet = getUserDataSet(req);
-                dbService.save(userDataSet);
-                pageVariables.put("created", "Новый пользователь создан!");
+                doInsertUser(req, pageVariables);
             }
         }
         resp.setContentType("text/html;charset=utf-8");
@@ -71,16 +77,17 @@ public class CrudServlet extends HttpServlet {
         resp.setStatus(HttpServletResponse.SC_OK);
     }
 
+    private void doInsertUser(HttpServletRequest req, Map<String, Object> pageVariables) {
+        logger.info("Пользователь добавляет user в БД");
+        UserDataSet userDataSet = getUserDataSet(req);
+        dbService.save(userDataSet);
+        pageVariables.put("created", "Новый пользователь создан!");
+    }
+
     private UserDataSet getUserDataSet(HttpServletRequest req) {
         logger.info("получение данных из форм для создания пользователя");
-        String name = null;
-        if (!req.getParameter("name").equals("")) {
-            name = req.getParameter("name");
-        }
-        String pass = null;
-        if (!req.getParameter("pass").equals("")) {
-            pass = req.getParameter("pass");
-        }
+        String name = getParameter(req, "name");
+        String pass = getParameter(req, "pass");
         int age = 0;
         if (!req.getParameter("age").equals("")) {
             age = Integer.parseInt(req.getParameter("age"));
@@ -98,5 +105,13 @@ public class CrudServlet extends HttpServlet {
             }
         }
         return new UserDataSet(name, pass, age, addressDataSet, phonesSet);
+    }
+
+    private String getParameter(HttpServletRequest req, String parameter) {
+        if (!req.getParameter(parameter).equals("")) {
+            return req.getParameter(parameter);
+        } else {
+            return null;
+        }
     }
 }

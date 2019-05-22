@@ -27,7 +27,7 @@ public class UserDataSet extends DataSet {
     public UserDataSet() {
     }
 
-    public UserDataSet(String user_name, String pass,int age, AddressDataSet address, PhoneDataSet... phones) {
+    public UserDataSet(String user_name, String pass, int age, AddressDataSet address, PhoneDataSet... phones) {
         this.user_name = user_name;
         this.pass = pass;
         this.age = age;

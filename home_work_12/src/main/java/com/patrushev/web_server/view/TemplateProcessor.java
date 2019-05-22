@@ -1,4 +1,4 @@
-package com.patrushev.web_server.servlets;
+package com.patrushev.web_server.view;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -10,18 +10,18 @@ import java.io.Writer;
 import java.util.Map;
 
 
-class TemplateProcessor {
+public class TemplateProcessor {
     private static final String HTML_DIR = "/static/";
 
     private final Configuration configuration;
 
-    TemplateProcessor() {
+    public TemplateProcessor() {
         configuration = new Configuration(Configuration.VERSION_2_3_28);
         configuration.setClassForTemplateLoading(this.getClass(), HTML_DIR); // for resource
         configuration.setDefaultEncoding("UTF-8");
     }
 
-    String getPage(String filename, Map<String, Object> data) throws IOException {
+    public String getPage(String filename, Map<String, Object> data) throws IOException {
         try (Writer stream = new StringWriter()) {
             Template template = configuration.getTemplate(filename);
             template.process(data, stream);
