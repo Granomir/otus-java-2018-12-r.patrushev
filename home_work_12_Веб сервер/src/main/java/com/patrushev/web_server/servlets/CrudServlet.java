@@ -57,6 +57,8 @@ public class CrudServlet extends HttpServlet {
         try {
             foundUser = dbService.load(Long.parseLong(id), UserDataSet.class);
             pageVariables.put("foundUser", foundUser.getUser_name());
+        } catch (NumberFormatException e) {
+            pageVariables.put("foundUser", "необходимо ввести число");
         } catch (ObjectNotFoundException e) {
             pageVariables.put("foundUser", "такой пользователь отсутсвует");
         }

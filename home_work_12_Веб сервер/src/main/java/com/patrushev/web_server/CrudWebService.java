@@ -20,38 +20,37 @@ import org.eclipse.jetty.util.resource.Resource;
 import org.hibernate.cfg.Configuration;
 
 public class CrudWebService {
-    private final static int PORT = 8080;
     private final static String STATIC = "/static";
+    private ServletContextHandler context;
+    private Server server;
 
     public void start() throws Exception {
         Configuration configuration = new Configuration();
         configuration.configure();
         try (DBService dbService = new DBServiceHibernateImpl(configuration, new UserDataSetDAO())) {
             createSomeUsers(dbService);
-
             //создается ресурсхэндлер jetty и ему передается путь к папке с ресурсами (html-страницы, картинки и т.п.)
             ResourceHandler resourceHandler = new ResourceHandler();
             Resource resource = Resource.newClassPathResource(STATIC);
             resourceHandler.setBaseResource(resource);
-
-            //что-то от jetty, связанное с контекстом и сервлетами
-            ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
             //создается наш сервлет и передается сервлетхолдеру jetty, который передается в контекст jetty
             //еще передается путь, перейдя по которому (адрес:порт/timer) откроется страница, управлямая нашим сервлетом
             context.addServlet(new ServletHolder(new CrudServlet(dbService, new TemplateProcessor())), "/crud");
             context.addServlet(new ServletHolder(new LoginServlet(dbService)), "/login");
             context.addFilter(new FilterHolder(new AuthorizationFilter()), "/crud", null);
-
-            //сервер jetty, ему передается порт - видимо это сам веб-сервер
-            Server server = new Server(PORT);
             //и передается лист хэндлеров, в который передаются ресурсхендлер и контекст
             server.setHandler(new HandlerList(resourceHandler, context));
-
-
             server.start();
             //join тут нужен на случай, когда серверу надо некоторое время на запуск (например большое приложение) и поэтому вызвающему потоку лучше его подождать
             server.join();
         }
+    }
+
+    public CrudWebService(ServletContextHandler context, Server server) {
+        //что-то от jetty, связанное с контекстом и сервлетами
+        this.context = context;
+        //сервер jetty, ему передается порт - видимо это сам веб-сервер
+        this.server = server;
     }
 
     private void createSomeUsers(DBService dbService) {
