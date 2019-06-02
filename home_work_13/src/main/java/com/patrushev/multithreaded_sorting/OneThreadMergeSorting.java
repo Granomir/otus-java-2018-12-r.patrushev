@@ -2,7 +2,7 @@ package com.patrushev.multithreaded_sorting;
 
 import java.util.Arrays;
 
-public class MergeSorting {
+public class OneThreadMergeSorting {
     public static void main(String[] args) {
         int[] arr = {1, 2, 5, 4, 32, 12, 99, 76, 11, 54};
         System.out.println(Arrays.toString(sortArray(arr)));

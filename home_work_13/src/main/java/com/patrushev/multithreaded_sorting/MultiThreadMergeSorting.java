@@ -2,10 +2,14 @@ package com.patrushev.multithreaded_sorting;
 
 import java.util.Arrays;
 
-public class OneThreadMergeSorting {
+public class MultiThreadMergeSorting {
     public static void main(String[] args) {
         int[] arr = {1, 2, 5, 4, 32, 12, 99, 76, 11, 54};
-        System.out.println(Arrays.toString(sortArray(arr)));
+        long begin = System.nanoTime();
+        sortArray(arr);
+        long end = System.nanoTime();
+        System.out.println("Сортировка заняла " + (end - begin) + " наносекунд");
+        System.out.println(Arrays.toString(arr));
     }
 
     private static int[] sortArray(int[] arrayA) { // сортировка Массива который передается в функцию
