@@ -6,10 +6,10 @@ public class MultiThreadMergeSorting {
     public static void main(String[] args) {
         int[] arr = {1, 2, 5, 4, 32, 12, 99, 76, 11, 54};
         long begin = System.nanoTime();
-        sortArray(arr);
+        int[] sortedArr = sortArray(arr);
         long end = System.nanoTime();
         System.out.println("Сортировка заняла " + (end - begin) + " наносекунд");
-        System.out.println(Arrays.toString(arr));
+        System.out.println(Arrays.toString(sortedArr));
     }
 
     private static int[] sortArray(int[] arrayA) { // сортировка Массива который передается в функцию
