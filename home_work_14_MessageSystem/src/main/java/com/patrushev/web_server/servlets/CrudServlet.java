@@ -4,6 +4,10 @@ import com.patrushev.web_server.data.AddressDataSet;
 import com.patrushev.web_server.data.PhoneDataSet;
 import com.patrushev.web_server.data.UserDataSet;
 import com.patrushev.web_server.dbutils.DBService;
+import com.patrushev.web_server.messageSystem.Address;
+import com.patrushev.web_server.messageSystem.Addressee;
+import com.patrushev.web_server.messageSystem.MessageSystem;
+import com.patrushev.web_server.messageSystem.MessageSystemContext;
 import com.patrushev.web_server.view.TemplateProcessor;
 import org.hibernate.ObjectNotFoundException;
 import org.slf4j.Logger;
@@ -16,14 +20,19 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CrudServlet extends HttpServlet {
+public class CrudServlet extends HttpServlet implements Addressee {
     private final Logger logger = LoggerFactory.getLogger(CrudServlet.class);
     private final TemplateProcessor templateProcessor;
+    private MessageSystemContext msContext;
+    private Address address;
     private final DBService dbService;
 
-    public CrudServlet(DBService dbService, TemplateProcessor templateProcessor) {
+    public CrudServlet(DBService dbService, TemplateProcessor templateProcessor, MessageSystemContext msContext, Address address) {
         this.dbService = dbService;
         this.templateProcessor = templateProcessor;
+        this.msContext = msContext;
+        this.address = address;
+        msContext.getMessageSystem().addAddressee(this);
     }
 
     @Override
@@ -115,5 +124,15 @@ public class CrudServlet extends HttpServlet {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public Address getAddress() {
+        return address;
+    }
+
+    @Override
+    public MessageSystem getMS() {
+        return msContext.getMessageSystem();
     }
 }

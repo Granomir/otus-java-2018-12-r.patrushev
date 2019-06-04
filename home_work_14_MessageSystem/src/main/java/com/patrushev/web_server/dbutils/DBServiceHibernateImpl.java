@@ -3,6 +3,9 @@ package com.patrushev.web_server.dbutils;
 import com.patrushev.web_server.data.DataSet;
 import com.patrushev.web_server.data.UserDataSet;
 import com.patrushev.web_server.data.UserDataSetDAO;
+import com.patrushev.web_server.messageSystem.Address;
+import com.patrushev.web_server.messageSystem.MessageSystem;
+import com.patrushev.web_server.messageSystem.MessageSystemContext;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -18,12 +21,17 @@ public class DBServiceHibernateImpl implements DBService {
     private Logger logger = LoggerFactory.getLogger(DBServiceHibernateImpl.class);
 
     private UserDataSetDAO dao;
+    private MessageSystemContext msContext;
+    private Address address;
     private SessionFactory sessionFactory;
 
-    public DBServiceHibernateImpl(Configuration configuration, UserDataSetDAO userDataSetDAO) {
+    public DBServiceHibernateImpl(Configuration configuration, UserDataSetDAO userDataSetDAO, MessageSystemContext msContext, Address address) {
         this.sessionFactory = configuration.buildSessionFactory();
-        dao = userDataSetDAO;
+        this.dao = userDataSetDAO;
+        this.msContext = msContext;
+        this.address = address;
         logger.info("Создан DBService на основе Hibernate с переданной SessionFactory.");
+        msContext.getMessageSystem().addAddressee(this);
     }
 
     @Override
@@ -78,5 +86,15 @@ public class DBServiceHibernateImpl implements DBService {
     public void close() {
         sessionFactory.close();
         System.out.println("Нету больше sessionFactory! :(");
+    }
+
+    @Override
+    public Address getAddress() {
+        return address;
+    }
+
+    @Override
+    public MessageSystem getMS() {
+        return msContext.getMessageSystem();
     }
 }

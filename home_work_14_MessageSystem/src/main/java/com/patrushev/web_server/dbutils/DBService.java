@@ -2,10 +2,11 @@ package com.patrushev.web_server.dbutils;
 
 import com.patrushev.web_server.data.DataSet;
 import com.patrushev.web_server.data.UserDataSet;
+import com.patrushev.web_server.messageSystem.Addressee;
 
 import java.util.List;
 
-public interface DBService extends AutoCloseable {
+public interface DBService extends AutoCloseable, Addressee {
 
     <T extends DataSet> void save(T entity);
 
