@@ -1,14 +1,8 @@
 package com.patrushev.multithreaded_sorting;
 
-import java.util.Arrays;
+public class SingleThreadMergeSorter {
 
-public class OneThreadMergeSorting {
-    public static void main(String[] args) {
-        int[] arr = {1, 2, 5, 4, 32, 12, 99, 76, 11, 54};
-        System.out.println(Arrays.toString(sortArray(arr)));
-    }
-
-    private static int[] sortArray(int[] arrayA) { // сортировка Массива который передается в функцию
+    public static int[] sortArray(int[] arrayA) { // сортировка Массива который передается в функцию
         // проверяем не нулевой ли он?
         if (arrayA == null) {
             return null;
