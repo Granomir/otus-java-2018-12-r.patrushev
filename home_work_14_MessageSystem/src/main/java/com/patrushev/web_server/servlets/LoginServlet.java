@@ -15,17 +15,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-public class LoginServlet extends HttpServlet implements Addressee {
+public class LoginServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(CrudServlet.class);
     private final DBService dbService;
-    private MessageSystemContext msContext;
-    private Address address;
+    private FrontendService frontendService;
 
-    public LoginServlet(DBService dbService, MessageSystemContext msContext, Address address) {
+    public LoginServlet(DBService dbService, FrontendService frontendService) {
         this.dbService = dbService;
-        this.msContext = msContext;
-        this.address = address;
-        msContext.getMessageSystem().addAddressee(this);
+        this.frontendService = frontendService;
     }
 
     @Override
@@ -57,15 +54,5 @@ public class LoginServlet extends HttpServlet implements Addressee {
             logger.info("Пользователя с таким именем не существует");
             return false;
         }
-    }
-
-    @Override
-    public Address getAddress() {
-        return address;
-    }
-
-    @Override
-    public MessageSystem getMS() {
-        return msContext.getMessageSystem();
     }
 }

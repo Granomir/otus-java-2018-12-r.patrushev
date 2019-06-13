@@ -20,19 +20,17 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CrudServlet extends HttpServlet implements Addressee {
+public class CrudServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(CrudServlet.class);
     private final TemplateProcessor templateProcessor;
-    private MessageSystemContext msContext;
-    private Address address;
+    private FrontendService frontendService;
+
     private final DBService dbService;
 
-    public CrudServlet(DBService dbService, TemplateProcessor templateProcessor, MessageSystemContext msContext, Address address) {
+    public CrudServlet(DBService dbService, TemplateProcessor templateProcessor, FrontendService frontendService) {
         this.dbService = dbService;
         this.templateProcessor = templateProcessor;
-        this.msContext = msContext;
-        this.address = address;
-        msContext.getMessageSystem().addAddressee(this);
+        this.frontendService = frontendService;
     }
 
     @Override
@@ -56,7 +54,8 @@ public class CrudServlet extends HttpServlet implements Addressee {
 
     private void doGetCount(Map<String, Object> pageVariables) {
         logger.info("Пользователь запрашивает количество user в БД");
-        pageVariables.put("count", dbService.getAllUsers().size());
+        final int userCount = frontendService.getUserCount();
+        pageVariables.put("count", userCount);
     }
 
     private void doFindUser(HttpServletRequest req, Map<String, Object> pageVariables) {
@@ -124,15 +123,5 @@ public class CrudServlet extends HttpServlet implements Addressee {
         } else {
             return null;
         }
-    }
-
-    @Override
-    public Address getAddress() {
-        return address;
-    }
-
-    @Override
-    public MessageSystem getMS() {
-        return msContext.getMessageSystem();
     }
 }

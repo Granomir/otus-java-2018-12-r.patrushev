@@ -1,4 +1,7 @@
-package com.patrushev.web_server.messageSystem;
+package com.patrushev.web_server.messageSystem.messages;
+
+import com.patrushev.web_server.messageSystem.Address;
+import com.patrushev.web_server.messageSystem.Addressee;
 
 public abstract class Message {
     private final Address from;

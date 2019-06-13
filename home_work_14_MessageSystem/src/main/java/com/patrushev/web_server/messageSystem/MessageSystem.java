@@ -1,5 +1,7 @@
 package com.patrushev.web_server.messageSystem;
 
+import com.patrushev.web_server.messageSystem.messages.Message;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +49,7 @@ public final class MessageSystem {
                     LinkedBlockingQueue<Message> queue = messagesMap.get(entry.getKey());
                     while (true) {
                         try {
-                            //вытаскиваем сообщение из очереди (если есть, а если нет, то поток засыпает?)
+                            //вытаскиваем сообщение из очереди (если есть, а если нет, то поток засыпает)
                             Message message = queue.take(); //Blocks
                             //говорим сообщению, чтобы оно отработало
                             message.exec(entry.getValue());

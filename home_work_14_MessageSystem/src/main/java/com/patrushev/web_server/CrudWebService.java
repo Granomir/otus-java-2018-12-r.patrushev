@@ -11,6 +11,8 @@ import com.patrushev.web_server.messageSystem.Address;
 import com.patrushev.web_server.messageSystem.MessageSystem;
 import com.patrushev.web_server.messageSystem.MessageSystemContext;
 import com.patrushev.web_server.servlets.CrudServlet;
+import com.patrushev.web_server.servlets.FrontendService;
+import com.patrushev.web_server.servlets.FrontendServiceImpl;
 import com.patrushev.web_server.servlets.LoginServlet;
 import com.patrushev.web_server.view.TemplateProcessor;
 import org.eclipse.jetty.server.Server;
@@ -23,7 +25,7 @@ import org.eclipse.jetty.util.resource.Resource;
 import org.hibernate.cfg.Configuration;
 
 public class CrudWebService {
-    private final static String STATIC = "/static";
+    private String STATIC = "/static";
     private ServletContextHandler context;
     private Server server;
     private MessageSystem messageSystem;
@@ -35,13 +37,12 @@ public class CrudWebService {
         //создаем контекст
         MessageSystemContext msContext = new MessageSystemContext(messageSystem);
         //создаем адреса
-        final Address crudFrontAddress = new Address("crudFront");
-        final Address loginFrontAddress = new Address("loginFront");
-        final Address databaseAddress = new Address("database");
+        final Address frontAddress = new Address("frontEnd");
+        final Address databaseAddress = new Address("dataBase");
         //передаем адреса в контекст
-        msContext.addAddress("crudFront", crudFrontAddress);
-        msContext.addAddress("loginFront", loginFrontAddress);
-        msContext.addAddress("database", databaseAddress);
+        msContext.addAddress("frontEnd", frontAddress);
+        msContext.addAddress("dataBase", databaseAddress);
+        FrontendService frontendService = new FrontendServiceImpl(msContext, frontAddress);
         try (DBService dbService = new DBServiceHibernateImpl(configuration, new UserDataSetDAO(), msContext, databaseAddress)) {
             createSomeUsers(dbService);
             //создается ресурсхэндлер jetty и ему передается путь к папке с ресурсами (html-страницы, картинки и т.п.)
@@ -50,11 +51,13 @@ public class CrudWebService {
             resourceHandler.setBaseResource(resource);
             //создается наш сервлет и передается сервлетхолдеру jetty, который передается в контекст jetty
             //еще передается путь, перейдя по которому (адрес:порт/) откроется страница, управлямая нашим сервлетом
-            context.addServlet(new ServletHolder(new CrudServlet(dbService, new TemplateProcessor(), msContext, crudFrontAddress)), "/crud");
-            context.addServlet(new ServletHolder(new LoginServlet(dbService, msContext, loginFrontAddress)), "/login");
+            context.addServlet(new ServletHolder(new CrudServlet(dbService, new TemplateProcessor(), frontendService)), "/crud");
+            context.addServlet(new ServletHolder(new LoginServlet(dbService, frontendService)), "/login");
             context.addFilter(new FilterHolder(new AuthorizationFilter()), "/crud", null);
             //и передается лист хэндлеров, в который передаются ресурсхендлер и контекст
             server.setHandler(new HandlerList(resourceHandler, context));
+            //запускаем систему сообщений
+            messageSystem.start();
             //стартуем веб-сервер
             server.start();
             //join тут нужен на случай, когда серверу надо некоторое время на запуск (например большое приложение) и поэтому вызвающему потоку лучше его подождать
