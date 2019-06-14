@@ -34,6 +34,7 @@ public final class MessageSystem {
     }
 
     public void sendMessage(Message message) {
+        logger.info("система сообщений получает сообщение типа " + message.getClass().getSimpleName());
         messagesMap.get(message.getTo()).add(message);
     }
 

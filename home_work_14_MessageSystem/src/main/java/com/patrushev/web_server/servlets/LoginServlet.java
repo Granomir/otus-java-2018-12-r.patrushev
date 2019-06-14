@@ -2,10 +2,9 @@ package com.patrushev.web_server.servlets;
 
 import com.patrushev.web_server.data.UserDataSet;
 import com.patrushev.web_server.dbutils.DBService;
-import com.patrushev.web_server.messageSystem.Address;
-import com.patrushev.web_server.messageSystem.Addressee;
-import com.patrushev.web_server.messageSystem.MessageSystem;
-import com.patrushev.web_server.messageSystem.MessageSystemContext;
+import com.patrushev.web_server.messageSystem.messages.Message;
+import com.patrushev.web_server.messageSystem.messages.MsgGetUserByLogin;
+import com.patrushev.web_server.messageSystem.messages.MsgGetUserByLoginAnswer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +46,13 @@ public class LoginServlet extends HttpServlet {
 
     private boolean authenticateUser(String login, String pass) {
         logger.info("Начинается аутентификация введенных пользователем данных");
-        UserDataSet checkingUser = dbService.loadUserByName(login);
+        Message getUserByLoginMessage = new MsgGetUserByLogin(frontendService.getAddress(), frontendService.getDbAddress(), login);
+        frontendService.sendMessage(getUserByLoginMessage);
+        Message getUserByLoginMessageAnswer = frontendService.getAnswer(getUserByLoginMessage.getId());
+        UserDataSet checkingUser = ((MsgGetUserByLoginAnswer) getUserByLoginMessageAnswer).getCheckingUser();
+        //=====================================================================================
+//        UserDataSet checkingUser = dbService.loadUserByName(login);
+        //=====================================================================================
         if (checkingUser != null) {
             return pass.equals(checkingUser.getPass());
         } else {

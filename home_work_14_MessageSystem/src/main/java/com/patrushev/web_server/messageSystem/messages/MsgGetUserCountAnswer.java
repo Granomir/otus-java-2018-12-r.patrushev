@@ -13,6 +13,6 @@ public class MsgGetUserCountAnswer extends MsgToFrontend {
 
     @Override
     public void exec(FrontendService frontendService) {
-        frontendService.addMessage(this);
+//        frontendService.addMessage(this);
     }
 }

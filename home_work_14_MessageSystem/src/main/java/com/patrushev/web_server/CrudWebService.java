@@ -37,11 +37,11 @@ public class CrudWebService {
         //создаем контекст
         MessageSystemContext msContext = new MessageSystemContext(messageSystem);
         //создаем адреса
-        final Address frontAddress = new Address("frontEnd");
-        final Address databaseAddress = new Address("dataBase");
+        Address frontAddress = new Address("frontEnd");
+        Address databaseAddress = new Address("dataBase");
         //передаем адреса в контекст
-        msContext.addAddress("frontEnd", frontAddress);
-        msContext.addAddress("dataBase", databaseAddress);
+        msContext.setFrontAddress(frontAddress);
+        msContext.setDbAddress(databaseAddress);
         FrontendService frontendService = new FrontendServiceImpl(msContext, frontAddress);
         try (DBService dbService = new DBServiceHibernateImpl(configuration, new UserDataSetDAO(), msContext, databaseAddress)) {
             createSomeUsers(dbService);
