@@ -1,9 +1,8 @@
-package com.patrushev.web_server.messageSystem.messages;
+package com.patrushev.web_server.messageSystem.messages.temp;
 
 import com.patrushev.web_server.dbutils.DBService;
 import com.patrushev.web_server.messageSystem.Address;
-import com.patrushev.web_server.messageSystem.Addressee;
-import com.patrushev.web_server.messageSystem.messages.Message;
+import com.patrushev.web_server.messageSystem.messages.MsgToDB;
 
 public class MsgGetUserCount extends MsgToDB {
     public MsgGetUserCount(Address from, Address to) {

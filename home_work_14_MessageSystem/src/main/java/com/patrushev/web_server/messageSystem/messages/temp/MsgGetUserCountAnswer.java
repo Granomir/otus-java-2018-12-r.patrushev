@@ -1,6 +1,7 @@
-package com.patrushev.web_server.messageSystem.messages;
+package com.patrushev.web_server.messageSystem.messages.temp;
 
 import com.patrushev.web_server.messageSystem.Address;
+import com.patrushev.web_server.messageSystem.messages.MsgToFrontend;
 import com.patrushev.web_server.servlets.FrontendService;
 
 public class MsgGetUserCountAnswer extends MsgToFrontend {

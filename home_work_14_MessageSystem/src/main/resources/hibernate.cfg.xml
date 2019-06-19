@@ -11,7 +11,7 @@
         <!-- NOTE that after automapping with IDEA property username and password will delete -->
         <!--and will be:  Initial SessionFactory failedorg.hibernate.service.spi.ServiceException: Unable to create requested service-->
         <property name="connection.username">postgres</property>
-        <!--        <property name="connection.password">admin</property>-->
+                <property name="connection.password">1lihefnflie</property>
         <property name="hbm2ddl.auto">create</property>
         <property name="show_sql">true</property>
         <property name="connection.useSSL">false</property>
