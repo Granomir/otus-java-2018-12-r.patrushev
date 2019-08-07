@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.patrushev</groupId>
-	<artifactId>Home_work</artifactId>
+    <artifactId>Home_work</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Parent POM</name>
@@ -39,6 +39,24 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
-    </dependencies>   
+    </dependencies>
+
+    <modules>
+        <module>home_work_01_Сборка и запуск проекта</module>
+        <module>home_work_02_Измерение памяти</module>
+        <module>home_work_03_MyArrayList</module>
+        <module>home_work_04_Измерение активности GC</module>
+        <module>home_work_4_1_Autologging</module>
+        <module>home_work_05_Тестовый фреймворк на аннотациях</module>
+        <module>home_work_06_my cache engine</module>
+        <module>home_work_07_Эмулятор АТМ</module>
+        <module>home_work_08_ATM Department</module>
+        <module>home_work_09_JSON object writer</module>
+        <module>home_work_10_myORM</module>
+        <module>home_work_11_Hibernate ORM</module>
+        <module>home_work_12_Веб сервер</module>
+        <module>home_work_13_Многопоточная сортировка</module>
+        <module>home_work_14_MessageSystem</module>
+    </modules>
 
 </project>
