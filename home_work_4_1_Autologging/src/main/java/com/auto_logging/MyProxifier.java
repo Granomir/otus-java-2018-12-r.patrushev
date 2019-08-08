@@ -4,7 +4,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class MyProxifier {
@@ -16,13 +16,12 @@ public class MyProxifier {
 
     private static class MyInvocationHandler implements InvocationHandler {
         private Object objectForProxying;
-        private HashSet<Method> annotatedMethods;
+        private final Set<Method> annotatedMethods;
 
         public MyInvocationHandler(Object objectForProxying) {
             this.objectForProxying = objectForProxying;
-            annotatedMethods = new HashSet<>();
             Class<?>[] interfaces = objectForProxying.getClass().getInterfaces();
-            Arrays.stream(interfaces).map(Class::getMethods).flatMap(Arrays::stream).filter(method -> method.getDeclaredAnnotation(Log.class) != null).forEach(method -> annotatedMethods.add(method));
+            annotatedMethods = Arrays.stream(interfaces).map(Class::getMethods).flatMap(Arrays::stream).filter(method -> method.getDeclaredAnnotation(Log.class) != null).collect(Collectors.toSet());
         }
 
         @Override
