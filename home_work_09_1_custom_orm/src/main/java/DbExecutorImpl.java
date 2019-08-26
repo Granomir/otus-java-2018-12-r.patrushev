@@ -1,5 +1,6 @@
 import java.sql.*;
 import java.util.List;
+import java.util.Map;
 
 public class DbExecutorImpl implements DbExecutor {
 
@@ -21,6 +22,24 @@ public class DbExecutorImpl implements DbExecutor {
                 rs.next();
                 return rs.getInt(1);
             }
+        } catch (SQLException ex) {
+            connection.rollback(savePoint);
+            System.out.println(ex.getMessage());
+            throw ex;
+        }
+    }
+
+    @Override
+    public void updateRecord(String sqlQuery, Map<String, Object> columnsAndValues, Connection connection, long fieldValue) throws SQLException {
+        Savepoint savePoint = connection.setSavepoint("savePointName");
+        try (PreparedStatement pst = connection.prepareStatement(sqlQuery)) {
+            int i = 1;
+            for (Map.Entry<String, Object> entry : columnsAndValues.entrySet()) {
+                pst.setString(i, entry.getKey());
+                setValue(pst, i, entry.getValue());
+                i++;
+            }
+            pst.executeUpdate();
         } catch (SQLException ex) {
             connection.rollback(savePoint);
             System.out.println(ex.getMessage());

@@ -2,7 +2,7 @@ import java.util.Optional;
 
 public interface DBService {
 
-    <T> void create(T objectData);
+    <T> long create(T objectData);
 
     <T> void update(T objectData);
 

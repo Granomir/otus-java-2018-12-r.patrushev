@@ -19,7 +19,7 @@ public class DBServiceImpl implements DBService {
     }
 
     @Override
-    public <T> int create(T objectData) {
+    public <T> long create(T objectData) {
         Class<?> clazz = objectData.getClass();
         List<Field> fields = ReflectionHelper.getAllDeclaredFieldsFromClass(clazz);
         Field idField = acceptableClasses.get(clazz);
@@ -36,7 +36,7 @@ public class DBServiceImpl implements DBService {
                 values.add(ReflectionHelper.getFieldValue(objectData, fieldName));
             }
         }
-        int id = -1;
+        long id = -1;
         String sqlQuery = getInsertQuery(clazz, columns);
         try (Connection connection = dataSource.getConnection()) {
             id = executor.insertRecord(sqlQuery, columns, values, connection);
@@ -85,15 +85,16 @@ public class DBServiceImpl implements DBService {
             acceptableClasses.put(clazz, idField);
         }
         Map<String, Object> columnsAndValues = new HashMap<>();
+        String idFieldName = idField.getName();
         for (Field field : fields) {
             String fieldName = field.getName();
-            if (!fieldName.equals(idField.getName())) {
+            if (!fieldName.equals(idFieldName)) {
                 columnsAndValues.put(fieldName, ReflectionHelper.getFieldValue(objectData, fieldName));
             }
         }
         String sqlQuery = getUpdateQuery(clazz, columnsAndValues, idField);
         try (Connection connection = dataSource.getConnection()) {
-            executor.updateRecord(sqlQuery, columnsAndValues, connection);
+            executor.updateRecord(sqlQuery, columnsAndValues, connection, (long) ReflectionHelper.getFieldValue(objectData, idFieldName));
             connection.commit();
         } catch (Exception e) {
             e.printStackTrace();
