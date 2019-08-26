@@ -17,29 +17,28 @@ public class DBServiceImpl implements DBService {
     }
 
     @Override
-    public <T> int create(T objectData) {
+    public <T> void create(T objectData) {
         Class<?> clazz = objectData.getClass();
         List<Field> fields = ReflectionHelper.getAllDeclaredFieldsFromClass(clazz);
-        Field idField = getIdField(fields);
+        if (acceptableClasses.contains(clazz)) {
+            checkIdField(fields);
+            acceptableClasses.add(clazz);
+        }
         List<String> columns = new ArrayList<>();
         List<Object> values = new ArrayList<>();
         for (Field field : fields) {
             String fieldName = field.getName();
-            if (!fieldName.equals(idField.getName())) {
-                columns.add(fieldName);
-                values.add(ReflectionHelper.getFieldValue(objectData, fieldName));
-            }
+            columns.add(fieldName);
+            values.add(ReflectionHelper.getFieldValue(objectData, fieldName));
         }
         String sqlQuery = getInsertQuery(clazz, columns);
-        int id = -1;
         try (Connection connection = dataSource.getConnection()){
             //TODO нужно ли тут возвращать id???
-            id = executor.insertRecord(sqlQuery, columns, values, connection);
+            executor.insertRecord(sqlQuery, columns, values, connection);
             connection.commit();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return id;
     }
 
     private String getInsertQuery(Class<?> clazz, List<String> columns) {
@@ -61,10 +60,10 @@ public class DBServiceImpl implements DBService {
         }
     }
 
-    private Field getIdField(List<Field> fields) {
+    private void checkIdField(List<Field> fields) {
         for (Field field : fields) {
             if (field.getAnnotation(Id.class) != null) {
-                return field;
+                return;
             }
         }
         throw new IllegalArgumentException("DBService может работать только с классами, имеющими поле с аннотацией \"@Id\"");

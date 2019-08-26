@@ -4,7 +4,7 @@ import java.util.List;
 public class DbExecutorImpl implements DbExecutor {
 
     @Override
-    public int insertRecord(String sqlQuery, List<String> columns, List<Object> values, Connection connection) {
-        return 0;
+    public void insertRecord(String sqlQuery, List<String> columns, List<Object> values, Connection connection) {
+
     }
 }
