@@ -124,9 +124,10 @@ public class ReflectionHelper {
 
     /**
      * присваивает переданное значение конкретного поля переданного объекта
+     *
      * @param entity - редактируемый объект
-     * @param field - поле, которому присваивается значение
-     * @param value - присваиваемое значение
+     * @param field  - поле, которому присваивается значение
+     * @param value  - присваиваемое значение
      */
     public static void setFieldValue(Object entity, Field field, Object value) throws IllegalAccessException {
         boolean isAccessible = field.canAccess(entity);

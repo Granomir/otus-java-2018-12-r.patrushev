@@ -92,7 +92,7 @@ public class DBServiceImpl implements DBService {
                 columnsAndValues.put(fieldName, ReflectionHelper.getFieldValue(objectData, fieldName));
             }
         }
-        String sqlQuery = getUpdateQuery(clazz, columnsAndValues, idField);
+        String sqlQuery = getUpdateQuery(clazz, columnsAndValues);
         try (Connection connection = dataSource.getConnection()) {
             executor.updateRecord(sqlQuery, columnsAndValues, connection, (long) ReflectionHelper.getFieldValue(objectData, idFieldName));
             connection.commit();
@@ -101,7 +101,7 @@ public class DBServiceImpl implements DBService {
         }
     }
 
-    private String getUpdateQuery(Class<?> clazz, Map<String, Object> columnsAndValues, Field idField) {
+    private String getUpdateQuery(Class<?> clazz, Map<String, Object> columnsAndValues) {
         String query = updateQueries.get(clazz);
         if (null != query) {
             return query;
@@ -113,14 +113,40 @@ public class DBServiceImpl implements DBService {
             sqlQuery.append(filler)
                     .append(" WHERE id = ?");
             query = sqlQuery.toString();
-            insertQueries.put(clazz, query);
+            updateQueries.put(clazz, query);
             return query;
         }
     }
 
     @Override
     public <T> T load(long id, Class<T> clazz) {
-        return null;
+        List<Field> fields = ReflectionHelper.getAllDeclaredFieldsFromClass(clazz);
+        Field idField = acceptableClasses.get(clazz);
+        if (idField == null) {
+            idField = getIdField(fields);
+            acceptableClasses.put(clazz, idField);
+        }
+
+
+
+        List<String> columns = new ArrayList<>();
+        List<Object> values = new ArrayList<>();
+        for (Field field : fields) {
+            String fieldName = field.getName();
+            if (!fieldName.equals(idField.getName())) {
+                columns.add(fieldName);
+                values.add(ReflectionHelper.getFieldValue(objectData, fieldName));
+            }
+        }
+        long id = -1;
+        String sqlQuery = getInsertQuery(clazz, columns);
+        try (Connection connection = dataSource.getConnection()) {
+            id = executor.insertRecord(sqlQuery, columns, values, connection);
+            connection.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return id;
     }
 
     @Override
