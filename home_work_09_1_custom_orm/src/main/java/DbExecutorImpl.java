@@ -1,18 +1,16 @@
 import java.sql.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 public class DbExecutorImpl implements DbExecutor {
 
     @Override
-    public int insertRecord(String sqlQuery, List<String> columns, List<Object> values, Connection connection) throws SQLException {
+    public int insertRecord(String sqlQuery, List<Object> values, Connection connection) throws SQLException {
         Savepoint savePoint = connection.setSavepoint("savePointName");
         try (PreparedStatement pst = connection.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS)) {
             int i = 1;
-            for (String column : columns) {
-                pst.setString(i, column);
-                i++;
-            }
             for (Object value : values) {
                 setValue(pst, i, value);
                 i++;
@@ -30,20 +28,30 @@ public class DbExecutorImpl implements DbExecutor {
     }
 
     @Override
-    public void updateRecord(String sqlQuery, Map<String, Object> columnsAndValues, Connection connection, long fieldValue) throws SQLException {
+    public void updateRecord(String sqlQuery, List<Object> values, Connection connection, long idField) throws SQLException {
         Savepoint savePoint = connection.setSavepoint("savePointName");
         try (PreparedStatement pst = connection.prepareStatement(sqlQuery)) {
             int i = 1;
-            for (Map.Entry<String, Object> entry : columnsAndValues.entrySet()) {
-                pst.setString(i, entry.getKey());
-                setValue(pst, i, entry.getValue());
+            for (Object value : values) {
+                setValue(pst, i, value);
                 i++;
             }
+            pst.setLong(i, idField);
             pst.executeUpdate();
         } catch (SQLException ex) {
             connection.rollback(savePoint);
             System.out.println(ex.getMessage());
             throw ex;
+        }
+    }
+
+    @Override
+    public <T> Optional<T> selectRecord(String sqlQuery, long id, Connection connection, Function<ResultSet, T> rsHandler) throws SQLException {
+        try (PreparedStatement pst = connection.prepareStatement(sqlQuery)) {
+            pst.setLong(1, id);
+            try (ResultSet rs = pst.executeQuery()) {
+                return Optional.ofNullable(rsHandler.apply(rs));
+            }
         }
     }
 

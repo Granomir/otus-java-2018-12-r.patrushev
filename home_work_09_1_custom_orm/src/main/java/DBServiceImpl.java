@@ -1,5 +1,6 @@
 import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -9,6 +10,7 @@ public class DBServiceImpl implements DBService {
     private Map<Class<?>, String> insertQueries;
     private DataSource dataSource;
     private Map<Class<?>, String> updateQueries;
+    private Map<Class<?>, String> selectQueries;
 
     public DBServiceImpl(DbExecutor executor, DataSource dataSource) {
         this.executor = executor;
@@ -16,17 +18,14 @@ public class DBServiceImpl implements DBService {
         acceptableClasses = new HashMap<>();
         insertQueries = new HashMap<>();
         updateQueries = new HashMap<>();
+        selectQueries = new HashMap<>();
     }
 
     @Override
     public <T> long create(T objectData) {
         Class<?> clazz = objectData.getClass();
         List<Field> fields = ReflectionHelper.getAllDeclaredFieldsFromClass(clazz);
-        Field idField = acceptableClasses.get(clazz);
-        if (idField == null) {
-            idField = getIdField(fields);
-            acceptableClasses.put(clazz, idField);
-        }
+        Field idField = getIdField(clazz, fields);
         List<String> columns = new ArrayList<>();
         List<Object> values = new ArrayList<>();
         for (Field field : fields) {
@@ -39,7 +38,7 @@ public class DBServiceImpl implements DBService {
         long id = -1;
         String sqlQuery = getInsertQuery(clazz, columns);
         try (Connection connection = dataSource.getConnection()) {
-            id = executor.insertRecord(sqlQuery, columns, values, connection);
+            id = executor.insertRecord(sqlQuery, values, connection);
             connection.commit();
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,23 +46,28 @@ public class DBServiceImpl implements DBService {
         return id;
     }
 
+    private Field getIdField(Class<?> clazz, List<Field> fields) {
+        Field idField = acceptableClasses.get(clazz);
+        if (idField == null) {
+            idField = getIdField(fields);
+            acceptableClasses.put(clazz, idField);
+        }
+        return idField;
+    }
+
     private String getInsertQuery(Class<?> clazz, List<String> columns) {
         String query = insertQueries.get(clazz);
-        if (null != query) {
-            return query;
-        } else {
-            StringBuilder sqlQuery = new StringBuilder("INSERT INTO ")
-                    .append(clazz.getSimpleName())
-                    .append("(");
-            String filler = columns.stream().map(i -> "?").collect(Collectors.joining(","));
-            sqlQuery.append(filler)
-                    .append(") VALUES (")
-                    .append(filler)
-                    .append(")");
-            query = sqlQuery.toString();
+        if (null == query) {
+            query = "INSERT INTO " +
+                    clazz.getSimpleName() +
+                    "(" +
+                    String.join(",", columns) +
+                    ") VALUES (" +
+                    columns.stream().map(i -> "?").collect(Collectors.joining(",")) +
+                    ")";
             insertQueries.put(clazz, query);
-            return query;
         }
+        return query;
     }
 
     private Field getIdField(List<Field> fields) {
@@ -79,74 +83,88 @@ public class DBServiceImpl implements DBService {
     public <T> void update(T objectData) {
         Class<?> clazz = objectData.getClass();
         List<Field> fields = ReflectionHelper.getAllDeclaredFieldsFromClass(clazz);
-        Field idField = acceptableClasses.get(clazz);
-        if (idField == null) {
-            idField = getIdField(fields);
-            acceptableClasses.put(clazz, idField);
-        }
-        Map<String, Object> columnsAndValues = new HashMap<>();
+        Field idField = getIdField(clazz, fields);
+        List<String> columns = new ArrayList<>();
+        List<Object> values = new ArrayList<>();
         String idFieldName = idField.getName();
         for (Field field : fields) {
             String fieldName = field.getName();
             if (!fieldName.equals(idFieldName)) {
-                columnsAndValues.put(fieldName, ReflectionHelper.getFieldValue(objectData, fieldName));
+                columns.add(fieldName);
+                values.add(ReflectionHelper.getFieldValue(objectData, fieldName));
             }
         }
-        String sqlQuery = getUpdateQuery(clazz, columnsAndValues);
+        String sqlQuery = getUpdateQuery(clazz, columns);
         try (Connection connection = dataSource.getConnection()) {
-            executor.updateRecord(sqlQuery, columnsAndValues, connection, (long) ReflectionHelper.getFieldValue(objectData, idFieldName));
+            executor.updateRecord(sqlQuery, values, connection, (long) ReflectionHelper.getFieldValue(objectData, idFieldName));
             connection.commit();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private String getUpdateQuery(Class<?> clazz, Map<String, Object> columnsAndValues) {
+    private String getUpdateQuery(Class<?> clazz, List<String> columns) {
         String query = updateQueries.get(clazz);
-        if (null != query) {
-            return query;
-        } else {
-            StringBuilder sqlQuery = new StringBuilder("UPDATE ")
-                    .append(clazz.getSimpleName())
-                    .append(" SET ");
-            String filler = columnsAndValues.keySet().stream().map(i -> "? = ?").collect(Collectors.joining(","));
-            sqlQuery.append(filler)
-                    .append(" WHERE id = ?");
-            query = sqlQuery.toString();
+        if (null == query) {
+            query = "UPDATE " +
+                    clazz.getSimpleName() +
+                    " SET " +
+                    columns.stream().map(i -> i + " = ?").collect(Collectors.joining(",")) +
+                    " WHERE id = ?";
             updateQueries.put(clazz, query);
-            return query;
         }
+        return query;
     }
 
     @Override
     public <T> T load(long id, Class<T> clazz) {
         List<Field> fields = ReflectionHelper.getAllDeclaredFieldsFromClass(clazz);
-        Field idField = acceptableClasses.get(clazz);
-        if (idField == null) {
-            idField = getIdField(fields);
-            acceptableClasses.put(clazz, idField);
-        }
-
-
-
-        List<String> columns = new ArrayList<>();
-        List<Object> values = new ArrayList<>();
-        for (Field field : fields) {
-            String fieldName = field.getName();
-            if (!fieldName.equals(idField.getName())) {
-                columns.add(fieldName);
-                values.add(ReflectionHelper.getFieldValue(objectData, fieldName));
-            }
-        }
-        long id = -1;
-        String sqlQuery = getInsertQuery(clazz, columns);
+        getIdField(clazz, fields);
+        String sqlQuery = getSelectQuery(clazz);
         try (Connection connection = dataSource.getConnection()) {
-            id = executor.insertRecord(sqlQuery, columns, values, connection);
-            connection.commit();
+            executor.selectRecord(sqlQuery, id, connection, resultSet -> {
+                //TODO здесь инициализация полей рефлексией
+                try {
+                    if (resultSet.next()) {
+                        return new User(resultSet.getLong("id"), resultSet.getString("name"));
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }););
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return id;
+
+//        List<String> columns = new ArrayList<>();
+//        List<Object> values = new ArrayList<>();
+//        for (Field field : fields) {
+//            String fieldName = field.getName();
+//            if (!fieldName.equals(idField.getName())) {
+//                columns.add(fieldName);
+//                values.add(ReflectionHelper.getFieldValue(objectData, fieldName));
+//            }
+//        }
+//        long id = -1;
+//        String sqlQuery = getInsertQuery(clazz, columns);
+//        try (Connection connection = dataSource.getConnection()) {
+//            id = executor.insertRecord(sqlQuery, columns, values, connection);
+//            connection.commit();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return id;
+    }
+
+    private <T> String getSelectQuery(Class<T> clazz) {
+        String query = selectQueries.get(clazz);
+        if (null == query) {
+            query = "SELECT FROM " +
+                    clazz.getSimpleName() +
+                    " WHERE id = ?";
+        }
+        return query;
     }
 
     @Override
