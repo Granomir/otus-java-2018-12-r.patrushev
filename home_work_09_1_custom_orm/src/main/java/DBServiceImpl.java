@@ -1,4 +1,6 @@
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
@@ -121,40 +123,27 @@ public class DBServiceImpl implements DBService {
         List<Field> fields = ReflectionHelper.getAllDeclaredFieldsFromClass(clazz);
         getIdField(clazz, fields);
         String sqlQuery = getSelectQuery(clazz);
+        Optional<T> loadedEntity = Optional.empty();
         try (Connection connection = dataSource.getConnection()) {
-            executor.selectRecord(sqlQuery, id, connection, resultSet -> {
-                //TODO здесь инициализация полей рефлексией
+            loadedEntity = executor.selectRecord(sqlQuery, id, connection, resultSet -> {
                 try {
                     if (resultSet.next()) {
-                        return new User(resultSet.getLong("id"), resultSet.getString("name"));
+                        Constructor<T> constructor = clazz.getConstructor();
+                        T entity = constructor.newInstance();
+                        for (Field field : fields) {
+                            ReflectionHelper.setFieldValue(entity, field, resultSet.getObject(field.getName()));
+                        }
+                        return entity;
                     }
-                } catch (SQLException e) {
+                } catch (SQLException | IllegalAccessException | NoSuchMethodException | InstantiationException | InvocationTargetException e) {
                     e.printStackTrace();
                 }
                 return null;
-            }););
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-//        List<String> columns = new ArrayList<>();
-//        List<Object> values = new ArrayList<>();
-//        for (Field field : fields) {
-//            String fieldName = field.getName();
-//            if (!fieldName.equals(idField.getName())) {
-//                columns.add(fieldName);
-//                values.add(ReflectionHelper.getFieldValue(objectData, fieldName));
-//            }
-//        }
-//        long id = -1;
-//        String sqlQuery = getInsertQuery(clazz, columns);
-//        try (Connection connection = dataSource.getConnection()) {
-//            id = executor.insertRecord(sqlQuery, columns, values, connection);
-//            connection.commit();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return id;
+        return loadedEntity.orElseThrow(IllegalArgumentException::new);
     }
 
     private <T> String getSelectQuery(Class<T> clazz) {
@@ -163,6 +152,7 @@ public class DBServiceImpl implements DBService {
             query = "SELECT FROM " +
                     clazz.getSimpleName() +
                     " WHERE id = ?";
+            selectQueries.put(clazz, query);
         }
         return query;
     }

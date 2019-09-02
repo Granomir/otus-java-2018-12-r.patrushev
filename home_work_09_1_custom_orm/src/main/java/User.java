@@ -2,14 +2,17 @@ import java.util.Objects;
 
 public class User {
     @Id
-    private final long id;
-    private final String name;
-    private final int age;
+    private long id;
+    private String name;
+    private int age;
 
     public User(long id, String name, int age) {
         this.id = id;
         this.name = name;
         this.age = age;
+    }
+
+    public User() {
     }
 
     public long getId() {
