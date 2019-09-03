@@ -1,5 +1,3 @@
-import java.util.Optional;
-
 public interface DBService {
 
     <T> long create(T objectData);

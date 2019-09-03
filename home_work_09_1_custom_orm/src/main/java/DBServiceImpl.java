@@ -1,3 +1,6 @@
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -6,7 +9,9 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("WeakerAccess")
 public class DBServiceImpl implements DBService {
+    private Logger logger = LoggerFactory.getLogger(DBServiceImpl.class);
     private DbExecutor executor;
     private Map<Class<?>, Field> acceptableClasses;
     private Map<Class<?>, String> insertQueries;
@@ -25,6 +30,7 @@ public class DBServiceImpl implements DBService {
 
     @Override
     public <T> long create(T objectData) {
+        logger.info("start creating entity");
         Class<?> clazz = objectData.getClass();
         List<Field> fields = ReflectionHelper.getAllDeclaredFieldsFromClass(clazz);
         Field idField = getIdField(clazz, fields);
@@ -39,12 +45,14 @@ public class DBServiceImpl implements DBService {
         }
         long id = -1;
         String sqlQuery = getInsertQuery(clazz, columns);
+        logger.info("prepared jdbc template - " + sqlQuery);
         try (Connection connection = dataSource.getConnection()) {
             id = executor.insertRecord(sqlQuery, values, connection);
             connection.commit();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        logger.info("finish creating entity");
         return id;
     }
 
@@ -83,6 +91,7 @@ public class DBServiceImpl implements DBService {
 
     @Override
     public <T> void update(T objectData) {
+        logger.info("start updating entity");
         Class<?> clazz = objectData.getClass();
         List<Field> fields = ReflectionHelper.getAllDeclaredFieldsFromClass(clazz);
         Field idField = getIdField(clazz, fields);
@@ -97,12 +106,14 @@ public class DBServiceImpl implements DBService {
             }
         }
         String sqlQuery = getUpdateQuery(clazz, columns);
+        logger.info("prepared jdbc template - " + sqlQuery);
         try (Connection connection = dataSource.getConnection()) {
             executor.updateRecord(sqlQuery, values, connection, (long) ReflectionHelper.getFieldValue(objectData, idFieldName));
             connection.commit();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        logger.info("finish updating entity");
     }
 
     private String getUpdateQuery(Class<?> clazz, List<String> columns) {
@@ -120,9 +131,11 @@ public class DBServiceImpl implements DBService {
 
     @Override
     public <T> T load(long id, Class<T> clazz) {
+        logger.info("start loading entity");
         List<Field> fields = ReflectionHelper.getAllDeclaredFieldsFromClass(clazz);
         getIdField(clazz, fields);
         String sqlQuery = getSelectQuery(clazz);
+        logger.info("prepared jdbc template - " + sqlQuery);
         Optional<T> loadedEntity = Optional.empty();
         try (Connection connection = dataSource.getConnection()) {
             loadedEntity = executor.selectRecord(sqlQuery, id, connection, resultSet -> {
@@ -143,6 +156,7 @@ public class DBServiceImpl implements DBService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        logger.info("finish loading entity");
         return loadedEntity.orElseThrow(IllegalArgumentException::new);
     }
 

@@ -2,6 +2,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
+@SuppressWarnings("WeakerAccess")
 public class ReflectionHelper {
     private static Set<Class<?>> wrappers = new HashSet<>();
 

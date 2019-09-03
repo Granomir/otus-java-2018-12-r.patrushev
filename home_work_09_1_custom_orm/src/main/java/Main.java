@@ -7,7 +7,7 @@ public class Main {
 
     public static void main(String[] args) {
         createUserTable();
-        DBService dbService = new DBServiceImpl(new DbExecutorImpl(connection), dataSource);
+        DBService dbService = new DBServiceImpl(new DbExecutorImpl(), new DataSourceH2());
         User user1 = new User(1, "roman", 29);
         dbService.create(user1);
         System.out.println("Проверка добавления записи в БД пройдена: " + user1.equals(dbService.load(1, User.class)));

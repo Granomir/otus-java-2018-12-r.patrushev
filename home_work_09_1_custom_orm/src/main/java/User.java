@@ -1,5 +1,6 @@
 import java.util.Objects;
 
+@SuppressWarnings("WeakerAccess")
 public class User {
     @Id
     private long id;
@@ -7,6 +8,12 @@ public class User {
     private int age;
 
     public User(long id, String name, int age) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+    }
+
+    public User(String name, int age) {
         this.id = id;
         this.name = name;
         this.age = age;
