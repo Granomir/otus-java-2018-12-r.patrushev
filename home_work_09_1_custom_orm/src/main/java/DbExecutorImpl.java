@@ -16,12 +16,10 @@ public class DbExecutorImpl implements DbExecutor {
         logger.info("savepoint saved");
         try (PreparedStatement pst = connection.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS)) {
             int i = 1;
-            //TODO в этом месте заполняется только первый параметр, а второй почему то нет
             for (Object value : values) {
                 setValue(pst, i, value);
                 i++;
             }
-            System.out.println(i);
             logger.info("prepared to execute - " + pst);
             pst.executeUpdate();
             try (ResultSet rs = pst.getGeneratedKeys()) {
@@ -77,19 +75,17 @@ public class DbExecutorImpl implements DbExecutor {
 
     private void setValue(PreparedStatement pst, int i, Object value) throws SQLException {
         Class<?> valueType = value.getClass();
-        System.out.println(valueType.getSimpleName());
-        if (valueType.equals(Long.TYPE))
+        if (valueType.equals(Long.class))
             pst.setLong(i, (long) value);
-        if (valueType.equals(Integer.TYPE))
+        if (valueType.equals(Integer.class))
             pst.setInt(i, (int) value);
-        if (valueType.equals(Short.TYPE) || valueType.equals(Byte.TYPE))
+        if (valueType.equals(Short.class) || valueType.equals(Byte.class))
             pst.setShort(i, (short) value);
-        if (valueType.equals(Double.TYPE))
+        if (valueType.equals(Double.class))
             pst.setDouble(i, (double) value);
-        if (valueType.equals(Float.TYPE))
+        if (valueType.equals(Float.class))
             pst.setFloat(i, (float) value);
-        if (valueType.equals(Character.TYPE) || valueType.equals(String.class))
+        if (valueType.equals(Character.class) || valueType.equals(String.class))
             pst.setString(i, (String) value);
-        System.out.println("param = " + i + " value " + value);
     }
 }

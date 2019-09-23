@@ -46,6 +46,12 @@ class DBServiceImplTest {
 
     @Test
     void update() {
+        DBService dbService = new DBServiceImpl(new DbExecutorImpl(), new DataSourceH2());
+        User user1 = new User("Roman", 29);
+        long id = dbService.create(user1);
+        User user2 = new User(id, "Roman", 30);
+        dbService.update(user2);
+        assertEquals(user2, dbService.load(id, user2.getClass()));
     }
 
     @Test

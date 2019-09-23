@@ -163,7 +163,7 @@ public class DBServiceImpl implements DBService {
     private <T> String getSelectQuery(Class<T> clazz) {
         String query = selectQueries.get(clazz);
         if (null == query) {
-            query = "SELECT FROM " +
+            query = "SELECT * FROM " +
                     clazz.getSimpleName() +
                     " WHERE id = ?";
             selectQueries.put(clazz, query);
