@@ -18,6 +18,7 @@ public class DBServiceImpl implements DBService {
     private DataSource dataSource;
     private Map<Class<?>, String> updateQueries;
     private Map<Class<?>, String> selectQueries;
+    private Map<Class<?>, String> selectCountQueries;
 
     public DBServiceImpl(DbExecutor executor, DataSource dataSource) {
         this.executor = executor;
@@ -68,13 +69,7 @@ public class DBServiceImpl implements DBService {
     private String getInsertQuery(Class<?> clazz, List<String> columns) {
         String query = insertQueries.get(clazz);
         if (null == query) {
-            query = "INSERT INTO " +
-                    clazz.getSimpleName() +
-                    "(" +
-                    String.join(",", columns) +
-                    ") VALUES (" +
-                    columns.stream().map(i -> "?").collect(Collectors.joining(",")) +
-                    ")";
+            query = String.format("INSERT INTO %s(%s) VALUES (%s)", clazz.getSimpleName(), String.join(",", columns), columns.stream().map(i -> "?").collect(Collectors.joining(",")));
             insertQueries.put(clazz, query);
         }
         return query;
@@ -119,11 +114,7 @@ public class DBServiceImpl implements DBService {
     private String getUpdateQuery(Class<?> clazz, List<String> columns) {
         String query = updateQueries.get(clazz);
         if (null == query) {
-            query = "UPDATE " +
-                    clazz.getSimpleName() +
-                    " SET " +
-                    columns.stream().map(i -> i + " = ?").collect(Collectors.joining(",")) +
-                    " WHERE id = ?";
+            query = String.format("UPDATE %s SET %s WHERE id = ?", clazz.getSimpleName(), columns.stream().map(i -> i + " = ?").collect(Collectors.joining(",")));
             updateQueries.put(clazz, query);
         }
         return query;
@@ -163,16 +154,39 @@ public class DBServiceImpl implements DBService {
     private <T> String getSelectQuery(Class<T> clazz) {
         String query = selectQueries.get(clazz);
         if (null == query) {
-            query = "SELECT * FROM " +
-                    clazz.getSimpleName() +
-                    " WHERE id = ?";
+            query = String.format("SELECT * FROM %s WHERE id = ?", clazz.getSimpleName());
             selectQueries.put(clazz, query);
+        }
+        return query;
+    }
+
+    private <T> String getSelectCountQuery(Class<T> clazz) {
+        String query = selectCountQueries.get(clazz);
+        if (null == query) {
+            query = String.format("SELECT COUNT(*) FROM %s WHERE id = ?", clazz.getSimpleName());
+            selectCountQueries.put(clazz, query);
         }
         return query;
     }
 
     @Override
     public <T> void createOrUpdate(T objectData) {
-
+        logger.info("start creating or updating entity");
+        Class<?> clazz = objectData.getClass();
+        List<Field> fields = ReflectionHelper.getAllDeclaredFieldsFromClass(clazz);
+        Field idField = getIdField(clazz, fields);
+        String idFieldName = idField.getName();
+        //TODO id может быть не задан в переданном объекте
+        //TODO если id не задан, то создаем новую запись и возвращаем валидный id
+        //TODO если id задан но не найден в БД, то создаем новую запись
+        //TODO если id задан и найден в БД, то обновляем запись
+//        long id = (long) ReflectionHelper.getFieldValue(objectData, idFieldName);
+//        String sqlQuery = getSelectCountQuery(clazz);
+//        logger.info("prepared jdbc template - " + sqlQuery);
+//        try (Connection connection = dataSource.getConnection()) {
+//            executor.selectRecordCount(sqlQuery, id, connection);
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
     }
 }

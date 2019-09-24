@@ -12,4 +12,6 @@ public interface DbExecutor {
     void updateRecord(String sqlQuery, List<Object> values, Connection connection, long fieldValue) throws SQLException;
 
     <T> Optional<T> selectRecord(String sqlQuery, long id, Connection connection, Function<ResultSet, T> rsHandler) throws SQLException;
+
+    int selectRecordCount(String sqlQuery, long id, Connection connection) throws SQLException;
 }
