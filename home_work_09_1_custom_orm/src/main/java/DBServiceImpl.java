@@ -27,6 +27,7 @@ public class DBServiceImpl implements DBService {
         insertQueries = new HashMap<>();
         updateQueries = new HashMap<>();
         selectQueries = new HashMap<>();
+        selectCountQueries = new HashMap<>();
     }
 
     @Override
@@ -170,23 +171,28 @@ public class DBServiceImpl implements DBService {
     }
 
     @Override
-    public <T> void createOrUpdate(T objectData) {
+    public <T> long createOrUpdate(T objectData) {
         logger.info("start creating or updating entity");
         Class<?> clazz = objectData.getClass();
-        List<Field> fields = ReflectionHelper.getAllDeclaredFieldsFromClass(clazz);
-        Field idField = getIdField(clazz, fields);
-        String idFieldName = idField.getName();
-        //TODO id может быть не задан в переданном объекте
-        //TODO если id не задан, то создаем новую запись и возвращаем валидный id
-        //TODO если id задан но не найден в БД, то создаем новую запись
-        //TODO если id задан и найден в БД, то обновляем запись
-//        long id = (long) ReflectionHelper.getFieldValue(objectData, idFieldName);
-//        String sqlQuery = getSelectCountQuery(clazz);
-//        logger.info("prepared jdbc template - " + sqlQuery);
-//        try (Connection connection = dataSource.getConnection()) {
-//            executor.selectRecordCount(sqlQuery, id, connection);
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
+        Field idField = getIdField(clazz, ReflectionHelper.getAllDeclaredFieldsFromClass(clazz));
+        long id = (long) ReflectionHelper.getFieldValue(objectData, idField.getName());
+        if (id == 0) {
+            return create(objectData);
+        } else {
+            int recordCount = 0;
+            String sqlQuery = getSelectCountQuery(clazz);
+            logger.info("prepared jdbc template - " + sqlQuery);
+            try (Connection connection = dataSource.getConnection()) {
+                recordCount = executor.selectRecordCount(sqlQuery, id, connection);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (recordCount == 0) {
+                return create(objectData);
+            } else {
+                update(objectData);
+                return id;
+            }
+        }
     }
 }

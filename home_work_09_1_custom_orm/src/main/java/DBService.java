@@ -4,7 +4,7 @@ public interface DBService {
 
     <T> void update(T objectData);
 
-    <T> void createOrUpdate(T objectData);
+    <T> long createOrUpdate(T objectData);
 
     <T> T load(long id, Class<T> clazz);
 

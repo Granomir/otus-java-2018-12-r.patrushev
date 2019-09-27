@@ -75,11 +75,16 @@ public class DbExecutorImpl implements DbExecutor {
 
     @Override
     public int selectRecordCount(String sqlQuery, long id, Connection connection) throws SQLException {
-        //TODO реализовать
-//        logger.info("start selecting record count");
-//        Savepoint savePoint = connection.setSavepoint("savePointName");
-//        logger.info("savepoint saved");
-        return 0;
+        logger.info("start selecting record count");
+        try (PreparedStatement pst = connection.prepareStatement(sqlQuery)) {
+            pst.setLong(1, id);
+            logger.info("prepared to execute - " + pst);
+            try (ResultSet rs = pst.executeQuery()) {
+                rs.next();
+                logger.info("finish selecting record count");
+                return rs.getInt(1);
+            }
+        }
     }
 
     private void setValue(PreparedStatement pst, int i, Object value) throws SQLException {

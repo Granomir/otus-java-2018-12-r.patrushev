@@ -60,5 +60,18 @@ class DBServiceImplTest {
 
     @Test
     void createOrUpdate() {
+        DBService dbService = new DBServiceImpl(new DbExecutorImpl(), new DataSourceH2());
+        User user1 = new User("Roman", 29);
+        long id1 = dbService.createOrUpdate(user1);
+        User user2 = new User(id1, "Roman", 29);
+        assertEquals(user2, dbService.load(id1, user2.getClass()));
+        User user3 = new User(id1, "Roman", 30);
+        long id2 = dbService.createOrUpdate(user3);
+        assertEquals(id1, id2);
+        assertEquals(user3, dbService.load(id1, user3.getClass()));
+        User user4 = new User(50, "Roman", 31);
+        long id3 = dbService.createOrUpdate(user4);
+        user4.setId(id3);
+        assertEquals(user4, dbService.load(id3, user4.getClass()));
     }
 }
