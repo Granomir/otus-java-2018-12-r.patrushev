@@ -13,26 +13,30 @@ class DBServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        System.out.println("start creating table");
+        System.out.println("start creating tables");
         try (Connection connection = DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
-             PreparedStatement pst = connection.prepareStatement("CREATE TABLE User(id bigint(20) NOT NULL auto_increment, name varchar(255), age int(3))")) {
-            pst.executeUpdate();
+             PreparedStatement pst1 = connection.prepareStatement("CREATE TABLE User(id bigint(20) NOT NULL auto_increment, name varchar(255), age int(3))");
+             PreparedStatement pst2 = connection.prepareStatement("CREATE TABLE Account(no bigint(20) NOT NULL auto_increment, type varchar(255), rest double)")) {
+            pst1.executeUpdate();
+            pst2.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("finish creating table");
+        System.out.println("finish creating tables");
     }
 
     @AfterEach
     void tearDown() {
-        System.out.println("start dropping table");
+        System.out.println("start dropping tables");
         try (Connection connection = DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
-             PreparedStatement pst = connection.prepareStatement("DROP TABLE IF EXISTS User")) {
-            pst.executeUpdate();
+             PreparedStatement pst1 = connection.prepareStatement("DROP TABLE IF EXISTS User");
+             PreparedStatement pst2 = connection.prepareStatement("DROP TABLE IF EXISTS Account")) {
+            pst1.executeUpdate();
+            pst2.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("finish dropping table");
+        System.out.println("finish dropping tables");
     }
 
     @Test
