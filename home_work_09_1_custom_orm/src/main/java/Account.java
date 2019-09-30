@@ -7,13 +7,13 @@ public class Account {
     private String type;
     private double rest;
 
-    public Account(long no, String type, int rest) {
+    public Account(long no, String type, double rest) {
         this.no = no;
         this.type = type;
         this.rest = rest;
     }
 
-    public Account(String type, int rest) {
+    public Account(String type, double rest) {
         this.type = type;
         this.rest = rest;
     }

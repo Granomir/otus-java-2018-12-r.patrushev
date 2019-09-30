@@ -46,6 +46,11 @@ class DBServiceImplTest {
         long id = dbService.create(user1);
         User user2 = new User(id, "Roman", 29);
         assertEquals(user2, dbService.load(id, user2.getClass()));
+
+        Account acc1 = new Account("new", 29.13);
+        long no = dbService.create(acc1);
+        Account acc2 = new Account(no, "new", 29.13);
+        assertEquals(acc2, dbService.load(no, acc2.getClass()));
     }
 
     @Test
@@ -56,6 +61,12 @@ class DBServiceImplTest {
         User user2 = new User(id, "Roman", 30);
         dbService.update(user2);
         assertEquals(user2, dbService.load(id, user2.getClass()));
+
+        Account acc1 = new Account("new", 29.13);
+        long no = dbService.create(acc1);
+        Account acc2 = new Account(no, "new", 30.13);
+        dbService.update(acc2);
+        assertEquals(acc2, dbService.load(no, acc2.getClass()));
     }
 
     @Test
@@ -77,5 +88,18 @@ class DBServiceImplTest {
         long id3 = dbService.createOrUpdate(user4);
         user4.setId(id3);
         assertEquals(user4, dbService.load(id3, user4.getClass()));
+
+        Account acc1 = new Account("new", 29.13);
+        long no1 = dbService.createOrUpdate(acc1);
+        Account acc2 = new Account(no1, "new", 29.13);
+        assertEquals(acc2, dbService.load(no1, acc2.getClass()));
+        Account acc3 = new Account(no1, "new", 30.13);
+        long no2 = dbService.createOrUpdate(acc3);
+        assertEquals(no1, no2);
+        assertEquals(acc3, dbService.load(no1, acc3.getClass()));
+        Account acc4 = new Account(50, "new", 31.13);
+        long no3 = dbService.createOrUpdate(acc4);
+        acc4.setNo(no3);
+        assertEquals(acc4, dbService.load(no3, acc4.getClass()));
     }
 }

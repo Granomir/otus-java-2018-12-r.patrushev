@@ -101,7 +101,7 @@ public class DBServiceImpl implements DBService {
                 values.add(ReflectionHelper.getFieldValue(objectData, fieldName));
             }
         }
-        String sqlQuery = getUpdateQuery(clazz, columns);
+        String sqlQuery = getUpdateQuery(clazz, idFieldName, columns);
         logger.info("prepared jdbc template - " + sqlQuery);
         try (Connection connection = dataSource.getConnection()) {
             executor.updateRecord(sqlQuery, values, connection, (long) ReflectionHelper.getFieldValue(objectData, idFieldName));
@@ -112,10 +112,10 @@ public class DBServiceImpl implements DBService {
         logger.info("finish updating entity");
     }
 
-    private String getUpdateQuery(Class<?> clazz, List<String> columns) {
+    private String getUpdateQuery(Class<?> clazz, String idFieldName, List<String> columns) {
         String query = updateQueries.get(clazz);
         if (null == query) {
-            query = String.format("UPDATE %s SET %s WHERE id = ?", clazz.getSimpleName(), columns.stream().map(i -> i + " = ?").collect(Collectors.joining(",")));
+            query = String.format("UPDATE %s SET %s WHERE %s = ?", clazz.getSimpleName(), columns.stream().map(i -> i + " = ?").collect(Collectors.joining(",")), idFieldName);
             updateQueries.put(clazz, query);
         }
         return query;
@@ -125,8 +125,8 @@ public class DBServiceImpl implements DBService {
     public <T> T load(long id, Class<T> clazz) {
         logger.info("start loading entity");
         List<Field> fields = ReflectionHelper.getAllDeclaredFieldsFromClass(clazz);
-        getIdField(clazz, fields);
-        String sqlQuery = getSelectQuery(clazz);
+        Field idField = getIdField(clazz, fields);
+        String sqlQuery = getSelectQuery(clazz, idField.getName());
         logger.info("prepared jdbc template - " + sqlQuery);
         Optional<T> loadedEntity = Optional.empty();
         try (Connection connection = dataSource.getConnection()) {
@@ -152,19 +152,19 @@ public class DBServiceImpl implements DBService {
         return loadedEntity.orElseThrow(IllegalArgumentException::new);
     }
 
-    private <T> String getSelectQuery(Class<T> clazz) {
+    private <T> String getSelectQuery(Class<T> clazz, String idFieldName) {
         String query = selectQueries.get(clazz);
         if (null == query) {
-            query = String.format("SELECT * FROM %s WHERE id = ?", clazz.getSimpleName());
+            query = String.format("SELECT * FROM %s WHERE %s = ?", clazz.getSimpleName(), idFieldName);
             selectQueries.put(clazz, query);
         }
         return query;
     }
 
-    private <T> String getSelectCountQuery(Class<T> clazz) {
+    private <T> String getSelectCountQuery(Class<T> clazz, String idFieldName) {
         String query = selectCountQueries.get(clazz);
         if (null == query) {
-            query = String.format("SELECT COUNT(*) FROM %s WHERE id = ?", clazz.getSimpleName());
+            query = String.format("SELECT COUNT(*) FROM %s WHERE %s = ?", clazz.getSimpleName(), idFieldName);
             selectCountQueries.put(clazz, query);
         }
         return query;
@@ -175,12 +175,13 @@ public class DBServiceImpl implements DBService {
         logger.info("start creating or updating entity");
         Class<?> clazz = objectData.getClass();
         Field idField = getIdField(clazz, ReflectionHelper.getAllDeclaredFieldsFromClass(clazz));
-        long id = (long) ReflectionHelper.getFieldValue(objectData, idField.getName());
+        String idFieldName = idField.getName();
+        long id = (long) ReflectionHelper.getFieldValue(objectData, idFieldName);
         if (id == 0) {
             return create(objectData);
         } else {
             int recordCount = 0;
-            String sqlQuery = getSelectCountQuery(clazz);
+            String sqlQuery = getSelectCountQuery(clazz, idFieldName);
             logger.info("prepared jdbc template - " + sqlQuery);
             try (Connection connection = dataSource.getConnection()) {
                 recordCount = executor.selectRecordCount(sqlQuery, id, connection);
