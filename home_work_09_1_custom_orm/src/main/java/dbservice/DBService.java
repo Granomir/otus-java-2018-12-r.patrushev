@@ -1,3 +1,5 @@
+package dbservice;
+
 public interface DBService {
 
     <T> long create(T objectData);

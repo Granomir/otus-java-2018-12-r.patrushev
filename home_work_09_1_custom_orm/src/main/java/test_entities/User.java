@@ -1,3 +1,7 @@
+package test_entities;
+
+import dbservice.Id;
+
 import java.util.Objects;
 
 @SuppressWarnings("WeakerAccess")
@@ -39,7 +43,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "test_entities.User{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", age=" + age +

@@ -1,5 +1,12 @@
+package dbservice.impl;
+
+import dbservice.DBService;
+import dbservice.DbExecutor;
+import dbservice.Id;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import test_datasorce.DataSource;
+import utils.ReflectionHelper;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -82,7 +89,7 @@ public class DBServiceImpl implements DBService {
                 return field;
             }
         }
-        throw new IllegalArgumentException("DBService может работать только с классами, имеющими поле с аннотацией \"@Id\"");
+        throw new IllegalArgumentException("dbservice.DBService может работать только с классами, имеющими поле с аннотацией \"@dbservice.Id\"");
     }
 
     @Override
