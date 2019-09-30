@@ -4,7 +4,6 @@ import dbservice.Id;
 
 import java.util.Objects;
 
-@SuppressWarnings("WeakerAccess")
 public class User {
     @Id
     private long id;

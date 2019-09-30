@@ -16,7 +16,6 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("WeakerAccess")
 public class DBServiceImpl implements DBService {
     private Logger logger = LoggerFactory.getLogger(DBServiceImpl.class);
     private DbExecutor executor;
