@@ -58,6 +58,7 @@
         <module>home_work_13_Многопоточная сортировка</module>
         <module>home_work_14_MessageSystem</module>
         <module>home_work_09_1_custom_orm</module>
+        <module>home_work_10_1_Hibernate_ORM</module>
     </modules>
 
 </project>
