@@ -2,11 +2,42 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>Home_work</artifactId>
+        <groupId>com.patrushev</groupId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.patrushev</groupId>
-    <artifactId>home_work_10_1</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>home_work_10_1_Hibernate_ORM</artifactId>
+    <name>home_work_10_1_Hibernate_ORM</name>
 
+    <properties>
+        <!--по умолчанию в maven версия jdk 1.5, поэтому если в коде будут фишки более поздних версий, то приложение не скомпилируется
+        указание версии jdk нужно для того, чтобы этого избежать-->
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.199</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>5.4.1.Final</version>
+        </dependency>
+    </dependencies>
 
 </project>
