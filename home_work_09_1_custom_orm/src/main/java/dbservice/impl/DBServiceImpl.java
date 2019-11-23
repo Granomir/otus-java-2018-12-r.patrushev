@@ -53,7 +53,7 @@ public class DBServiceImpl implements DBService {
         }
         long id = -1;
         String sqlQuery = getInsertQuery(clazz, columns);
-        logger.info("prepared jdbc template - " + sqlQuery);
+        logger.info("prepared jdbc template - {}", sqlQuery);
         try (Connection connection = dataSource.getConnection()) {
             id = executor.insertRecord(sqlQuery, values, connection);
             connection.commit();
@@ -88,7 +88,7 @@ public class DBServiceImpl implements DBService {
                 return field;
             }
         }
-        throw new IllegalArgumentException("dbservice.DBService может работать только с классами, имеющими поле с аннотацией \"@dbservice.Id\"");
+        throw new IllegalArgumentException("DBService может работать только с классами, имеющими поле с аннотацией \"@dbservice.Id\"");
     }
 
     @Override
@@ -108,7 +108,7 @@ public class DBServiceImpl implements DBService {
             }
         }
         String sqlQuery = getUpdateQuery(clazz, idFieldName, columns);
-        logger.info("prepared jdbc template - " + sqlQuery);
+        logger.info("prepared jdbc template - {}", sqlQuery);
         try (Connection connection = dataSource.getConnection()) {
             executor.updateRecord(sqlQuery, values, connection, (long) ReflectionHelper.getFieldValue(objectData, idFieldName));
             connection.commit();
@@ -133,7 +133,7 @@ public class DBServiceImpl implements DBService {
         List<Field> fields = ReflectionHelper.getAllDeclaredFieldsFromClass(clazz);
         Field idField = getIdField(clazz, fields);
         String sqlQuery = getSelectQuery(clazz, idField.getName());
-        logger.info("prepared jdbc template - " + sqlQuery);
+        logger.info("prepared jdbc template - {}", sqlQuery);
         Optional<T> loadedEntity = Optional.empty();
         try (Connection connection = dataSource.getConnection()) {
             loadedEntity = executor.selectRecord(sqlQuery, id, connection, resultSet -> {
@@ -188,7 +188,7 @@ public class DBServiceImpl implements DBService {
         } else {
             int recordCount = 0;
             String sqlQuery = getSelectCountQuery(clazz, idFieldName);
-            logger.info("prepared jdbc template - " + sqlQuery);
+            logger.info("prepared jdbc template - {}", sqlQuery);
             try (Connection connection = dataSource.getConnection()) {
                 recordCount = executor.selectRecordCount(sqlQuery, id, connection);
             } catch (SQLException e) {

@@ -42,7 +42,7 @@ public class Account {
 
     @Override
     public String toString() {
-        return "test_entities.User{" +
+        return "User{" +
                 "id=" + no +
                 ", name='" + type + '\'' +
                 ", age=" + rest +

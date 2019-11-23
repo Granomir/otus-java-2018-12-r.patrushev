@@ -23,7 +23,7 @@ public class DbExecutorImpl implements DbExecutor {
                 setValue(pst, i, value);
                 i++;
             }
-            logger.info("prepared to execute - " + pst);
+            logger.info("prepared to execute - {}", pst);
             pst.executeUpdate();
             try (ResultSet rs = pst.getGeneratedKeys()) {
                 rs.next();
@@ -51,7 +51,7 @@ public class DbExecutorImpl implements DbExecutor {
                 i++;
             }
             pst.setLong(i, idField);
-            logger.info("prepared to execute - " + pst);
+            logger.info("prepared to execute - {}", pst);
             pst.executeUpdate();
             logger.info("finish updating record");
         } catch (SQLException ex) {
@@ -68,7 +68,7 @@ public class DbExecutorImpl implements DbExecutor {
         logger.info("start selecting record");
         try (PreparedStatement pst = connection.prepareStatement(sqlQuery)) {
             pst.setLong(1, id);
-            logger.info("prepared to execute - " + pst);
+            logger.info("prepared to execute - {}", pst);
             try (ResultSet rs = pst.executeQuery()) {
                 logger.info("finish selecting record");
                 return Optional.ofNullable(rsHandler.apply(rs));
@@ -81,7 +81,7 @@ public class DbExecutorImpl implements DbExecutor {
         logger.info("start selecting record count");
         try (PreparedStatement pst = connection.prepareStatement(sqlQuery)) {
             pst.setLong(1, id);
-            logger.info("prepared to execute - " + pst);
+            logger.info("prepared to execute - {}", pst);
             try (ResultSet rs = pst.executeQuery()) {
                 rs.next();
                 logger.info("finish selecting record count");

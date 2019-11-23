@@ -19,17 +19,6 @@ public class ReflectionHelper {
         wrappers.add(Void.class);
     }
 
-
-    /**
-     * возвращает список полей, объявленных в классе переданного объекта
-     */
-    public static List<Field> getAllDeclaredFields(Object object) {
-        Class<?> objectClass = object.getClass();
-        List<Field> fields = new ArrayList<>(Arrays.asList(objectClass.getDeclaredFields()));
-        fields.removeIf(field -> Modifier.isStatic(field.getModifiers()));
-        return fields;
-    }
-
     /**
      * возвращает список полей, объявленных в переданном классе
      */
@@ -69,7 +58,7 @@ public class ReflectionHelper {
      */
     public static Map<String, Object> getDeclaredFieldsAndValues(Object entity) {
         Map<String, Object> fieldsAndValues = new HashMap<>();
-        List<Field> fields = ReflectionHelper.getAllDeclaredFields(entity);
+        List<Field> fields = ReflectionHelper.getAllDeclaredFieldsFromClass(entity.getClass());
         for (Field field : fields) {
             fieldsAndValues.put(field.getName(), ReflectionHelper.getFieldValue(entity, field.getName()));
         }
