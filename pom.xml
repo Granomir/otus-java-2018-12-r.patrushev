@@ -57,6 +57,7 @@
         <module>home_work_12_Веб сервер</module>
         <module>home_work_13_Многопоточная сортировка</module>
         <module>home_work_14_MessageSystem</module>
+        <module>home_work_09_1_custom_orm</module>
     </modules>
 
 </project>
