@@ -28,9 +28,15 @@ public class DBServiceImpl implements DBService {
         logger.debug("start saving entity");
         long id = -1;
         try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            id = (long) session.save(objectData);
-            session.getTransaction().commit();
+            try {
+                session.beginTransaction();
+                id = (long) session.save(objectData);
+                session.getTransaction().commit();
+            } catch (Exception e) {
+                logger.error("Exception occurred while creating entity: {}", e.getMessage());
+                session.getTransaction().rollback();
+                throw new RuntimeException(e);
+            }
         }
         logger.debug("entity saved with id = {}", id);
         return id;
