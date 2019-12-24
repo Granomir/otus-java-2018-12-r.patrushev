@@ -10,8 +10,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>home_work_09_1_custom_orm</artifactId>
-    <name>home_work_09_1_custom_orm</name>
+    <artifactId>home_work_10_1_Hibernate_ORM</artifactId>
+    <name>home_work_10_1_Hibernate_ORM</name>
 
     <properties>
         <!--по умолчанию в maven версия jdk 1.5, поэтому если в коде будут фишки более поздних версий, то приложение не скомпилируется
@@ -31,6 +31,12 @@
             <artifactId>junit-jupiter</artifactId>
             <version>RELEASE</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>5.4.1.Final</version>
         </dependency>
     </dependencies>
 
