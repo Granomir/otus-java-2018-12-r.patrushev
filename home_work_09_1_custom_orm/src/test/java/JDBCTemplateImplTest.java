@@ -1,5 +1,5 @@
-import dbservice.DBService;
-import dbservice.impl.DBServiceImpl;
+import dbservice.JDBCTemplate;
+import dbservice.impl.JDBCTemplateImpl;
 import dbservice.impl.DbExecutorImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +15,7 @@ import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DBServiceImplTest {
+class JDBCTemplateImplTest {
 
     @BeforeEach
     void setUp() {
@@ -47,32 +47,32 @@ class DBServiceImplTest {
 
     @Test
     void testCreateAndLoad() {
-        DBService dbService = new DBServiceImpl(new DbExecutorImpl(), new DataSourceH2());
+        JDBCTemplate JDBCTemplate = new JDBCTemplateImpl(new DbExecutorImpl(), new DataSourceH2());
         User user1 = new User("Roman", 29);
-        long id = dbService.create(user1);
+        long id = JDBCTemplate.create(user1);
         User user2 = new User(id, "Roman", 29);
-        assertEquals(user2, dbService.load(id, user2.getClass()));
+        assertEquals(user2, JDBCTemplate.load(id, user2.getClass()));
 
         Account acc1 = new Account("new", 29.13);
-        long no = dbService.create(acc1);
+        long no = JDBCTemplate.create(acc1);
         Account acc2 = new Account(no, "new", 29.13);
-        assertEquals(acc2, dbService.load(no, acc2.getClass()));
+        assertEquals(acc2, JDBCTemplate.load(no, acc2.getClass()));
     }
 
     @Test
     void update() {
-        DBService dbService = new DBServiceImpl(new DbExecutorImpl(), new DataSourceH2());
+        JDBCTemplate JDBCTemplate = new JDBCTemplateImpl(new DbExecutorImpl(), new DataSourceH2());
         User user1 = new User("Roman", 29);
-        long id = dbService.create(user1);
+        long id = JDBCTemplate.create(user1);
         User user2 = new User(id, "Roman", 30);
-        dbService.update(user2);
-        assertEquals(user2, dbService.load(id, user2.getClass()));
+        JDBCTemplate.update(user2);
+        assertEquals(user2, JDBCTemplate.load(id, user2.getClass()));
 
         Account acc1 = new Account("new", 29.13);
-        long no = dbService.create(acc1);
+        long no = JDBCTemplate.create(acc1);
         Account acc2 = new Account(no, "new", 30.13);
-        dbService.update(acc2);
-        assertEquals(acc2, dbService.load(no, acc2.getClass()));
+        JDBCTemplate.update(acc2);
+        assertEquals(acc2, JDBCTemplate.load(no, acc2.getClass()));
     }
 
     @Test
@@ -81,31 +81,31 @@ class DBServiceImplTest {
 
     @Test
     void createOrUpdate() {
-        DBService dbService = new DBServiceImpl(new DbExecutorImpl(), new DataSourceH2());
+        JDBCTemplate JDBCTemplate = new JDBCTemplateImpl(new DbExecutorImpl(), new DataSourceH2());
         User user1 = new User("Roman", 29);
-        long id1 = dbService.createOrUpdate(user1);
+        long id1 = JDBCTemplate.createOrUpdate(user1);
         User user2 = new User(id1, "Roman", 29);
-        assertEquals(user2, dbService.load(id1, user2.getClass()));
+        assertEquals(user2, JDBCTemplate.load(id1, user2.getClass()));
         User user3 = new User(id1, "Roman", 30);
-        long id2 = dbService.createOrUpdate(user3);
+        long id2 = JDBCTemplate.createOrUpdate(user3);
         assertEquals(id1, id2);
-        assertEquals(user3, dbService.load(id1, user3.getClass()));
+        assertEquals(user3, JDBCTemplate.load(id1, user3.getClass()));
         User user4 = new User(50, "Roman", 31);
-        long id3 = dbService.createOrUpdate(user4);
+        long id3 = JDBCTemplate.createOrUpdate(user4);
         user4.setId(id3);
-        assertEquals(user4, dbService.load(id3, user4.getClass()));
+        assertEquals(user4, JDBCTemplate.load(id3, user4.getClass()));
 
         Account acc1 = new Account("new", 29.13);
-        long no1 = dbService.createOrUpdate(acc1);
+        long no1 = JDBCTemplate.createOrUpdate(acc1);
         Account acc2 = new Account(no1, "new", 29.13);
-        assertEquals(acc2, dbService.load(no1, acc2.getClass()));
+        assertEquals(acc2, JDBCTemplate.load(no1, acc2.getClass()));
         Account acc3 = new Account(no1, "new", 30.13);
-        long no2 = dbService.createOrUpdate(acc3);
+        long no2 = JDBCTemplate.createOrUpdate(acc3);
         assertEquals(no1, no2);
-        assertEquals(acc3, dbService.load(no1, acc3.getClass()));
+        assertEquals(acc3, JDBCTemplate.load(no1, acc3.getClass()));
         Account acc4 = new Account(50, "new", 31.13);
-        long no3 = dbService.createOrUpdate(acc4);
+        long no3 = JDBCTemplate.createOrUpdate(acc4);
         acc4.setNo(no3);
-        assertEquals(acc4, dbService.load(no3, acc4.getClass()));
+        assertEquals(acc4, JDBCTemplate.load(no3, acc4.getClass()));
     }
 }

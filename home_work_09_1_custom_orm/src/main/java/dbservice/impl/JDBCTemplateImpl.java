@@ -1,6 +1,6 @@
 package dbservice.impl;
 
-import dbservice.DBService;
+import dbservice.JDBCTemplate;
 import dbservice.DbExecutor;
 import dbservice.Id;
 import org.slf4j.Logger;
@@ -16,8 +16,8 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class DBServiceImpl implements DBService {
-    private Logger logger = LoggerFactory.getLogger(DBServiceImpl.class);
+public class JDBCTemplateImpl implements JDBCTemplate {
+    private Logger logger = LoggerFactory.getLogger(JDBCTemplateImpl.class);
     private DbExecutor executor;
     private Map<Class<?>, Field> acceptableClasses;
     private Map<Class<?>, String> insertQueries;
@@ -26,7 +26,7 @@ public class DBServiceImpl implements DBService {
     private Map<Class<?>, String> selectQueries;
     private Map<Class<?>, String> selectCountQueries;
 
-    public DBServiceImpl(DbExecutor executor, DataSource dataSource) {
+    public JDBCTemplateImpl(DbExecutor executor, DataSource dataSource) {
         this.executor = executor;
         this.dataSource = dataSource;
         acceptableClasses = new HashMap<>();

@@ -1,6 +1,6 @@
 package dbservice;
 
-public interface DBService {
+public interface JDBCTemplate {
 
     <T> long create(T objectData);
 
