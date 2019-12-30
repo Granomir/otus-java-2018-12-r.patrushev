@@ -4,10 +4,8 @@ import dbservice.DbExecutor;
 import dbservice.JDBCTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import test_datasorce.DataSource;
 import utils.ReflectionHelper;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,14 +14,12 @@ public class JDBCTemplateImpl implements JDBCTemplate {
     private Logger logger = LoggerFactory.getLogger(JDBCTemplateImpl.class);
     private DbExecutor executor;
     private Map<Class<?>, String> insertQueries;
-    private DataSource dataSource;
     private Map<Class<?>, String> updateQueries;
     private Map<Class<?>, String> selectQueries;
     private Map<Class<?>, String> selectCountQueries;
 
-    public JDBCTemplateImpl(DbExecutor executor, DataSource dataSource) {
+    public JDBCTemplateImpl(DbExecutor executor) {
         this.executor = executor;
-        this.dataSource = dataSource;
         insertQueries = new HashMap<>();
         updateQueries = new HashMap<>();
         selectQueries = new HashMap<>();
@@ -40,10 +36,9 @@ public class JDBCTemplateImpl implements JDBCTemplate {
         long id = -1;
         String sqlQuery = getInsertQuery(clazz, columns);
         logger.info("prepared jdbc template - {}", sqlQuery);
-        try (Connection connection = dataSource.getConnection()) {
-            id = executor.insertRecord(sqlQuery, values, connection);
-            connection.commit();
-        } catch (Exception e) {
+        try {
+            id = executor.insertRecord(sqlQuery, values);
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         logger.info("finish creating entity");
@@ -69,10 +64,9 @@ public class JDBCTemplateImpl implements JDBCTemplate {
         String idFieldName = ReflectionHelper.getIdFieldName(clazz);
         String sqlQuery = getUpdateQuery(clazz, idFieldName, columns);
         logger.info("prepared jdbc template - {}", sqlQuery);
-        try (Connection connection = dataSource.getConnection()) {
-            executor.updateRecord(sqlQuery, values, connection, (long) ReflectionHelper.getFieldValue(objectData, idFieldName));
-            connection.commit();
-        } catch (Exception e) {
+        try {
+            executor.updateRecord(sqlQuery, values, (long) ReflectionHelper.getFieldValue(objectData, idFieldName));
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         logger.info("finish updating entity");
@@ -93,8 +87,8 @@ public class JDBCTemplateImpl implements JDBCTemplate {
         String sqlQuery = getSelectQuery(clazz, ReflectionHelper.getIdFieldName(clazz));
         logger.info("prepared jdbc template - {}", sqlQuery);
         Optional<T> loadedEntity = Optional.empty();
-        try (Connection connection = dataSource.getConnection()) {
-            loadedEntity = executor.selectRecord(sqlQuery, id, connection, resultSet -> {
+        try {
+            loadedEntity = executor.selectRecord(sqlQuery, id, resultSet -> {
                 try {
                     if (resultSet.next()) {
                         T entity = ReflectionHelper.getEmptyEntity(clazz);
@@ -110,7 +104,7 @@ public class JDBCTemplateImpl implements JDBCTemplate {
                 }
                 return null;
             });
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         logger.info("finish loading entity");
@@ -147,8 +141,8 @@ public class JDBCTemplateImpl implements JDBCTemplate {
             int recordCount = 0;
             String sqlQuery = getSelectCountQuery(clazz, idFieldName);
             logger.info("prepared jdbc template - {}", sqlQuery);
-            try (Connection connection = dataSource.getConnection()) {
-                recordCount = executor.selectRecordCount(sqlQuery, id, connection);
+            try {
+                recordCount = executor.selectRecordCount(sqlQuery, id);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
