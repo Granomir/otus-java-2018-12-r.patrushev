@@ -135,23 +135,19 @@ public class JDBCTemplateImpl implements JDBCTemplate {
         Class<?> clazz = objectData.getClass();
         String idFieldName = ReflectionHelper.getIdFieldName(clazz);
         long id = (long) ReflectionHelper.getFieldValue(objectData, idFieldName);
-        if (id == 0) {
+        int recordCount = 0;
+        String sqlQuery = getSelectCountQuery(clazz, idFieldName);
+        logger.info("prepared jdbc template - {}", sqlQuery);
+        try {
+            recordCount = executor.selectRecordCount(sqlQuery, id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (recordCount == 0) {
             return create(objectData);
         } else {
-            int recordCount = 0;
-            String sqlQuery = getSelectCountQuery(clazz, idFieldName);
-            logger.info("prepared jdbc template - {}", sqlQuery);
-            try {
-                recordCount = executor.selectRecordCount(sqlQuery, id);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            if (recordCount == 0) {
-                return create(objectData);
-            } else {
-                update(objectData);
-                return id;
-            }
+            update(objectData);
+            return id;
         }
     }
 }
