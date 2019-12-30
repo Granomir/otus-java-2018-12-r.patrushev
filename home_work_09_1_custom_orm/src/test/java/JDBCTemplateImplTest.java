@@ -7,6 +7,7 @@ import dbservice.impl.DbExecutorImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import test_datasorce.DataSource;
 import test_datasorce.DataSourceH2;
 import test_entities.Account;
 import test_entities.User;
@@ -50,7 +51,8 @@ class JDBCTemplateImplTest {
 
     @Test
     void testCreateAndLoad() {
-        JDBCTemplate jdbcTemplate = new JDBCTemplateImpl(new DbExecutorImpl(), new DataSourceH2());
+        DataSource dataSource = new DataSourceH2();
+        JDBCTemplate jdbcTemplate = new JDBCTemplateImpl(new DbExecutorImpl(dataSource));
         DBService<User> dbServiceUser = new DbServiceUserImpl(jdbcTemplate);
         User user1 = new User("Roman", 29);
         long id = dbServiceUser.create(user1);
@@ -66,7 +68,8 @@ class JDBCTemplateImplTest {
 
     @Test
     void update() {
-        JDBCTemplate jdbcTemplate = new JDBCTemplateImpl(new DbExecutorImpl(), new DataSourceH2());
+        DataSource dataSource = new DataSourceH2();
+        JDBCTemplate jdbcTemplate = new JDBCTemplateImpl(new DbExecutorImpl(dataSource));
         DBService<User> dbServiceUser = new DbServiceUserImpl(jdbcTemplate);
         User user1 = new User("Roman", 29);
         long id = dbServiceUser.create(user1);
@@ -88,7 +91,8 @@ class JDBCTemplateImplTest {
 
     @Test
     void createOrUpdate() {
-        JDBCTemplate jdbcTemplate = new JDBCTemplateImpl(new DbExecutorImpl(), new DataSourceH2());
+        DataSource dataSource = new DataSourceH2();
+        JDBCTemplate jdbcTemplate = new JDBCTemplateImpl(new DbExecutorImpl(dataSource));
         DBService<User> dbServiceUser = new DbServiceUserImpl(jdbcTemplate);
         User user1 = new User("Roman", 29);
         long id1 = dbServiceUser.createOrUpdate(user1);

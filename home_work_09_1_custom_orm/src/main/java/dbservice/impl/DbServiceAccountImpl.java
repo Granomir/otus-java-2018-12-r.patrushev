@@ -3,7 +3,6 @@ package dbservice.impl;
 import dbservice.DBService;
 import dbservice.JDBCTemplate;
 import test_entities.Account;
-import test_entities.User;
 
 public class DbServiceAccountImpl implements DBService<Account> {
     private JDBCTemplate template;
