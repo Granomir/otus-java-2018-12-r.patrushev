@@ -19,7 +19,7 @@ public class DataSourceH2 implements DataSource {
             connection = DriverManager.getConnection(URL);
             connection.setAutoCommit(false);
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error occurred while getting DB connection", e);
         }
         logger.info("finish getting connection to DB");
         return connection;

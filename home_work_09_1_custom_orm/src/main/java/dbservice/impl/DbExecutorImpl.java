@@ -39,10 +39,9 @@ public class DbExecutorImpl implements DbExecutor {
                     return rs.getInt(1);
                 }
             } catch (SQLException ex) {
-                logger.error("error occured when inserting record");
+                logger.error("error occurred when inserting record", ex);
                 connection.rollback(savePoint);
                 logger.error("savepoint was restored");
-                logger.error(ex.getMessage());
                 throw ex;
             }
         }
@@ -66,10 +65,9 @@ public class DbExecutorImpl implements DbExecutor {
                 connection.commit();
                 logger.info("finish updating record");
             } catch (SQLException ex) {
-                logger.error("error occured when updating record");
+                logger.error("error occurred when updating record with id {}", idField, ex);
                 connection.rollback(savePoint);
                 logger.error("savepoint was restored");
-                logger.error(ex.getMessage());
                 throw ex;
             }
         }
@@ -104,17 +102,18 @@ public class DbExecutorImpl implements DbExecutor {
 
     private void setValue(PreparedStatement pst, int i, Object value) throws SQLException {
         Class<?> valueType = value.getClass();
-        if (valueType.equals(Long.class))
+        if (valueType.equals(Long.class)) {
             pst.setLong(i, (long) value);
-        if (valueType.equals(Integer.class))
+        } else if (valueType.equals(Integer.class)) {
             pst.setInt(i, (int) value);
-        if (valueType.equals(Short.class) || valueType.equals(Byte.class))
+        } else if (valueType.equals(Short.class) || valueType.equals(Byte.class)) {
             pst.setShort(i, (short) value);
-        if (valueType.equals(Double.class))
+        } else if (valueType.equals(Double.class)) {
             pst.setDouble(i, (double) value);
-        if (valueType.equals(Float.class))
+        } else if (valueType.equals(Float.class)) {
             pst.setFloat(i, (float) value);
-        if (valueType.equals(Character.class) || valueType.equals(String.class))
+        } else if (valueType.equals(Character.class) || valueType.equals(String.class)) {
             pst.setString(i, (String) value);
+        }
     }
 }

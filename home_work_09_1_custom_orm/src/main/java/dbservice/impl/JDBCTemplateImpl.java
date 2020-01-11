@@ -39,7 +39,7 @@ public class JDBCTemplateImpl implements JDBCTemplate {
         try {
             id = executor.insertRecord(sqlQuery, values);
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error occurred while creating entity: {}", objectData, e);
         }
         logger.info("finish creating entity");
         return id;
@@ -67,7 +67,7 @@ public class JDBCTemplateImpl implements JDBCTemplate {
         try {
             executor.updateRecord(sqlQuery, values, (long) ReflectionHelper.getFieldValue(objectData, idFieldName));
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error occurred while updating entity: {}", objectData, e);
         }
         logger.info("finish updating entity");
     }
@@ -100,12 +100,12 @@ public class JDBCTemplateImpl implements JDBCTemplate {
                         return ReflectionHelper.fillEntity(clazz, entity, values);
                     }
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    logger.error("Error occurred while deserialize entity with id: {}", id, e);
                 }
                 return null;
             });
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error occurred while loading entity with id: {}", id, e);
         }
         logger.info("finish loading entity");
         return loadedEntity.orElseThrow(IllegalArgumentException::new);
@@ -144,7 +144,7 @@ public class JDBCTemplateImpl implements JDBCTemplate {
             try {
                 recordCount = executor.selectRecordCount(sqlQuery, id);
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.error("Error occurred while creatingOrUpdating entity: {}", objectData, e);
             }
             if (recordCount == 0) {
                 return create(objectData);
