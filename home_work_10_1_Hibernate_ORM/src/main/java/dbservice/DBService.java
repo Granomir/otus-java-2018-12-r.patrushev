@@ -1,13 +1,11 @@
 package dbservice;
 
-public interface DBService {
+public interface DBService<T> {
+    long create(T objectData);
 
-    <T> long create(T objectData);
+    void update(T objectData);
 
-    <T> void update(T objectData);
+    long createOrUpdate(T objectData);
 
-    <T> long createOrUpdate(T objectData);
-
-    <T> T load(long id, Class<T> clazz);
-
+    T load(long id);
 }
