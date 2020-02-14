@@ -14,9 +14,7 @@ public class DBServiceUserImpl implements DBService<User> {
     private final SessionFactory sessionFactory;
 
     public DBServiceUserImpl() {
-        Configuration configuration = new Configuration().configure("hibernate.cfg.xml");
-        sessionFactory = configuration.buildSessionFactory();
-        logger.debug("DBService initialized");
+        this("hibernate.cfg.xml");
     }
 
     public DBServiceUserImpl(String configName) {
@@ -27,7 +25,7 @@ public class DBServiceUserImpl implements DBService<User> {
 
     public long create(User objectData) {
         logger.debug("start saving entity");
-        long id = -1;
+        long id;
         try (Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
