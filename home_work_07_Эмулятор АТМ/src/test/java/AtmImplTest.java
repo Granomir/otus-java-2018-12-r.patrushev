@@ -1,5 +1,7 @@
-package com.patrushev.my_atm_emulator;
-
+import com.patrushev.my_atm_emulator.Atm;
+import com.patrushev.my_atm_emulator.AtmImpl;
+import com.patrushev.my_atm_emulator.GreedyDispenser;
+import com.patrushev.my_atm_emulator.MoneyCassette;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
