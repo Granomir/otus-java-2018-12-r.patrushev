@@ -20,9 +20,9 @@ import java.util.List;
 */
 
 public class GcTracker {
-    private static Logger logger = LoggerFactory.getLogger("logger");
+    private static final Logger logger = LoggerFactory.getLogger("logger");
 
-    private static List<GCjobReport> reports = new ArrayList<>();
+    private static final List<GCjobReport> reports = new ArrayList<>();
 
     private static long youngGCcount;
     private static long youngGCDurationCount;
@@ -43,30 +43,26 @@ public class GcTracker {
             //делаем бин сборщика мусора источником оповещений о событиях
             NotificationEmitter emitter = (NotificationEmitter) gcBean;
             //создаем слушателя оповещений о событиях
-            NotificationListener listener = new NotificationListener() {
+            //определяем метод, в котором будет происходить обработка полученных оповещений о событиях
+            NotificationListener listener = (notification, handBack) -> {
+                //проверяем, что оповещение является оповещением о сборке мусора
+                if (notification.getType().equals(GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION)) {
+                    //получаем всю информацию о сборке мусора из объекта оповещения
+                    GarbageCollectionNotificationInfo info = GarbageCollectionNotificationInfo.from((CompositeData) notification.getUserData());
 
-                //определяем метод, в котором будет происходить обработка полученных оповещений о событиях
-                @Override
-                public void handleNotification(Notification notification, Object handBack) {
-                    //проверяем, что оповещение является оповещением о сборке мусора
-                    if (notification.getType().equals(GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION)) {
-                        //получаем всю информацию о сборке мусора из объекта оповещения
-                        GarbageCollectionNotificationInfo info = GarbageCollectionNotificationInfo.from((CompositeData) notification.getUserData());
-
-                        if (info.getGcName().contains("Young") || info.getGcName().contains("ParNew") || info.getGcName().contains("Copy") || info.getGcName().equals("PS Scavenge")) {
-                            logger.info("young сборка №" + info.getGcInfo().getId());
-                            tempYoungGCCount++;
-                            youngGCcount++;
-                            youngGCDurationCount += info.getGcInfo().getDuration();
-                            totalGCDuration += info.getGcInfo().getDuration();
-                        }
-                        if (info.getGcName().contains("Old") || info.getGcName().contains("ConcurrentMarkSweep") || info.getGcName().contains("MarkSweepCompact") || info.getGcName().equals("PS MarkSweep")) {
-                            logger.info("old сборка №" + info.getGcInfo().getId());
-                            tempOldGCCount++;
-                            oldGCcount++;
-                            oldGCDurationCount += info.getGcInfo().getDuration();
-                            totalGCDuration += info.getGcInfo().getDuration();
-                        }
+                    if (info.getGcName().contains("Young") || info.getGcName().contains("ParNew") || info.getGcName().contains("Copy") || info.getGcName().equals("PS Scavenge")) {
+                        logger.info("young сборка №" + info.getGcInfo().getId());
+                        tempYoungGCCount++;
+                        youngGCcount++;
+                        youngGCDurationCount += info.getGcInfo().getDuration();
+                        totalGCDuration += info.getGcInfo().getDuration();
+                    }
+                    if (info.getGcName().contains("Old") || info.getGcName().contains("ConcurrentMarkSweep") || info.getGcName().contains("MarkSweepCompact") || info.getGcName().equals("PS MarkSweep")) {
+                        logger.info("old сборка №" + info.getGcInfo().getId());
+                        tempOldGCCount++;
+                        oldGCcount++;
+                        oldGCDurationCount += info.getGcInfo().getDuration();
+                        totalGCDuration += info.getGcInfo().getDuration();
                     }
                 }
             };

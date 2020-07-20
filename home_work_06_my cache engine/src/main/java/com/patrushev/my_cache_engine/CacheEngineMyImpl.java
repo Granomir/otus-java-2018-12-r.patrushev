@@ -25,7 +25,7 @@ public class CacheEngineMyImpl<K, V> implements CacheEngine<K, V> {
     //счетчик неудачных запросов элементов из кэша (элемент не найден)
     private int miss = 0;
 
-    CacheEngineMyImpl(int maxElements, long lifeTimeMs, long idleTimeMs) {
+    public CacheEngineMyImpl(int maxElements, long lifeTimeMs, long idleTimeMs) {
         if (maxElements <= 0) throw new IllegalArgumentException("capacity cannot be 0 or less");
         if (lifeTimeMs < 0 || idleTimeMs < 0) throw new IllegalArgumentException("time cannot be less than 0");
         this.maxElements = maxElements;

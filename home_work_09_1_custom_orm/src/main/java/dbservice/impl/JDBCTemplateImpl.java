@@ -1,35 +1,25 @@
 package dbservice.impl;
 
-import dbservice.DBService;
 import dbservice.DbExecutor;
-import dbservice.Id;
+import dbservice.JDBCTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import test_datasorce.DataSource;
 import utils.ReflectionHelper;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class DBServiceImpl implements DBService {
-    private Logger logger = LoggerFactory.getLogger(DBServiceImpl.class);
+public class JDBCTemplateImpl implements JDBCTemplate {
+    private Logger logger = LoggerFactory.getLogger(JDBCTemplateImpl.class);
     private DbExecutor executor;
-    private Map<Class<?>, Field> acceptableClasses;
     private Map<Class<?>, String> insertQueries;
-    private DataSource dataSource;
     private Map<Class<?>, String> updateQueries;
     private Map<Class<?>, String> selectQueries;
     private Map<Class<?>, String> selectCountQueries;
 
-    public DBServiceImpl(DbExecutor executor, DataSource dataSource) {
+    public JDBCTemplateImpl(DbExecutor executor) {
         this.executor = executor;
-        this.dataSource = dataSource;
-        acceptableClasses = new HashMap<>();
         insertQueries = new HashMap<>();
         updateQueries = new HashMap<>();
         selectQueries = new HashMap<>();
@@ -40,37 +30,19 @@ public class DBServiceImpl implements DBService {
     public <T> long create(T objectData) {
         logger.info("start creating entity");
         Class<?> clazz = objectData.getClass();
-        List<Field> fields = ReflectionHelper.getAllDeclaredFieldsFromClass(clazz);
-        Field idField = getIdField(clazz, fields);
         List<String> columns = new ArrayList<>();
         List<Object> values = new ArrayList<>();
-        for (Field field : fields) {
-            String fieldName = field.getName();
-            if (!fieldName.equals(idField.getName())) {
-                columns.add(fieldName);
-                values.add(ReflectionHelper.getFieldValue(objectData, fieldName));
-            }
-        }
+        ReflectionHelper.fillFieldsNamesWithValues(objectData, columns, values);
         long id = -1;
         String sqlQuery = getInsertQuery(clazz, columns);
         logger.info("prepared jdbc template - {}", sqlQuery);
-        try (Connection connection = dataSource.getConnection()) {
-            id = executor.insertRecord(sqlQuery, values, connection);
-            connection.commit();
-        } catch (Exception e) {
-            e.printStackTrace();
+        try {
+            id = executor.insertRecord(sqlQuery, values);
+        } catch (SQLException e) {
+            logger.error("Error occurred while creating entity: {}", objectData, e);
         }
         logger.info("finish creating entity");
         return id;
-    }
-
-    private Field getIdField(Class<?> clazz, List<Field> fields) {
-        Field idField = acceptableClasses.get(clazz);
-        if (idField == null) {
-            idField = getIdField(fields);
-            acceptableClasses.put(clazz, idField);
-        }
-        return idField;
     }
 
     private String getInsertQuery(Class<?> clazz, List<String> columns) {
@@ -82,38 +54,20 @@ public class DBServiceImpl implements DBService {
         return query;
     }
 
-    private Field getIdField(List<Field> fields) {
-        for (Field field : fields) {
-            if (field.getAnnotation(Id.class) != null) {
-                return field;
-            }
-        }
-        throw new IllegalArgumentException("DBService может работать только с классами, имеющими поле с аннотацией \"@dbservice.Id\"");
-    }
-
     @Override
     public <T> void update(T objectData) {
         logger.info("start updating entity");
         Class<?> clazz = objectData.getClass();
-        List<Field> fields = ReflectionHelper.getAllDeclaredFieldsFromClass(clazz);
-        Field idField = getIdField(clazz, fields);
         List<String> columns = new ArrayList<>();
         List<Object> values = new ArrayList<>();
-        String idFieldName = idField.getName();
-        for (Field field : fields) {
-            String fieldName = field.getName();
-            if (!fieldName.equals(idFieldName)) {
-                columns.add(fieldName);
-                values.add(ReflectionHelper.getFieldValue(objectData, fieldName));
-            }
-        }
+        ReflectionHelper.fillFieldsNamesWithValues(objectData, columns, values);
+        String idFieldName = ReflectionHelper.getIdFieldName(clazz);
         String sqlQuery = getUpdateQuery(clazz, idFieldName, columns);
         logger.info("prepared jdbc template - {}", sqlQuery);
-        try (Connection connection = dataSource.getConnection()) {
-            executor.updateRecord(sqlQuery, values, connection, (long) ReflectionHelper.getFieldValue(objectData, idFieldName));
-            connection.commit();
-        } catch (Exception e) {
-            e.printStackTrace();
+        try {
+            executor.updateRecord(sqlQuery, values, (long) ReflectionHelper.getFieldValue(objectData, idFieldName));
+        } catch (SQLException e) {
+            logger.error("Error occurred while updating entity: {}", objectData, e);
         }
         logger.info("finish updating entity");
     }
@@ -130,29 +84,28 @@ public class DBServiceImpl implements DBService {
     @Override
     public <T> T load(long id, Class<T> clazz) {
         logger.info("start loading entity");
-        List<Field> fields = ReflectionHelper.getAllDeclaredFieldsFromClass(clazz);
-        Field idField = getIdField(clazz, fields);
-        String sqlQuery = getSelectQuery(clazz, idField.getName());
+        String sqlQuery = getSelectQuery(clazz, ReflectionHelper.getIdFieldName(clazz));
         logger.info("prepared jdbc template - {}", sqlQuery);
         Optional<T> loadedEntity = Optional.empty();
-        try (Connection connection = dataSource.getConnection()) {
-            loadedEntity = executor.selectRecord(sqlQuery, id, connection, resultSet -> {
+        try {
+            loadedEntity = executor.selectRecord(sqlQuery, id, resultSet -> {
                 try {
                     if (resultSet.next()) {
-                        Constructor<T> constructor = clazz.getConstructor();
-                        T entity = constructor.newInstance();
-                        for (Field field : fields) {
-                            ReflectionHelper.setFieldValue(entity, field, resultSet.getObject(field.getName()));
+                        T entity = ReflectionHelper.getEmptyEntity(clazz);
+                        List<String> fieldsNames = ReflectionHelper.getAllDeclaredFieldsNamesFromClass(clazz);
+                        Map<String, Object> values = new HashMap<>();
+                        for (String field : fieldsNames) {
+                            values.put(field, resultSet.getObject(field));
                         }
-                        return entity;
+                        return ReflectionHelper.fillEntity(clazz, entity, values);
                     }
-                } catch (SQLException | IllegalAccessException | NoSuchMethodException | InstantiationException | InvocationTargetException e) {
-                    e.printStackTrace();
+                } catch (SQLException e) {
+                    logger.error("Error occurred while deserialize entity with id: {}", id, e);
                 }
                 return null;
             });
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            logger.error("Error occurred while loading entity with id: {}", id, e);
         }
         logger.info("finish loading entity");
         return loadedEntity.orElseThrow(IllegalArgumentException::new);
@@ -180,8 +133,7 @@ public class DBServiceImpl implements DBService {
     public <T> long createOrUpdate(T objectData) {
         logger.info("start creating or updating entity");
         Class<?> clazz = objectData.getClass();
-        Field idField = getIdField(clazz, ReflectionHelper.getAllDeclaredFieldsFromClass(clazz));
-        String idFieldName = idField.getName();
+        String idFieldName = ReflectionHelper.getIdFieldName(clazz);
         long id = (long) ReflectionHelper.getFieldValue(objectData, idFieldName);
         if (id == 0) {
             return create(objectData);
@@ -189,10 +141,10 @@ public class DBServiceImpl implements DBService {
             int recordCount = 0;
             String sqlQuery = getSelectCountQuery(clazz, idFieldName);
             logger.info("prepared jdbc template - {}", sqlQuery);
-            try (Connection connection = dataSource.getConnection()) {
-                recordCount = executor.selectRecordCount(sqlQuery, id, connection);
+            try {
+                recordCount = executor.selectRecordCount(sqlQuery, id);
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.error("Error occurred while creatingOrUpdating entity: {}", objectData, e);
             }
             if (recordCount == 0) {
                 return create(objectData);

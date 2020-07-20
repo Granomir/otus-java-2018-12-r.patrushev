@@ -8,7 +8,7 @@ public class MyArrayList<E> implements List<E> {
     private E[] array;
     //текущее количество элементов в списке
     private int size = 0;
-    private int fillingDegree = 75;
+    private final int fillingDegree = 75;
 
     //готов - создается массив с размером по умолчанию 10
     @SuppressWarnings("unchecked")
@@ -84,8 +84,8 @@ public class MyArrayList<E> implements List<E> {
             }
             return a;
         } else {
-            T[] newArray = (T[]) Array.newInstance(a.getClass().getComponentType(), a.length);
-            for (int i = 0; i < a.length; i++) {
+            T[] newArray = (T[]) Array.newInstance(a.getClass().getComponentType(), size);
+            for (int i = 0; i < size; i++) {
                 newArray[i] = (T) array[i];
             }
             return newArray;
@@ -110,11 +110,10 @@ public class MyArrayList<E> implements List<E> {
 
     //готов - копирует содержимое старого внутреннего массива в новый массив большего размера
     private void enlargeCapacity(double newCapacity) {
+        E[] tempArray = array;
         if (newCapacity > Integer.MAX_VALUE) {
-            E[] tempArray = array;
             array = Arrays.copyOf(tempArray, Integer.MAX_VALUE);
         } else {
-            E[] tempArray = array;
             array = Arrays.copyOf(tempArray, (int) newCapacity);
         }
     }
@@ -395,5 +394,15 @@ public class MyArrayList<E> implements List<E> {
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
         throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public String toString() {
+        //стрёмненький
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < size; i++) {
+            builder.append(array[i]).append(",");
+        }
+        return builder.toString();
     }
 }

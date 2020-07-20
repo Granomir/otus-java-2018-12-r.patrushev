@@ -1,68 +1,24 @@
 package utils;
 
+import dbservice.Id;
+
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("WeakerAccess")
 public class ReflectionHelper {
-    private static Set<Class<?>> wrappers = new HashSet<>();
-
-    static {
-        wrappers.add(Boolean.class);
-        wrappers.add(Byte.class);
-        wrappers.add(Short.class);
-        wrappers.add(Integer.class);
-        wrappers.add(Long.class);
-        wrappers.add(Float.class);
-        wrappers.add(Double.class);
-        wrappers.add(Void.class);
-    }
 
     /**
      * возвращает список полей, объявленных в переданном классе
      */
-    public static List<Field> getAllDeclaredFieldsFromClass(Class clazz) {
+    public static List<Field> getAllDeclaredFieldsFromClass(Class<?> clazz) {
         List<Field> fields = new ArrayList<>(Arrays.asList(clazz.getDeclaredFields()));
         fields.removeIf(field -> Modifier.isStatic(field.getModifiers()));
         return fields;
-    }
-
-    /**
-     * возвращает список всех полей переданного объекта (включая унаследованные)
-     */
-    public static List<Field> getAllFields(Object object) {
-        Class<?> objectClass = object.getClass();
-        List<Field> fields = new ArrayList<>(Arrays.asList(objectClass.getDeclaredFields()));
-        if (objectClass.getSuperclass() != null) {
-            fields.addAll(Arrays.asList(objectClass.getSuperclass().getDeclaredFields()));
-        }
-        fields.removeIf(field -> Modifier.isStatic(field.getModifiers()));
-        return fields;
-    }
-
-    /**
-     * возвращает список всех полей переданного класса (включая унаследованные)
-     */
-    public static List<Field> getAllFieldsFromClass(Class clazz) {
-        List<Field> fields = new ArrayList<>(Arrays.asList(clazz.getDeclaredFields()));
-        if (clazz.getSuperclass() != null) {
-            fields.addAll(Arrays.asList(clazz.getSuperclass().getDeclaredFields()));
-        }
-        fields.removeIf(field -> Modifier.isStatic(field.getModifiers()));
-        return fields;
-    }
-
-    /**
-     * возвращает поля, объявленные в классе переданного объекта, с их значениями
-     */
-    public static Map<String, Object> getDeclaredFieldsAndValues(Object entity) {
-        Map<String, Object> fieldsAndValues = new HashMap<>();
-        List<Field> fields = ReflectionHelper.getAllDeclaredFieldsFromClass(entity.getClass());
-        for (Field field : fields) {
-            fieldsAndValues.put(field.getName(), ReflectionHelper.getFieldValue(entity, field.getName()));
-        }
-        return fieldsAndValues;
     }
 
     /**
@@ -108,13 +64,6 @@ public class ReflectionHelper {
     }
 
     /**
-     * Определяет, является ли переданный объект примитивным типом в обёртке
-     */
-    public static boolean isWrapperType(Object obj) {
-        return wrappers.contains(obj.getClass());
-    }
-
-    /**
      * присваивает переданное значение конкретного поля переданного объекта
      *
      * @param entity - редактируемый объект
@@ -133,5 +82,59 @@ public class ReflectionHelper {
                 field.setAccessible(false);
             }
         }
+    }
+
+    public static <T> void fillFieldsNamesWithValues(T objectData, List<String> columns, List<Object> values) {
+        Class<?> clazz = objectData.getClass();
+        List<Field> fields = ReflectionHelper.getAllDeclaredFieldsFromClass(clazz);
+        Field idField = getIdField(fields);
+        for (Field field : fields) {
+            String fieldName = field.getName();
+            if (!fieldName.equals(idField.getName())) {
+                columns.add(fieldName);
+                values.add(ReflectionHelper.getFieldValue(objectData, fieldName));
+            }
+        }
+    }
+
+    private static Field getIdField(List<Field> fields) {
+        for (Field field : fields) {
+            if (field.getAnnotation(Id.class) != null) {
+                return field;
+            }
+        }
+        throw new IllegalArgumentException("DBService может работать только с классами, имеющими поле с аннотацией \"@Id\"");
+    }
+
+    public static String getIdFieldName(Class<?> clazz) {
+        final List<Field> fields = getAllDeclaredFieldsFromClass(clazz);
+        final Field idField = getIdField(fields);
+        return idField.getName();
+    }
+
+    public static <T> T getEmptyEntity(Class<T> clazz) {
+        try {
+            Constructor<T> constructor = clazz.getConstructor();
+            return constructor.newInstance();
+        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static <T> List<String> getAllDeclaredFieldsNamesFromClass(Class<T> clazz) {
+        return getAllDeclaredFieldsFromClass(clazz).stream().map(Field::getName).collect(Collectors.toList());
+    }
+
+    public static <T> T fillEntity(Class<T> clazz, T entity, Map<String, Object> values) {
+        List<Field> fields = ReflectionHelper.getAllDeclaredFieldsFromClass(clazz);
+        for (Field field : fields) {
+            try {
+                ReflectionHelper.setFieldValue(entity, field, values.get(field.getName()));
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        return entity;
     }
 }
