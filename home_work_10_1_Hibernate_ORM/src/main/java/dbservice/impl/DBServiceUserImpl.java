@@ -47,11 +47,11 @@ public class DBServiceUserImpl implements DBService<User> {
     }
 
     public void update(User objectData) {
-
+        throw new UnsupportedOperationException();
     }
 
     public long createOrUpdate(User objectData) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     public User load(long id) {
