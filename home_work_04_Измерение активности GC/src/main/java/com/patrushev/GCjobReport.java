@@ -2,6 +2,11 @@ package com.patrushev;
 
 @SuppressWarnings("WeakerAccess")
 public class GCjobReport {
+    private final int minuteNumber;
+    private final long youngGCcount;
+    private final long youngGCDurationCount;
+    private final long oldGCcount;
+    private final long oldGCDurationCount;
 
     public GCjobReport(int minuteNumber, long youngGCcount, long youngGCDurationCount, long oldGCcount, long oldGCDurationCount) {
         this.minuteNumber = minuteNumber;
@@ -30,10 +35,4 @@ public class GCjobReport {
     public long getOldGCDurationCount() {
         return oldGCDurationCount;
     }
-
-    private int minuteNumber;
-    private long youngGCcount;
-    private long youngGCDurationCount;
-    private long oldGCcount;
-    private long oldGCDurationCount;
 }

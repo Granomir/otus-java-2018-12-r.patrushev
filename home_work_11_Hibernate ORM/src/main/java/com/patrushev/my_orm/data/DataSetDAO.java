@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DataSetDAO {
-    private static Logger logger = LoggerFactory.getLogger(DataSetDAO.class);
+    private static final Logger logger = LoggerFactory.getLogger(DataSetDAO.class);
 
     public <T extends DataSet> void save(Session session, T entity) {
         session.save(entity);

@@ -15,8 +15,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class FrontendServiceImpl implements FrontendService {
     private final Logger logger = LoggerFactory.getLogger(CrudServlet.class);
     private Address address;
-    private MessageSystemContext msContext;
-    private Address frontAddress;
+    private final MessageSystemContext msContext;
+    private final Address frontAddress;
     private final Map<String, LinkedBlockingQueue<Message>> answerMessageAwaitingQueues;
 
     public FrontendServiceImpl(MessageSystemContext msContext, Address frontAddress) {

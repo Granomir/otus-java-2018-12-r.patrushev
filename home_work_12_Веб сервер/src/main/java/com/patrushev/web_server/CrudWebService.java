@@ -21,8 +21,8 @@ import org.hibernate.cfg.Configuration;
 
 public class CrudWebService {
     private final static String STATIC = "/static";
-    private ServletContextHandler context;
-    private Server server;
+    private final ServletContextHandler context;
+    private final Server server;
 
     public void start() throws Exception {
         Configuration configuration = new Configuration();

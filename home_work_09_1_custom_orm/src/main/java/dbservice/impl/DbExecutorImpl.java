@@ -11,8 +11,8 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public class DbExecutorImpl implements DbExecutor {
-    private Logger logger = LoggerFactory.getLogger(DbExecutorImpl.class);
-    private DataSource dataSource;
+    private final Logger logger = LoggerFactory.getLogger(DbExecutorImpl.class);
+    private final DataSource dataSource;
 
     public DbExecutorImpl(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -113,7 +113,7 @@ public class DbExecutorImpl implements DbExecutor {
         } else if (valueType.equals(Float.class)) {
             pst.setFloat(i, (float) value);
         } else if (valueType.equals(Character.class) || valueType.equals(String.class)) {
-            pst.setString(i, (String) value);
+            pst.setString(i, String.valueOf(value));
         }
     }
 }

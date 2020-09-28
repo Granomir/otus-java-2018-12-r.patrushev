@@ -19,12 +19,15 @@ public class User {
     private Address address;
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Phone> phones = new HashSet<>();
+    @Column(name = "pass")
+    private String pass;
 
-    public User(long id, String name, int age, Address address, Phone... phones) {
+    public User(long id, String name, int age, Address address, String pass, Phone... phones) {
         this.id = id;
         this.name = name;
         this.age = age;
         this.address = address;
+        this.pass = pass;
         address.setOwner(this);
         for (Phone phone : phones) {
             phone.setOwner(this);
@@ -32,10 +35,11 @@ public class User {
         }
     }
 
-    public User(String name, int age, Address address, Phone... phones) {
+    public User(String name, int age, Address address, String pass, Phone... phones) {
         this.name = name;
         this.age = age;
         this.address = address;
+        this.pass = pass;
         address.setOwner(this);
         for (Phone phone : phones) {
             phone.setOwner(this);
@@ -103,6 +107,14 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(name, age, address, phones);
+    }
+
+    public String getPass() {
+        return pass;
+    }
+
+    public void setPass(String pass) {
+        this.pass = pass;
     }
 
     @Override

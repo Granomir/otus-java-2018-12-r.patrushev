@@ -2,8 +2,8 @@ package com.patrushev.my_atm_emulator;
 
 @SuppressWarnings("WeakerAccess")
 public class MoneyCassette {
-    private int denomination;
-    private int quantity;
+    private final int denomination;
+    private final int quantity;
 
     public MoneyCassette(int denomination, int quantity) {
         this.denomination = denomination;

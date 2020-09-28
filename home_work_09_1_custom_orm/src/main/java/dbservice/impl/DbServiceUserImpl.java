@@ -5,7 +5,7 @@ import dbservice.JDBCTemplate;
 import test_entities.User;
 
 public class DbServiceUserImpl implements DBService<User> {
-    private JDBCTemplate template;
+    private final JDBCTemplate template;
 
     public DbServiceUserImpl(JDBCTemplate template) {
         this.template = template;

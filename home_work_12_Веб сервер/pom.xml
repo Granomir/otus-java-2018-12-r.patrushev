@@ -128,7 +128,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.patrushev.web_server.Main</mainClass>
+                            <mainClass>com.patrushev.web_server.HW121</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

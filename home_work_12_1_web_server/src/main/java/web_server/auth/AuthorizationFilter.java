@@ -24,7 +24,7 @@ public class AuthorizationFilter implements Filter {
         logger.info("Проверка наличия активной сессии");
         if (session == null) {
             logger.info("Активная сессия отсутствует");
-            res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            res.sendRedirect("http://localhost:8081");
         } else {
             logger.info("Активная сессия существует");
             filterChain.doFilter(servletRequest, servletResponse);

@@ -7,7 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 
 public class Executor {
-    private static Logger logger = LoggerFactory.getLogger(Executor.class);
+    private static final Logger logger = LoggerFactory.getLogger(Executor.class);
 
     public static <T> T queryPrepared(PreparedStatement select, TResultHandler<T> handler, Class<T> clazz) throws SQLException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         try (select; ResultSet result = select.executeQuery()) {

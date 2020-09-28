@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Map;
 
 public class PostgresQueryingHelper implements QueryingHelper {
-    private Logger logger = LoggerFactory.getLogger(PostgresQueryingHelper.class);
-    private Map<String, String> insertQueries;
-    private Map<String, List<Field>> fieldsLists;
+    private final Logger logger = LoggerFactory.getLogger(PostgresQueryingHelper.class);
+    private final Map<String, String> insertQueries;
+    private final Map<String, List<Field>> fieldsLists;
 
     @Override
     public String getCreateTableQuery(Class<? extends DataSet> entityClass) {

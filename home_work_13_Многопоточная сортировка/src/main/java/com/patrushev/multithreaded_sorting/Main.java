@@ -1,6 +1,5 @@
 package com.patrushev.multithreaded_sorting;
 
-import java.util.Arrays;
 import java.util.concurrent.ForkJoinPool;
 
 public class Main {

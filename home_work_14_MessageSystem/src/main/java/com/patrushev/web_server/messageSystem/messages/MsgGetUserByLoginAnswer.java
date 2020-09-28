@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 
 public class MsgGetUserByLoginAnswer extends MsgToFrontend {
     private final Logger logger = LoggerFactory.getLogger(MsgGetUserByLoginAnswer.class);
-    private UserDataSet checkingUser;
-    private String queryId;
+    private final UserDataSet checkingUser;
+    private final String queryId;
 
     public MsgGetUserByLoginAnswer(Address from, Address to, UserDataSet checkingUser, String id) {
         super(from, to);

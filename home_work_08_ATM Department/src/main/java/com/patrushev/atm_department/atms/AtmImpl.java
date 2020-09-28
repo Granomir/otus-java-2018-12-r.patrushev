@@ -14,7 +14,7 @@ public class AtmImpl implements Atm, EventListener {
     /**
      * объект снимка, в который конструктором записывается начальное состояние объекта ATM
      */
-    private Memento memento;
+    private final Memento memento;
 
     /**
      * в конструктор передаются денежные кассеты (любое количество) с заданными номиналом банкнот, с которыми будет работать банкомат, а также их начальное количество.
@@ -38,7 +38,7 @@ public class AtmImpl implements Atm, EventListener {
      */
     @Override
     public void depositMoney(int banknoteDenomination, int quantity) {
-        if (cassettes.keySet().contains(banknoteDenomination)) {
+        if (cassettes.containsKey(banknoteDenomination)) {
             cassettes.put(banknoteDenomination, cassettes.get(banknoteDenomination) + quantity);
         } else {
             throw new IllegalArgumentException("Данный номинал не поддерживается банкоматом.");

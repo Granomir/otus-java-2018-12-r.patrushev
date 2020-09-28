@@ -11,8 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
+import static web_server.CrudWebService.CRUD_PATH;
+
 public class LoginServlet extends HttpServlet {
+    private final static int MAX_INACTIVE_INTERVAL = 300;
+
     private final Logger logger = LoggerFactory.getLogger(CrudServlet.class);
+
     private final DBService<User> dbService;
 
     public LoginServlet(DBService<User> dbService) {
@@ -30,9 +35,9 @@ public class LoginServlet extends HttpServlet {
         if (authenticateUser(login, pass)) {
             logger.info("Пользователь ввел правильный пароль, создается сессия");
             HttpSession session = req.getSession();
-            session.setMaxInactiveInterval(300);
+            session.setMaxInactiveInterval(MAX_INACTIVE_INTERVAL);
             logger.info("Создана сессия");
-            resp.sendRedirect("/crud");
+            resp.sendRedirect(CRUD_PATH);
         } else {
             logger.info("Пользователь ввел неправильные данные");
             resp.setStatus(HttpServletResponse.SC_FORBIDDEN);

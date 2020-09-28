@@ -4,10 +4,6 @@ import com.patrushev.web_server.data.AddressDataSet;
 import com.patrushev.web_server.data.PhoneDataSet;
 import com.patrushev.web_server.data.UserDataSet;
 import com.patrushev.web_server.dbutils.DBService;
-import com.patrushev.web_server.messageSystem.Address;
-import com.patrushev.web_server.messageSystem.Addressee;
-import com.patrushev.web_server.messageSystem.MessageSystem;
-import com.patrushev.web_server.messageSystem.MessageSystemContext;
 import com.patrushev.web_server.view.TemplateProcessor;
 import org.hibernate.ObjectNotFoundException;
 import org.slf4j.Logger;
@@ -23,7 +19,7 @@ import java.util.Map;
 public class CrudServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(CrudServlet.class);
     private final TemplateProcessor templateProcessor;
-    private FrontendService frontendService;
+    private final FrontendService frontendService;
 
     private final DBService dbService;
 

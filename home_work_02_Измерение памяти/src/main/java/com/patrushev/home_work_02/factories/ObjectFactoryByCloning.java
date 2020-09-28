@@ -3,7 +3,7 @@ package com.patrushev.home_work_02.factories;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class ObjectFactoryByClonning implements ObjectFactory {
+public class ObjectFactoryByCloning implements ObjectFactory {
     Gson gsonTo = new GsonBuilder()
             .setPrettyPrinting()
             .create();
@@ -12,7 +12,7 @@ public class ObjectFactoryByClonning implements ObjectFactory {
     Class objectClass;
 
 
-    public ObjectFactoryByClonning(Object objectForClonning) {
+    public ObjectFactoryByCloning(Object objectForClonning) {
         objectInJson = gsonTo.toJson(objectForClonning);
         objectClass = objectForClonning.getClass();
     }

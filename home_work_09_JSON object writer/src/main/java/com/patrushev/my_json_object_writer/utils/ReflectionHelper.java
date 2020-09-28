@@ -5,7 +5,7 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 
 public class ReflectionHelper {
-    private static Set<Class<?>> wrappers = new HashSet<>();
+    private static final Set<Class<?>> wrappers = new HashSet<>();
 
     static {
         wrappers.add(Boolean.class);

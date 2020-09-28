@@ -4,7 +4,7 @@ import java.util.concurrent.RecursiveTask;
 
 public class ForkJoinMergeSorter extends RecursiveTask<int[]> {
 
-    private int[] arrayA;
+    private final int[] arrayA;
 
     public ForkJoinMergeSorter(int[] arrayA) {
         this.arrayA = arrayA;

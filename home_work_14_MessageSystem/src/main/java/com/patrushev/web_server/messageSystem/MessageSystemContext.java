@@ -1,8 +1,5 @@
 package com.patrushev.web_server.messageSystem;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Created by tully.
  */

@@ -11,12 +11,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class JDBCTemplateImpl implements JDBCTemplate {
-    private Logger logger = LoggerFactory.getLogger(JDBCTemplateImpl.class);
-    private DbExecutor executor;
-    private Map<Class<?>, String> insertQueries;
-    private Map<Class<?>, String> updateQueries;
-    private Map<Class<?>, String> selectQueries;
-    private Map<Class<?>, String> selectCountQueries;
+    private final Logger logger = LoggerFactory.getLogger(JDBCTemplateImpl.class);
+    private final DbExecutor executor;
+    private final Map<Class<?>, String> insertQueries;
+    private final Map<Class<?>, String> updateQueries;
+    private final Map<Class<?>, String> selectQueries;
+    private final Map<Class<?>, String> selectCountQueries;
 
     public JDBCTemplateImpl(DbExecutor executor) {
         this.executor = executor;

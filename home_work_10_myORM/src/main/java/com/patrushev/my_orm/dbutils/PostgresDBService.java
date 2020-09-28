@@ -13,11 +13,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PostgresDBService implements DBService {
-    private static Logger logger = LoggerFactory.getLogger(PostgresDBService.class);
-    private Connection connection;
-    private Set<Class> usableClasses;
-    private QueryingHelper queryingHelper;
-    private DataSetDAO dataSetDAO;
+    private static final Logger logger = LoggerFactory.getLogger(PostgresDBService.class);
+    private final Connection connection;
+    private final Set<Class> usableClasses;
+    private final QueryingHelper queryingHelper;
+    private final DataSetDAO dataSetDAO;
 
     @Override
     public <T extends DataSet> void save(T entity) throws SQLException {

@@ -6,7 +6,7 @@ import java.util.*;
 
 @SuppressWarnings("WeakerAccess")
 public class AtmDepartment {
-    private ArrayList<Atm> atms;
+    private final ArrayList<Atm> atms;
 
     public AtmDepartment() {
         atms = new ArrayList<>();

@@ -4,7 +4,6 @@ import com.patrushev.web_server.data.UserDataSet;
 import com.patrushev.web_server.messageSystem.Address;
 import com.patrushev.web_server.messageSystem.Addressee;
 import com.patrushev.web_server.messageSystem.messages.Message;
-import com.patrushev.web_server.messageSystem.messages.MsgGetUserByLoginAnswer;
 
 public interface FrontendService extends Addressee {
     UserDataSet findUser(long id);
