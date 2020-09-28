@@ -8,8 +8,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DataSourceH2 implements DataSource {
-    private Logger logger = LoggerFactory.getLogger(DataSourceH2.class);
-    private String URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
+    private final Logger logger = LoggerFactory.getLogger(DataSourceH2.class);
+    private static final String URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
 
     @Override
     public Connection getConnection() {

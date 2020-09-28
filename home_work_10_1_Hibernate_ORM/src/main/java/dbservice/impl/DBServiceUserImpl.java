@@ -8,7 +8,12 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import test_entities.Address;
+import test_entities.Phone;
 import test_entities.User;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DBServiceUserImpl implements DBService<User> {
     private final Logger logger = LoggerFactory.getLogger(DBServiceUserImpl.class);
@@ -47,11 +52,11 @@ public class DBServiceUserImpl implements DBService<User> {
     }
 
     public void update(User objectData) {
-
+        throw new UnsupportedOperationException();
     }
 
     public long createOrUpdate(User objectData) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     public User load(long id) {
@@ -66,5 +71,20 @@ public class DBServiceUserImpl implements DBService<User> {
             logger.debug("loaded entity: {}", loadedEntity);
             return loadedEntity;
         }
+    }
+
+    @Override
+    public User loadUserByName(String name) {
+        //TODO тут конечно нужно реализовать запрос в БД, но не охота пока
+        if (name.equals("Roman")) {
+            return new User("Roman", 31, new Address(), "verda", new Phone());
+        }
+        return null;
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        //TODO тут конечно нужно реализовать запрос в БД, но не охота пока
+        return new ArrayList<>();
     }
 }

@@ -1,7 +1,7 @@
 package com.patrushev.home_work_02.factories;
 
 public class IntArrayFactory implements ObjectFactory {
-    private int arrayLength;
+    private final int arrayLength;
 
     public IntArrayFactory(int arrayLength) {
         this.arrayLength = arrayLength;

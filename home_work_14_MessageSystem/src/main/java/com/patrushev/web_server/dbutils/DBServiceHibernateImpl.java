@@ -18,12 +18,12 @@ import java.util.List;
 import java.util.function.Function;
 
 public class DBServiceHibernateImpl implements DBService {
-    private Logger logger = LoggerFactory.getLogger(DBServiceHibernateImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(DBServiceHibernateImpl.class);
 
-    private UserDataSetDAO dao;
-    private MessageSystemContext msContext;
-    private Address address;
-    private SessionFactory sessionFactory;
+    private final UserDataSetDAO dao;
+    private final MessageSystemContext msContext;
+    private final Address address;
+    private final SessionFactory sessionFactory;
 
     public DBServiceHibernateImpl(Configuration configuration, UserDataSetDAO userDataSetDAO, MessageSystemContext msContext, Address address) {
         this.sessionFactory = configuration.buildSessionFactory();
@@ -68,7 +68,7 @@ public class DBServiceHibernateImpl implements DBService {
     @Override
     public List<UserDataSet> getAllUsers() {
         logger.info("Началась выгрузка всех пользователей из БД");
-        return runInSession(session -> dao.readAll(session));
+        return runInSession(dao::readAll);
     }
 
     private <R> R runInSession(Function<Session, R> function) {

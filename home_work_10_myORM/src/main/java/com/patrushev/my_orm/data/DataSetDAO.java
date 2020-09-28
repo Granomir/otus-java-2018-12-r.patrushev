@@ -15,7 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DataSetDAO {
-    private static Logger logger = LoggerFactory.getLogger(DataSetDAO.class);
+    private static final Logger logger = LoggerFactory.getLogger(DataSetDAO.class);
     private static QueryingHelper queryingHelper;
 
     public DataSetDAO(QueryingHelper queryingHelper) {

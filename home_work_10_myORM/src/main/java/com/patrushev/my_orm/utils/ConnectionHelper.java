@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class ConnectionHelper {
-    private static Logger logger = LoggerFactory.getLogger(ConnectionHelper.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConnectionHelper.class);
 
     /**
      * @return подключение к базе данных

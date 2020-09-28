@@ -3,7 +3,6 @@ package com.patrushev.web_server.messageSystem.messages;
 import com.patrushev.web_server.data.UserDataSet;
 import com.patrushev.web_server.dbutils.DBService;
 import com.patrushev.web_server.messageSystem.Address;
-import com.patrushev.web_server.servlets.CrudServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -25,10 +25,10 @@ import org.eclipse.jetty.util.resource.Resource;
 import org.hibernate.cfg.Configuration;
 
 public class CrudWebService {
-    private String STATIC = "/static";
-    private ServletContextHandler context;
-    private Server server;
-    private MessageSystem messageSystem;
+    private final String STATIC = "/static";
+    private final ServletContextHandler context;
+    private final Server server;
+    private final MessageSystem messageSystem;
 
     public void start() throws Exception {
         Configuration configuration = new Configuration();

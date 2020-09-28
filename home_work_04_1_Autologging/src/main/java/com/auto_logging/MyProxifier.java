@@ -15,7 +15,7 @@ public class MyProxifier {
     }
 
     private static class MyInvocationHandler implements InvocationHandler {
-        private Object objectForProxying;
+        private final Object objectForProxying;
         private final Set<Method> annotatedMethods;
 
         public MyInvocationHandler(Object objectForProxying) {

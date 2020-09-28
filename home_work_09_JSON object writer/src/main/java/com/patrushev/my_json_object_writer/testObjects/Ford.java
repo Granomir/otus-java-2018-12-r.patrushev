@@ -1,8 +1,8 @@
 package com.patrushev.my_json_object_writer.testObjects;
 
 public class Ford extends Car {
-    private String model = "Explorer";
-    private int price = 1000;
+    private final String model = "Explorer";
+    private final int price = 1000;
 
     @Override
     public String toString() {

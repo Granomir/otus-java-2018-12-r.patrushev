@@ -17,7 +17,7 @@ import java.io.IOException;
 public class LoginServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(CrudServlet.class);
     private final DBService dbService;
-    private FrontendService frontendService;
+    private final FrontendService frontendService;
 
     public LoginServlet(DBService dbService, FrontendService frontendService) {
         this.dbService = dbService;

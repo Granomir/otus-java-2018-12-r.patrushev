@@ -16,8 +16,6 @@
     <name>home_work_12</name>
 
     <properties>
-        <!--по умолчанию в maven версия jdk 1.5, поэтому если в коде будут фишки более поздних версий, то приложение не скомпилируется
-        указание версии jdk нужно для того, чтобы этого избежать-->
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <jetty.version>9.4.9.v20180320</jetty.version>
@@ -130,7 +128,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.patrushev.web_server.Main</mainClass>
+                            <mainClass>com.patrushev.web_server.HW121</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

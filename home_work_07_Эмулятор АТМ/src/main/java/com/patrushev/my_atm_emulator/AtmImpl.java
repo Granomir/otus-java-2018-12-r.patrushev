@@ -7,7 +7,7 @@ public class AtmImpl implements Atm {
     /**
      * наличность, имеющаяся в банкомате (номинал и количество)
      */
-    private TreeMap<Integer, Integer> cassettes;
+    private final TreeMap<Integer, Integer> cassettes;
 
     /**
      * в конструктор передаются денежные кассеты (любое количество) с заданными номиналом банкнот, с которыми будет работать банкомат, а также их начальное количество.
@@ -28,7 +28,7 @@ public class AtmImpl implements Atm {
      */
     @Override
     public void depositMoney(int banknoteDenomination, int quantity) {
-        if (cassettes.keySet().contains(banknoteDenomination)) {
+        if (cassettes.containsKey(banknoteDenomination)) {
             cassettes.put(banknoteDenomination, cassettes.get(banknoteDenomination) + quantity);
         } else {
             throw new IllegalArgumentException("Данный номинал не поддерживается банкоматом.");

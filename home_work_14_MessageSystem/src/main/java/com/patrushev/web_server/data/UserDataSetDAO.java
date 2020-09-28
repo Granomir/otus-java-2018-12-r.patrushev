@@ -11,7 +11,7 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 
 public class UserDataSetDAO {
-    private static Logger logger = LoggerFactory.getLogger(UserDataSetDAO.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserDataSetDAO.class);
 
     public <T extends DataSet> void save(Session session, T entity) {
         session.save(entity);

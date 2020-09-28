@@ -13,10 +13,10 @@ import org.slf4j.LoggerFactory;
 import java.util.function.Function;
 
 public class DBServiceHibernateImpl implements DBService {
-    private Logger logger = LoggerFactory.getLogger(DBServiceHibernateImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(DBServiceHibernateImpl.class);
 
-    private DataSetDAO dao;
-    private SessionFactory sessionFactory;
+    private final DataSetDAO dao;
+    private final SessionFactory sessionFactory;
 
     public DBServiceHibernateImpl(Configuration configuration, DataSetDAO dataSetDAO) {
         this.sessionFactory = configuration.buildSessionFactory();

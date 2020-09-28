@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 public class MsgAddUser extends MsgToDB {
     private final Logger logger = LoggerFactory.getLogger(MsgAddUser.class);
-    private UserDataSet userDataSet;
+    private final UserDataSet userDataSet;
 
     public MsgAddUser(Address from, Address to, UserDataSet userDataSet) {
         super(from, to);
