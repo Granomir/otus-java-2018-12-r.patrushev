@@ -27,7 +27,7 @@ public class CrudWebService {
     private final ServletContextHandler context;
     private final Server server;
 
-    public void start() throws Exception {
+    public Server prepareServer() {
         DBService<User> dbService = new DBServiceUserImpl();
         createSomeUsers(dbService);
         //создается наш сервлет и передается сервлетхолдеру jetty, который передается в контекст jetty
@@ -38,10 +38,7 @@ public class CrudWebService {
         context.addFilter(new FilterHolder(new AuthorizationFilter()), CRUD_PATH, null);
         //и передается лист хэндлеров, в который передаются ресурсхендлер и контекст
         server.setHandler(new HandlerList(createResourceHandler(), context));
-        server.start();
-        //join тут нужен на случай, когда серверу надо некоторое время на запуск (например большое приложение) и поэтому вызывающему потоку лучше его подождать
-        server.join();
-
+        return server;
     }
 
     private ResourceHandler createResourceHandler() {
