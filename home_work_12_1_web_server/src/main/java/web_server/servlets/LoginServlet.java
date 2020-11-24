@@ -40,7 +40,7 @@ public class LoginServlet extends HttpServlet {
             resp.sendRedirect(CRUD_PATH);
         } else {
             logger.info("Пользователь ввел неправильные данные");
-            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
 

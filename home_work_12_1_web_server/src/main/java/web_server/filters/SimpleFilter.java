@@ -6,13 +6,6 @@ import java.io.IOException;
 
 public class SimpleFilter implements Filter {
 
-    private ServletContext context;
-
-    @Override
-    public void init(FilterConfig filterConfig) {
-        this.context = filterConfig.getServletContext();
-    }
-
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
