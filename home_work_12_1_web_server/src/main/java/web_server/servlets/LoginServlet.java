@@ -36,6 +36,7 @@ public class LoginServlet extends HttpServlet {
             logger.info("Пользователь ввел правильный пароль, создается сессия");
             HttpSession session = req.getSession();
             session.setMaxInactiveInterval(MAX_INACTIVE_INTERVAL);
+            session.setAttribute("currentUser", login);
             logger.info("Создана сессия");
             resp.sendRedirect(CRUD_PATH);
         } else {

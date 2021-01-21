@@ -35,7 +35,7 @@ public class CrudWebService {
         context.addServlet(new ServletHolder(new CrudServlet(dbService, new TemplateProcessor())), CRUD_PATH);
         context.addServlet(new ServletHolder(new LoginServlet(dbService)), LOGIN_PATH);
         context.addFilter(new FilterHolder(new SimpleFilter()), ALL_PATH, null); //просто выводит в консоль ури и имя юзера
-        context.addFilter(new FilterHolder(new AuthorizationFilter()), CRUD_PATH, null);
+        context.addFilter(new FilterHolder(new AuthorizationFilter()), CRUD_PATH, null); //фильтр авторизации, не пускает по указанному пути, если нет сессии и перенаправляет на строницу авторизации
         //и передается лист хэндлеров, в который передаются ресурсхендлер и контекст
         server.setHandler(new HandlerList(createResourceHandler(), context));
         return server;
@@ -56,11 +56,11 @@ public class CrudWebService {
     }
 
     private void createSomeUsers(DBService<User> dbService) {
-        User HW121 = new User("Roman", 30, new Address("P"), "verda", new Phone("937"));
+        User savingUser1 = new User("Roman", 30, new Address("P"), "verda", new Phone("937"));
         User savingUser2 = new User("Tatiana", 28, new Address("M"), "verda", new Phone("964"));
         User savingUser3 = new User("Anna", 4, new Address("SD"), "verda", new Phone("917"));
         User savingUser4 = new User("Aleksandra", 3, new Address("MD"), "verda", new Phone("915"));
-        dbService.create(HW121);
+        dbService.create(savingUser1);
         dbService.create(savingUser2);
         dbService.create(savingUser3);
         dbService.create(savingUser4);
