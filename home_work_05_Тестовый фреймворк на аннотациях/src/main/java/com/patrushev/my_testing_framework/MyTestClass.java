@@ -15,22 +15,22 @@ public class MyTestClass {
     }
 
     @BeforeEach
-    public static void beforeEachMethod1() {
+    public void beforeEachMethod1() {
         System.out.println("beforEach #1");
     }
 
     @BeforeEach
-    public static void beforeEachMethod2() {
+    public void beforeEachMethod2() {
         System.out.println("beforEach #2");
     }
 
     @AfterEach
-    public static void afterEachMethod1() {
+    public void afterEachMethod1() {
         System.out.println("afterEach #1");
     }
 
     @AfterEach
-    public static void afterEachMethod2() {
+    public void afterEachMethod2() {
         System.out.println("afterEach #2");
     }
 
