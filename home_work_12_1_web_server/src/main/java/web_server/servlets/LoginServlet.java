@@ -1,6 +1,6 @@
 package web_server.servlets;
 
-import dbservice.DBService;
+import dbservice.UserDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import test_entities.User;
@@ -18,10 +18,10 @@ public class LoginServlet extends HttpServlet {
 
     private final Logger logger = LoggerFactory.getLogger(CrudServlet.class);
 
-    private final DBService<User> dbService;
+    private final UserDao userDao;
 
-    public LoginServlet(DBService<User> dbService) {
-        this.dbService = dbService;
+    public LoginServlet(UserDao userDao) {
+        this.userDao = userDao;
     }
 
     @Override
@@ -47,7 +47,7 @@ public class LoginServlet extends HttpServlet {
 
     private boolean authenticateUser(String login, String pass) {
         logger.info("Начинается аутентификация введенных пользователем данных");
-        User checkingUser = dbService.loadUserByName(login);
+        User checkingUser = userDao.loadByName(login);
         if (checkingUser != null) {
             return pass.equals(checkingUser.getPass());
         } else {

@@ -60,6 +60,7 @@
         <module>home_work_09_1_custom_orm</module>
         <module>home_work_10_1_Hibernate_ORM</module>
         <module>home_work_12_1_web_server</module>
+        <module>home_work_13_1_tomcat</module>
     </modules>
 
 </project>

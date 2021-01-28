@@ -1,13 +1,12 @@
-package dbservice.impl;
+package dao;
 
-import dbservice.DBService;
 import dbservice.JDBCTemplate;
 import test_entities.Account;
 
-public class DbServiceAccountImpl implements DBService<Account> {
+public class AccountDaoImpl implements AccountDao {
     private final JDBCTemplate template;
 
-    public DbServiceAccountImpl(JDBCTemplate template) {
+    public AccountDaoImpl(JDBCTemplate template) {
         this.template = template;
     }
 

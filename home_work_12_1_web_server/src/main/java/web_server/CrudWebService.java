@@ -1,7 +1,7 @@
 package web_server;
 
-import dbservice.DBService;
-import dbservice.impl.DBServiceUserImpl;
+import dbservice.UserDao;
+import dbservice.impl.UserDaoImpl;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
@@ -28,12 +28,12 @@ public class CrudWebService {
     private final Server server;
 
     public Server prepareServer() {
-        DBService<User> dbService = new DBServiceUserImpl();
-        createSomeUsers(dbService);
+        UserDao userDao = new UserDaoImpl();
+        createSomeUsers(userDao);
         //создается наш сервлет и передается сервлетхолдеру jetty, который передается в контекст jetty
         //еще передается путь, перейдя по которому (адрес:порт/timer) откроется страница, управлямая нашим сервлетом
-        context.addServlet(new ServletHolder(new CrudServlet(dbService, new TemplateProcessor())), CRUD_PATH);
-        context.addServlet(new ServletHolder(new LoginServlet(dbService)), LOGIN_PATH);
+        context.addServlet(new ServletHolder(new CrudServlet(userDao, new TemplateProcessor())), CRUD_PATH);
+        context.addServlet(new ServletHolder(new LoginServlet(userDao)), LOGIN_PATH);
         context.addFilter(new FilterHolder(new SimpleFilter()), ALL_PATH, null); //просто выводит в консоль ури и имя юзера
         context.addFilter(new FilterHolder(new AuthorizationFilter()), CRUD_PATH, null); //фильтр авторизации, не пускает по указанному пути, если нет сессии и перенаправляет на строницу авторизации
         //и передается лист хэндлеров, в который передаются ресурсхендлер и контекст
@@ -55,15 +55,15 @@ public class CrudWebService {
         this.server = server;
     }
 
-    private void createSomeUsers(DBService<User> dbService) {
+    private void createSomeUsers(UserDao userDao) {
         User savingUser1 = new User("Roman", 30, new Address("P"), "verda", new Phone("937"));
         User savingUser2 = new User("Tatiana", 28, new Address("M"), "verda", new Phone("964"));
         User savingUser3 = new User("Anna", 4, new Address("SD"), "verda", new Phone("917"));
         User savingUser4 = new User("Aleksandra", 3, new Address("MD"), "verda", new Phone("915"));
-        dbService.create(savingUser1);
-        dbService.create(savingUser2);
-        dbService.create(savingUser3);
-        dbService.create(savingUser4);
+        userDao.create(savingUser1);
+        userDao.create(savingUser2);
+        userDao.create(savingUser3);
+        userDao.create(savingUser4);
     }
 
 }

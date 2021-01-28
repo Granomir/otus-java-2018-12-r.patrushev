@@ -1,6 +1,6 @@
 package web_server.servlets;
 
-import dbservice.DBService;
+import dbservice.UserDao;
 import org.hibernate.ObjectNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +22,10 @@ public class CrudServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(CrudServlet.class);
 
     private final TemplateProcessor templateProcessor;
-    private final DBService<User> dbService;
+    private final UserDao userDao;
 
-    public CrudServlet(DBService<User> dbService, TemplateProcessor templateProcessor) {
-        this.dbService = dbService;
+    public CrudServlet(UserDao userDao, TemplateProcessor templateProcessor) {
+        this.userDao = userDao;
         this.templateProcessor = templateProcessor;
     }
 
@@ -58,7 +58,7 @@ public class CrudServlet extends HttpServlet {
 
     private void doGetCount(Map<String, Object> pageVariables) {
         logger.info("Пользователь запрашивает количество user в БД");
-        pageVariables.put("count", dbService.getAllUsers().size());
+        pageVariables.put("count", userDao.getAll().size());
     }
 
     private void doFindUser(HttpServletRequest req, Map<String, Object> pageVariables) {
@@ -66,7 +66,7 @@ public class CrudServlet extends HttpServlet {
         logger.info("Пользователь ищет user по id = " + id);
         User foundUser = null;
         try {
-            foundUser = dbService.load(Long.parseLong(id));
+            foundUser = userDao.load(Long.parseLong(id));
         } catch (NumberFormatException e) {
             pageVariables.put("foundUser", "необходимо ввести число");
         } catch (ObjectNotFoundException e) {
@@ -97,7 +97,7 @@ public class CrudServlet extends HttpServlet {
     private void doInsertUser(HttpServletRequest req, Map<String, Object> pageVariables) {
         logger.info("Пользователь добавляет user в БД");
         User user = getUser(req);
-        dbService.create(user);
+        userDao.create(user);
         pageVariables.put("created", "Новый пользователь создан!");
     }
 
