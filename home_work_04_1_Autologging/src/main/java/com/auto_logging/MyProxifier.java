@@ -9,9 +9,9 @@ import java.util.stream.Collectors;
 
 public class MyProxifier {
 
-    public static Object getProxifiedObject(Object objectForProxying) {
+    public static <T> T getProxifiedObject(T objectForProxying) {
         InvocationHandler invocationHandler = new MyInvocationHandler(objectForProxying);
-        return Proxy.newProxyInstance(MyProxifier.class.getClassLoader(), objectForProxying.getClass().getInterfaces(), invocationHandler);
+        return (T) Proxy.newProxyInstance(MyProxifier.class.getClassLoader(), objectForProxying.getClass().getInterfaces(), invocationHandler);
     }
 
     private static class MyInvocationHandler implements InvocationHandler {
