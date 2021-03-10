@@ -77,6 +77,7 @@ public class UserDaoImpl implements UserDao {
         try (Session session = sessionFactory.openSession()) {
             final User loadedEntity = session.get(User.class, id);
             log.debug("loaded entity: {}", loadedEntity);
+            cache.put(id, loadedEntity);
             return loadedEntity;
         }
     }
