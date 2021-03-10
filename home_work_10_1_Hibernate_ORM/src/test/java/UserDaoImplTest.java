@@ -14,7 +14,6 @@ class UserDaoImplTest {
         UserDao userDao = new UserDaoImpl();
         User user1 = new User("Roman", 29, new Address("Lavrinenko"), "verda", new Phone("79375292927"), new Phone("79153527806"));
         long id = userDao.create(user1);
-        User user2 = new User(id, "Roman", 29, new Address("Lavrinenko"), "verda", new Phone("79375292927"), new Phone("79153527806"));
-        assertEquals(user2, userDao.load(id));
+        assertEquals(user1, userDao.load(id));
     }
 }
